@@ -2,11 +2,13 @@ library(shiny)
 library(shinydashboard)
 library(DT)
 library(dplyr)
+library(tidyr)
 library(readr)
 library(lubridate)
 library(data.table)
 library(shinyWidgets)
 library(shinyjs)
+library(highcharter)
 
 for_display <- function(df){
   df %>%
@@ -19,7 +21,7 @@ for_display <- function(df){
 }
 
 df <- read_csv("Rugby_clean.csv", col_types = "cDccccccciicilllic") %>%
-  mutate_at(c("Team", "Stage", "Home/Away", "Result"), as.factor)
+  mutate_at(c("Team", "Stage", "`Home/Away`", "Result"), as.factor)
 
 
 # Define UI for application that draws a histogram
