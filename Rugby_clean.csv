@@ -73,5 +73,7 @@ Season,Date,Team,Competition,Stage,Opposition,Home/Away,Venue,Result,F,A,Positio
 2018/2019,2018-10-06,Exiles,MMT 4,NA,Wasps 2nd,H,Ealing,W,43,31,Lock,80,TRUE,TRUE,FALSE,1,NA
 2018/2019,2018-10-13,2nd,MMT Cup,NA,Old Haberdashers' 2nd,H,Ealing,L,20,27,Lock,75,TRUE,FALSE,FALSE,0,NA
 2018/2019,2018-10-20,2nd,MMT 1,NA,London Cornish 3rd,A,Away,L,18,45,Lock,80,TRUE,FALSE,FALSE,0,NA
-2018/2019,2018-11-09,Evergreens,MMT Vets Cup,,Chiswick,A,Away,L,17,40,Flanker/No. 8,70,TRUE,FALSE,FALSE,0,Abandoned after 70'
-2018/2019,2018-11-10,Exiles,Friendly,,Surrey Chargers,H,Ealing,D,35,35,Flanker,80,TRUE,FALSE,FALSE,0,Mixed ability
+2018/2019,2018-11-09,Evergreens,MMT Vets Cup,NA,Chiswick,A,Away,L,17,40,Flanker/No. 8,70,TRUE,FALSE,FALSE,0,Abandoned after 70'
+2018/2019,2018-11-10,Exiles,Friendly,NA,Surrey Chargers,H,Ealing,D,35,35,Flanker,80,TRUE,FALSE,FALSE,0,Mixed ability
+2018/2019,2018-11-17,2nd,MMT 1,,HAC 3rd,A,Away,L,17,44,Lock,80,TRUE,FALSE,FALSE,0,
+2018/2019,2018-11-17,Exiles,MMT 4,,Bank of England 2nd,H,Ealing,W,41,31,Lock/No. 8,70,TRUE,FALSE,FALSE,0,Abandoned after 70'

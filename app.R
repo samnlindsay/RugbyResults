@@ -9,6 +9,7 @@ library(data.table)
 library(shinyWidgets)
 library(shinyjs)
 library(highcharter)
+source("charts.R")
 
 for_display <- function(df){
   df %>%
@@ -21,8 +22,7 @@ for_display <- function(df){
 }
 
 df <- read_csv("Rugby_clean.csv", col_types = "cDccccccciicilllic") %>%
-  mutate_at(c("Team", "Stage", "`Home/Away`", "Result"), as.factor)
-
+  mutate_at(c("Team", "Stage", "Home/Away", "Result"), as.factor)
 
 # Define UI for application that draws a histogram
 ui <- dashboardPage(
@@ -31,11 +31,7 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Data", tabName = "data", icon = icon("table")),
       menuItem("Analysis", tabName = "analysis", icon = icon("bar-chart-o"))
-      ),
-    br(),
-    br(),
-    uiOutput("season_filter_input"),
-    uiOutput("team_filter_input")
+      )
   ),
   dashboardBody(
     useShinyjs(),
@@ -52,11 +48,42 @@ ui <- dashboardPage(
                          collapsible = TRUE,
                          status = "primary",
                          #solidHeader = TRUE,
+                         fluidRow(
+                           column(2, ""),
+                           column(4, uiOutput("season_filter_input")),
+                           column(4, uiOutput("team_filter_input"))
+                           ),
                          column(12, DT::dataTableOutput("dataTable"))
                          ))
             ),
       tabItem(tabName = "analysis",
-            "Some plots")
+            fluidRow(box(
+              title = "Scores",
+              width = 12,
+              collapsible = T,
+              fluidRow(
+                column(6, highchartOutput("plot_scores")),
+                column(6, uiOutput(""))
+                )
+              )),
+            fluidRow(box(title = "Cumulative games/minutes played",
+                width = 12,
+                collapsible = T,
+                fluidRow(
+                  column(6, highchartOutput("plot_cum_games")),
+                  column(6, highchartOutput("plot_cum_time"))
+                )
+                )),
+            fluidRow(box(
+              title = "Game count",
+              width = 12,
+              collapsible = T,
+              switchInput("toggle_by_team", "Break down by team",
+                          value = T, labelWidth = "150px", onStatus = "warning"),
+              br(),
+              uiOutput("plot_games")
+              ))
+      )
     )
   )
 )
@@ -199,7 +226,7 @@ server <- function(input, output) {
 
     datatable(DT,
               escape = F,
-              extensions = 'FixedHeader',
+              #extensions = 'FixedHeader',
               options = list(
                 pageLength = 10,
                 fixedHeader = TRUE,
@@ -239,6 +266,28 @@ server <- function(input, output) {
     write_csv(rugby_data$Data, "Rugby_clean.csv")
 
     showModal(modalDialog(title = "Game saved", em("Rugby_clean.csv"), " overwritten with new data", easyClose = TRUE, size = "s"))
+  })
+
+  output$plot_cum_time <- renderHighchart(hc_cum_time(rugby_data$Data))
+  output$plot_cum_games <- renderHighchart(hc_cum_games(rugby_data$Data))
+  output$plot_tries <- renderHighchart(hc_tries(rugby_data$Data))
+  output$plot_games_team <- renderHighchart(hc_games_by_team(rugby_data$Data))
+  output$plot_games_season <- renderHighchart(hc_games_by_season(rugby_data$Data))
+  output$plot_games_season2 <- renderHighchart(hc_games_by_season2(rugby_data$Data))
+  output$plot_games_position <- renderHighchart(hc_games_by_position(rugby_data$Data))
+  output$plot_games_position2 <- renderHighchart(hc_games_by_position2(rugby_data$Data))
+  output$plot_scores <- renderHighchart(hc_score_map(rugby_data$Data))
+
+  output$plot_games <- renderUI({
+    if(input$toggle_by_team){
+      fluidRow(
+        column(6, highchartOutput("plot_games_season")),
+        column(6, highchartOutput("plot_games_position")))
+    } else {
+      fluidRow(
+        column(6, highchartOutput("plot_games_season2")),
+        column(6, highchartOutput("plot_games_position2")))
+    }
   })
 
 }
