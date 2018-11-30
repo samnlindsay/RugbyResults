@@ -49,9 +49,8 @@ ui <- dashboardPage(
                          status = "primary",
                          #solidHeader = TRUE,
                          fluidRow(
-                           column(2, ""),
-                           column(4, uiOutput("season_filter_input")),
-                           column(4, uiOutput("team_filter_input"))
+                           column(6, uiOutput("season_filter_input")),
+                           column(6, uiOutput("team_filter_input"))
                            ),
                          column(12, DT::dataTableOutput("dataTable"))
                          ))
@@ -63,15 +62,24 @@ ui <- dashboardPage(
               collapsible = T,
               fluidRow(
                 column(6, highchartOutput("plot_scores")),
-                column(6, uiOutput(""))
+                column(3, highchartOutput("plot_games_team"))
                 )
               )),
             fluidRow(box(title = "Cumulative games/minutes played",
                 width = 12,
                 collapsible = T,
                 fluidRow(
-                  column(6, highchartOutput("plot_cum_games")),
-                  column(6, highchartOutput("plot_cum_time"))
+                  column(6, radioGroupButtons("cum_games_or_mins", label = NULL,
+                              choices = c("Games", "Minutes"), justified = TRUE),
+                         conditionalPanel("input.cum_games_or_mins == 'Games'",
+                           highchartOutput("plot_cum_games")),
+                         conditionalPanel("input.cum_games_or_mins == 'Minutes'",
+                           highchartOutput("plot_cum_time"))),
+                  column(6, box(width = 12,
+                                formattableOutput("table_win_rate")),
+                         box(width = 12,
+                             formattableOutput("table_avg_score_team"),
+                             formattableOutput("table_avg_score_season")))
                 )
                 )),
             fluidRow(box(
@@ -189,8 +197,7 @@ server <- function(input, output) {
                          justified = T,
                          checkIcon = list(
                            yes = icon("ok", lib = "glyphicon"),
-                           no = icon("remove", lib = "glyphicon")),
-                         direction = "vertical")
+                           no = icon("remove", lib = "glyphicon")))
   })
 
   output$team_filter_input <- renderUI({
@@ -201,20 +208,7 @@ server <- function(input, output) {
                          justified = T,
                          checkIcon = list(
                            yes = icon("ok", lib = "glyphicon"),
-                           no = icon("remove", lib = "glyphicon")),
-                         direction = "vertical")
-  })
-
-  output$team_filter_input <- renderUI({
-    checkboxGroupButtons("team_filter",
-                         "Team Filter",
-                         choices = levels(df$Team),
-                         selected = levels(df$Team),
-                         justified = T,
-                         checkIcon = list(
-                           yes = icon("ok", lib = "glyphicon"),
-                           no = icon("remove", lib = "glyphicon")),
-                         direction = "vertical")
+                           no = icon("remove", lib = "glyphicon")))
   })
 
   ## Table of results
@@ -272,11 +266,17 @@ server <- function(input, output) {
   output$plot_cum_games <- renderHighchart(hc_cum_games(rugby_data$Data))
   output$plot_tries <- renderHighchart(hc_tries(rugby_data$Data))
   output$plot_games_team <- renderHighchart(hc_games_by_team(rugby_data$Data))
+  output$plot_tot_games_team <- renderHighchart(hc_tot_games_by_team(rugby_data$Data))
+  output$plot_mins_team <- renderHighchart(hc_mins_by_team(rugby_data$Data))
+  output$plot_tot_mins_team <- renderHighchart(hc_tot_mins_by_team(rugby_data$Data))
   output$plot_games_season <- renderHighchart(hc_games_by_season(rugby_data$Data))
-  output$plot_games_season2 <- renderHighchart(hc_games_by_season2(rugby_data$Data))
+  output$plot_tot_games_season <- renderHighchart(hc_tot_games_by_season(rugby_data$Data))
   output$plot_games_position <- renderHighchart(hc_games_by_position(rugby_data$Data))
-  output$plot_games_position2 <- renderHighchart(hc_games_by_position2(rugby_data$Data))
+  output$plot_tot_games_position <- renderHighchart(hc_tot_games_by_position(rugby_data$Data))
   output$plot_scores <- renderHighchart(hc_score_map(rugby_data$Data))
+  output$table_win_rate <- renderFormattable(dt_win_rate(rugby_data$Data))
+  output$table_avg_score_team <- renderFormattable(dt_average_score_team(rugby_data$Data))
+  output$table_avg_score_season <- renderFormattable(dt_average_score_season(rugby_data$Data))
 
   output$plot_games <- renderUI({
     if(input$toggle_by_team){
@@ -285,8 +285,8 @@ server <- function(input, output) {
         column(6, highchartOutput("plot_games_position")))
     } else {
       fluidRow(
-        column(6, highchartOutput("plot_games_season2")),
-        column(6, highchartOutput("plot_games_position2")))
+        column(6, highchartOutput("plot_tot_games_season")),
+        column(6, highchartOutput("plot_tot_games_position")))
     }
   })
 
