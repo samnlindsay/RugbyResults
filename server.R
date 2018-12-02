@@ -9,6 +9,7 @@ library(data.table)
 library(shinyWidgets)
 library(shinyjs)
 library(highcharter)
+library(formattable)
 source("charts.R")
 
 for_display <- function(df){
@@ -18,7 +19,7 @@ for_display <- function(df){
            MOTM = ifelse(MOTM, "<i class='fa fa-trophy' style='color:green' align='center'></i>", ""),
            YC = ifelse(YC, "<i class='fa fa-square' style='color:#ffcc00' align='center''></i>", ""),
            Try = ifelse(Try > 0, strrep("<i class='fa fa-star' style='color:green' align='center'></i>", Try), "")) %>%
-    select(-Season, -Result, -`Home/Away`)
+    select(-Season, -`Home/Away`)
 }
 
 df <- read_csv("Rugby_clean.csv", col_types = "cDccccccciicilllic") %>%
@@ -36,7 +37,8 @@ server <- function(input, output, session) {
                            paste0(year(Date), "/", year(Date) + 1)),
            `Home/Away` = ifelse(Venue == "Away", "A", "H"),
            Result = ifelse(`F` == `A`, "D",
-                           ifelse(`F` > `A`, "W", "L")))
+                           ifelse(`F` > `A`, "W", "L")),
+           Opposition_club = str_replace_all(Opposition, "\\s\\(?[0-9](st|nd|rd|th)\\)?", ""))
 
   output$new_data <- renderUI({
     fluidRow(
@@ -94,14 +96,17 @@ server <- function(input, output, session) {
   ## Table of results
   output$dataTable <- DT::renderDataTable({
     DT = for_display(rugby_data$Data %>%
-                       filter(Season %in% input$season_filter,
-                              Team %in% input$team_filter) %>%
-                       arrange(desc(Date)))
+                       filter((Team == input$team_filter | input$team_filter == "All"),
+                              (Season == input$season_filter | input$season_filter == "All"),
+                              (Opposition_club %in% input$oppo_filter | is.null(input$oppo_filter))) %>%
+                       arrange(desc(Date)) %>%
+                       select(-Opposition_club))
 
-    datatable(DT,
+    table <- datatable(DT,
               escape = F,
               #extensions = 'FixedHeader',
               options = list(
+                columnDefs = list(list(visible=FALSE, targets=c(6))),
                 pageLength = 10,
                 fixedHeader = TRUE,
                 dom = 'ltp',
@@ -110,6 +115,20 @@ server <- function(input, output, session) {
               ),
               rownames = F,
               selection = "none")
+
+    if(input$color_data_by == "Result"){
+      table <- table %>%
+        formatStyle('Result', target = 'row',
+        backgroundColor = styleEqual(c("W", "L", "D"),
+                                     c("rgb(200,255,200)", "rgb(255,200,200)", "rgb(255,255,200)")))
+    } else if(input$color_data_by == "Team"){
+      table <- table %>%
+        formatStyle('Team', target = 'row',
+                    backgroundColor = styleEqual(c("1st", "2nd", "Evergreens", "Exiles"),
+                                                 c("rgb(200,255,200)", "rgb(255,200,100)",
+                                                   "rgb(200,200,200)", "rgb(250,250,250)")))
+    }
+    return(table)
   })
 
   ## Save table to changes.csv
@@ -135,7 +154,8 @@ server <- function(input, output, session) {
                              paste0(year(Date), "/", year(Date) + 1)),
              `Home/Away` = ifelse(Venue == "Away", "A", "H"),
              Result = ifelse(`F` == `A`, "D",
-                             ifelse(`F` > `A`, "W", "L")))
+                             ifelse(`F` > `A`, "W", "L")),
+             Opposition_club = str_replace_all(Opposition, "\\s\\(?[0-9](st|nd|rd|th)\\)?", ""))
 
     write_csv(rugby_data$Data, "Rugby_clean.csv")
 
@@ -146,32 +166,32 @@ server <- function(input, output, session) {
   stats_data <- reactive(
     rugby_data$Data %>%
       filter(Team == input$stats_team | input$stats_team == "All",
-             Season == input$stats_season | input$stats_season == "All"))
+             Season == input$stats_season | input$stats_season == "All",
+             Opposition_club == input$stats_oppo | input$stats_oppo == "All"))
 
 # FILTERS -----------------------------------------------------------------
 
   output$season_filter_input <- renderUI({
-    checkboxGroupButtons("season_filter",
-                         "Season Filter",
-                         choices = unique(rugby_data$Data$Season),
-                         selected = unique(rugby_data$Data$Season),
-                         justified = T,
-                         #direction = "vertical",
-                         checkIcon = list(
-                           yes = icon("ok", lib = "glyphicon"),
-                           no = icon("remove", lib = "glyphicon")))
+    pickerInput("season_filter", "Season filter",
+                choices = c("All", unique(rugby_data$Data$Season)),
+                selected = "All")
   })
 
   output$team_filter_input <- renderUI({
-    checkboxGroupButtons("team_filter",
-                         "Team Filter",
-                         choices = levels(df$Team),
-                         selected = levels(df$Team),
-                         justified = T,
-                         #direction = "vertical",
-                         checkIcon = list(
-                           yes = icon("ok", lib = "glyphicon"),
-                           no = icon("remove", lib = "glyphicon")))
+    pickerInput("team_filter", "Team filter",
+                choices = c("All", as.character(sort(unique(rugby_data$Data$Team)))),
+                selected = "All")
+  })
+
+  output$oppo_filter_input <- renderUI({
+    pickerInput("oppo_filter", "Opposition filter*",
+                choices = sort(unique(rugby_data$Data$Opposition_club)),
+                multiple = T,
+                options = list(
+                  #style = "btn-primary",
+                  title = "Choose a club (e.g. \"Wasps\")",
+                  `live-search` = TRUE)
+                )
   })
 
   output$stats_filters <- renderUI({
@@ -183,6 +203,14 @@ server <- function(input, output, session) {
       pickerInput("stats_season", "Season",
                   choices = c("All", unique(rugby_data$Data$Season)),
                   selected = "All"),
+      pickerInput("stats_oppo", "Opposition",
+                  choices = c("All", sort(unique(rugby_data$Data$Opposition_club))),
+                  selected = "All",
+                  options = list(
+                    #style = "btn-primary",
+                    `actions-box` = TRUE,
+                    `live-search` = TRUE)
+      ),
       br(),
       h5("* Ealing score first"))
   })
@@ -232,9 +260,12 @@ server <- function(input, output, session) {
   })
 
   output$minute_count <- renderValueBox({
+    avg_time <- round(sum(stats_data()$Time / nrow(stats_data())))
+
     valueBox(
-      format(sum(stats_data()$Time), big.mark = ","),
-      "Minutes",
+      paste0(format(sum(stats_data()$Time), big.mark = ","),
+             " (", avg_time, ")"),
+      "Minutes (per game)",
       color = "blue",
       icon = icon("clock-o")
     )

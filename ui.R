@@ -15,8 +15,8 @@ ui <- dashboardPage(
   dashboardHeader(title = "Rugby Results"),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Data", tabName = "data", icon = icon("table")),
-      menuItem("Stats", tabName = "stats", icon = icon("bar-chart-o"))
+      menuItem(h4(icon("table"),"  Data"), tabName = "data"),
+      menuItem(h4(icon("bar-chart-o"), "  Stats"), tabName = "stats")
     )
   ),
   dashboardBody(
@@ -32,9 +32,19 @@ ui <- dashboardPage(
             collapsible = TRUE,
             status = "primary",
             fluidRow(
-              column(6, uiOutput("season_filter_input")),
-              column(6, uiOutput("team_filter_input"))
+              column(3, uiOutput("season_filter_input")),
+              column(3, uiOutput("team_filter_input")),
+              column(4, uiOutput("oppo_filter_input")),
+              column(2, radioGroupButtons("color_data_by", "Colour rows by...",
+                choices = c("Result", "Team"),
+                checkIcon = list(
+                  yes = tags$i(class = "fa fa-check-square",
+                               style = "color: steelblue"),
+                  no = tags$i(class = "fa fa-square-o",
+                              style = "color: steelblue"))
+              ))
             ),
+            tags$hr(),
             column(12, DT::dataTableOutput("dataTable"))
             )
           )
