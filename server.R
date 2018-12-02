@@ -26,7 +26,7 @@ df <- read_csv("Rugby_clean.csv", col_types = "cDccccccciicilllic") %>%
   mutate_at(c("Team", "Stage", "Home/Away", "Result"), as.factor)
 
 
-server <- function(input, output, session) {
+function(input, output, session) {
 
 
 # DATA --------------------------------------------------------------------
@@ -184,7 +184,7 @@ server <- function(input, output, session) {
   })
 
   output$oppo_filter_input <- renderUI({
-    pickerInput("oppo_filter", "Opposition filter*",
+    pickerInput("oppo_filter", "Opposition filter",
                 choices = sort(unique(rugby_data$Data$Opposition_club)),
                 multiple = T,
                 options = list(
@@ -199,20 +199,24 @@ server <- function(input, output, session) {
       width = 2,
       pickerInput("stats_team", "Team",
                   choices = c("All", as.character(sort(unique(rugby_data$Data$Team)))),
-                  selected = "All"),
+                  selected = "All") %>%
+        popify(title = "",
+               content = "Select an Ealing team played for, or \"All\" to include games for all teams."),
       pickerInput("stats_season", "Season",
                   choices = c("All", unique(rugby_data$Data$Season)),
-                  selected = "All"),
+                  selected = "All") %>%
+        popify(title = "",
+               content = "Select a season, or \"All\" to include all games."),
       pickerInput("stats_oppo", "Opposition",
                   choices = c("All", sort(unique(rugby_data$Data$Opposition_club))),
                   selected = "All",
                   options = list(
                     #style = "btn-primary",
                     `actions-box` = TRUE,
-                    `live-search` = TRUE)
-      ),
-      br(),
-      h5("* Ealing score first"))
+                    `live-search` = TRUE)) %>%
+        popify(title = "",
+               content = "Select from a list of clubs played against, or \"All\" to include all opposition. There is no distinction between different teams from the same club.")
+      )
   })
 
 
@@ -352,5 +356,5 @@ server <- function(input, output, session) {
                .$avg_score,
              "Away")
   })
-
 }
+

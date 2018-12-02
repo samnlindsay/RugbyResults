@@ -8,6 +8,8 @@ library(lubridate)
 library(data.table)
 library(shinyWidgets)
 library(shinyjs)
+library(shinyBS)
+library(shinycssloaders)
 library(highcharter)
 source("charts.R")
 
@@ -21,6 +23,9 @@ ui <- dashboardPage(
   ),
   dashboardBody(
     useShinyjs(),
+    tags$style(type="text/css",
+               ".shiny-output-error { visibility: hidden; }",
+               ".shiny-output-error:before { visibility: hidden; }"),
     tabItems(
       tabItem(
         tabName = "data",
@@ -28,13 +33,19 @@ ui <- dashboardPage(
         fluidRow(
           box(
             width = 12,
-            title = "Match History",
+            title = "Match history",
             collapsible = TRUE,
             status = "primary",
             fluidRow(
-              column(3, uiOutput("season_filter_input")),
-              column(3, uiOutput("team_filter_input")),
-              column(4, uiOutput("oppo_filter_input")),
+              column(3, uiOutput("season_filter_input") %>%
+                       popify(title = "", placement = "top",
+                              content = "Select a specific season to view only games that year.")),
+              column(3, uiOutput("team_filter_input") %>%
+                       popify(title = "", placement = "top",
+                              content = "Select an Ealing team to view only games played for that team.")),
+              column(4, uiOutput("oppo_filter_input") %>%
+                       popify(title = "", placement = "top",
+                              content = "Select an opposition club to view only games played against that club (all squads).")),
               column(2, radioGroupButtons("color_data_by", "Colour rows by...",
                 choices = c("Result", "Team"),
                 checkIcon = list(
@@ -42,17 +53,18 @@ ui <- dashboardPage(
                                style = "color: steelblue"),
                   no = tags$i(class = "fa fa-square-o",
                               style = "color: steelblue"))
-              ))
+              ) %>%
+                popify(title = "", placement= "top", content = "Color rows by result <br> (W/L = green/red) <br> or team played for <br> (1st/2nd = green/orange)"))
             ),
             tags$hr(),
-            column(12, DT::dataTableOutput("dataTable"))
+            column(12, DT::dataTableOutput("dataTable") %>% withSpinner())
             )
           )
         ),
       tabItem(
         tabName = "stats",
         fluidRow(box(
-          title = "Summary Stats",
+          title = "Summary stats",
           width = 12,
           collapsible = T,
           status = "primary",
@@ -68,23 +80,27 @@ ui <- dashboardPage(
                      valueBoxOutput("card_count", width = 6))
             ),
           box(
-            title = "Win Percentage",
+            title = "Win percentage",
             width = 3,
             solidHeader = T,
             status = "primary",
             fluidRow(valueBoxOutput("win_rate", width = 12)),
             fluidRow(valueBoxOutput("win_rate_home", width = 12)),
             fluidRow(valueBoxOutput("win_rate_away", width = 12))
-            ),
+            ) %>%
+            popify(title = "", content = "Overall win rate (top) and separately at home and away.",
+                   placement = "top", trigger = "hover"),
           box(
-            title = "Average Scores*",
+            title = "Average score",
             width = 3,
             solidHeader = T,
             status = "primary",
             fluidRow(valueBoxOutput("avg_score", width = 12)),
             fluidRow(valueBoxOutput("avg_score_home", width = 12)),
             fluidRow(valueBoxOutput("avg_score_away", width = 12))
-            )
+            ) %>%
+            popify(title = "", placement = "top", trigger = "hover",
+                   content = "Average points for and against in all games (top), home games and away games. Ealing score is shown first.")
           )),
       fluidRow(
         box(
