@@ -15,7 +15,7 @@ hc_games_by_season <- function(df){
     hc_yAxis(tickInterval = 5) %>%
     hc_plotOptions(column = list(dataLabels = list(enabled = T)))
 }
-hc_games_by_season(df)
+#hc_games_by_season(df)
 
 hc_tot_games_by_season <- function(df){
   games_by_team <- df %>% count(Start, Season) %>%
@@ -33,7 +33,7 @@ hc_tot_games_by_season <- function(df){
     hc_legend(align = "left", verticalAlign = "top",
               layout = "vertical", floating = T, x = 60, y = 5)
 }
-hc_tot_games_by_season(df)
+#hc_tot_games_by_season(df)
 
 # GAMES BY POSITION
 hc_games_by_position <- function(df){
@@ -48,7 +48,7 @@ hc_games_by_position <- function(df){
               layout = "vertical", floating = T, x = -40, y = 5) %>%
     hc_plotOptions(column = list(dataLabels = list(enabled = T)))
 }
-hc_games_by_position(df)
+#hc_games_by_position(df)
 
 hc_tot_games_by_position <- function(df){
   games_by_position <- df %>%
@@ -64,7 +64,7 @@ hc_tot_games_by_position <- function(df){
               layout = "vertical", floating = T, x = -40, y = 5) %>%
     hc_plotOptions(column = list(dataLabels = list(enabled = T)))
 }
-hc_tot_games_by_position(df)
+#hc_tot_games_by_position(df)
 
 
 # GAMES BY TEAM
@@ -89,7 +89,7 @@ hc_tot_games_by_team <- function(df){
     hc_legend(align = "left", verticalAlign = "top",
               layout = "vertical", floating = T, x = 60, y = 5)
 }
-hc_tot_games_by_team(df)
+#hc_tot_games_by_team(df)
 
 # MINS BY TEAM
 hc_tot_mins_by_team <- function(df){
@@ -108,7 +108,7 @@ hc_tot_mins_by_team <- function(df){
     hc_plotOptions(series = list(colorByPoint = T),
                    column = list(dataLabels = list(enabled = T)))
 }
-hc_tot_mins_by_team(df)
+#hc_tot_mins_by_team(df)
 
 # TRIES
 hc_tries <- function(df){
@@ -124,8 +124,8 @@ hc_tries <- function(df){
               layout = "vertical", floating = T, x = 70, y = 15) %>%
     hc_plotOptions(column = list(stacking = "normal",
                                  dataLabels = list(enabled = T)))
-  }
-hc_tries(df)
+}
+#hc_tries(df)
 
 # SCORE MAP
 hc_score_map <- function(df){
@@ -153,7 +153,7 @@ hc_score_map <- function(df){
     hc_yAxis(tickInterval = 20) %>%
     hc_xAxis(tickInterval = 10, min = 0, max = 60)
 }
-hc_score_map(df)
+#hc_score_map(df)
 
 
 # CUMULATIVE GAME TIME
@@ -176,7 +176,7 @@ hc_cum_time <- function(df){
     hc_tooltip(crosshairs = T, dateTimeLabelFormats = list(day = "%e %b")) %>%
     hc_add_theme(theme)
 }
-hc_cum_time(df)
+#hc_cum_time(df)
 
 # CUMULATIVE GAMES
 hc_cum_games <- function(df){
@@ -198,7 +198,7 @@ hc_cum_games <- function(df){
     hc_tooltip(dateTimeLabelFormats = list(day = "%e %b")) %>%
     hc_add_theme(theme)
 }
-hc_cum_games(df)
+#hc_cum_games(df)
 
 ###############################################################################
 
@@ -246,10 +246,10 @@ dt_average_score_season <- function(df){
                     align = c("r", "c", "c", "c", "c", "c"),
                     list(
                       ` ` = formatter("span", style = ~ style(font.weight = "bold"))
-                      ))
+                    ))
   return(dt)
 }
-dt_average_score_season(df)
+#dt_average_score_season(df)
 
 
 dt_average_score_team <- function(df){
@@ -279,23 +279,23 @@ dt_average_score_team <- function(df){
                     list(
                       ` ` = formatter("span", style = ~ style(font.weight = "bold")
                       ))
-                    )
+  )
   return(dt)
 }
-dt_average_score_team(df)
+#dt_average_score_team(df)
 
 dt_win_rate <- function(df){
   win_rate <- df %>%
     group_by(Team, Season) %>%
     summarise(Games = n(),
               Wins = sum(Result == "W")) %>%
-    mutate(win_rate = scales::percent(Wins/Games, accuracy = 1))
+    mutate(win_rate = scales::percent(Wins/Games))
 
   win_rate_by_team <- win_rate %>%
     group_by(Team) %>%
     summarise(Games = sum(Games),
               Wins = sum(Wins)) %>%
-    mutate(win_rate = scales::percent(Wins/Games, accuracy = 1),
+    mutate(win_rate = scales::percent(Wins/Games),
            Season = "Overall")
 
   win_rate2 <- bind_rows(win_rate, win_rate_by_team) %>%
@@ -312,18 +312,18 @@ dt_win_rate <- function(df){
 
   return(dt)
 }
-dt_win_rate(df)
+#dt_win_rate(df)
 
 
 ###############################################################
 
-data(citytemp)
+#data(citytemp)
 
-hc <- highchart() %>%
-  hc_xAxis(categories = citytemp$month) %>%
-  hc_add_series(name = "Tokyo", data = citytemp$tokyo) %>%
-  hc_add_series(name = "London", data = citytemp$london) %>%
-  hc_add_series(name = "Other city",
-                data = (citytemp$tokyo + citytemp$london)/2)
+#hc <- highchart() %>%
+#  hc_xAxis(categories = citytemp$month) %>%
+#  hc_add_series(name = "Tokyo", data = citytemp$tokyo) %>%
+#  hc_add_series(name = "London", data = citytemp$london) %>%
+#  hc_add_series(name = "Other city",
+#                data = (citytemp$tokyo + citytemp$london)/2)
 
-hc
+#hc

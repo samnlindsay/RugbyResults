@@ -22,14 +22,14 @@ for_display <- function(df){
     select(-Season, -`Home/Away`)
 }
 
-df <- read_csv("Rugby_clean.csv", col_types = "cDccccccciicilllic") %>%
+df <- read_csv("Rugby_clean.csv", col_types = "cDccccccciicilllicc") %>%
   mutate_at(c("Team", "Stage", "Home/Away", "Result"), as.factor)
 
 
 function(input, output, session) {
 
 
-# DATA --------------------------------------------------------------------
+  # DATA --------------------------------------------------------------------
   rugby_data <- reactiveValues()
   rugby_data$Data <- df %>%
     mutate(Season = ifelse(month(Date) < 6,
@@ -44,27 +44,27 @@ function(input, output, session) {
     fluidRow(
       box(
         width = 12,
-        title = "Add new match",
+        title = "Add latest game",
         collapsible = T,
         collapsed = T,
-        status = "primary",
-        solidHeader = T,
+        status = "warning",
+        solidHeader = F,
         column(
           6,
           wellPanel(
             h4("Fixture"),
             fluidRow(
-              column(4, airDatepickerInput("date", "Date", value = Sys.Date())),
+              column(4, dateInput("date", "Date", value = Sys.Date(), format = "dd MM yyyy")),
               column(4, pickerInput("team", "Team", choices = levels(rugby_data$Data$Team), selected = "2nd")),
-                column(4, textInput("opposition", "Opposition"))),
-              fluidRow(
-                column(4, textInput("competition", "Competition")),
-                column(4, pickerInput("stage", "Stage", choices = c("", levels(rugby_data$Data$Stage)))),
-                column(4, pickerInput("venue", "Venue", choices = levels(as.factor(rugby_data$Data$Venue)), selected = "Ealing")))
-            ),
-          actionButton("add_match", "Add new match", icon = icon("save"),
-                       style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+              column(4, textInput("opposition", "Opposition"))),
+            fluidRow(
+              column(4, textInput("competition", "Competition")),
+              column(4, pickerInput("stage", "Stage", choices = c("", levels(rugby_data$Data$Stage)))),
+              column(4, pickerInput("venue", "Venue", choices = levels(as.factor(rugby_data$Data$Venue)), selected = "Ealing")))
           ),
+          actionButton("add_game", "Add new game", icon = icon("save"),
+                       style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+        ),
         column(
           6,
           wellPanel(
@@ -85,13 +85,13 @@ function(input, output, session) {
               column(3, awesomeCheckbox("start", strong("Start?"), value = T)),
               column(3, awesomeCheckbox("motm", strong("MOTM?"), value = F, status = "success")),
               column(3, awesomeCheckbox("yc", strong("YC?"), value = F, status = "warning"))
-              ),
+            ),
             textInput("notes", "Notes")
-            )
           )
         )
       )
-    })
+    )
+  })
 
   ## Table of results
   output$dataTable <- DT::renderDataTable({
@@ -103,24 +103,24 @@ function(input, output, session) {
                        select(-Opposition_club))
 
     table <- datatable(DT,
-              escape = F,
-              #extensions = 'FixedHeader',
-              options = list(
-                columnDefs = list(list(visible=FALSE, targets=c(6))),
-                pageLength = 10,
-                fixedHeader = TRUE,
-                dom = 'ltp',
-                ordering = F,
-                autoWidth = TRUE
-              ),
-              rownames = F,
-              selection = "none")
+                       escape = F,
+                       #extensions = 'FixedHeader',
+                       options = list(
+                         columnDefs = list(list(visible=FALSE, targets=c(6))),
+                         pageLength = 10,
+                         fixedHeader = TRUE,
+                         dom = 'ltp',
+                         ordering = F,
+                         autoWidth = TRUE
+                       ),
+                       rownames = F,
+                       selection = "none")
 
     if(input$color_data_by == "Result"){
       table <- table %>%
         formatStyle('Result', target = 'row',
-        backgroundColor = styleEqual(c("W", "L", "D"),
-                                     c("rgb(200,255,200)", "rgb(255,200,200)", "rgb(255,255,200)")))
+                    backgroundColor = styleEqual(c("W", "L", "D"),
+                                                 c("rgb(200,255,200)", "rgb(255,200,200)", "rgb(255,255,200)")))
     } else if(input$color_data_by == "Team"){
       table <- table %>%
         formatStyle('Team', target = 'row',
@@ -132,7 +132,7 @@ function(input, output, session) {
   })
 
   ## Save table to changes.csv
-  observeEvent(input$add_match, {
+  observeEvent(input$add_game, {
     rugby_data$Data <- rugby_data$Data %>%
       add_row(Date = as.Date(input$date, format = "%Y-%m-%d"),
               Team = input$team,
@@ -169,7 +169,7 @@ function(input, output, session) {
              Season == input$stats_season | input$stats_season == "All",
              Opposition_club == input$stats_oppo | input$stats_oppo == "All"))
 
-# FILTERS -----------------------------------------------------------------
+  # FILTERS -----------------------------------------------------------------
 
   output$season_filter_input <- renderUI({
     pickerInput("season_filter", "Season filter",
@@ -191,7 +191,7 @@ function(input, output, session) {
                   #style = "btn-primary",
                   title = "Choose a club (e.g. \"Wasps\")",
                   `live-search` = TRUE)
-                )
+    )
   })
 
   output$stats_filters <- renderUI({
@@ -216,13 +216,13 @@ function(input, output, session) {
                     `live-search` = TRUE)) %>%
         popify(title = "",
                content = "Select from a list of clubs played against, or \"All\" to include all opposition. There is no distinction between different teams from the same club.")
-      )
+    )
   })
 
 
 
 
-# CHARTS ------------------------------------------------------------------
+  # CHARTS ------------------------------------------------------------------
 
   output$plot_cum_time <- renderHighchart(hc_cum_time(rugby_data$Data))
   output$plot_cum_games <- renderHighchart(hc_cum_games(rugby_data$Data))
@@ -252,9 +252,9 @@ function(input, output, session) {
     }
   })
 
-# STATS (ValueBoxes) ------------------------------------------------------
+  # STATS (ValueBoxes) ------------------------------------------------------
 
-  output$match_count <- renderValueBox({
+  output$game_count <- renderValueBox({
     valueBox(
       paste0(nrow(stats_data()), " (", sum(stats_data()$Start),")"),
       "Games (starts)",
@@ -296,10 +296,10 @@ function(input, output, session) {
                summarise(Games = n(),
                          Wins = sum(Result == "W", na.rm = T)) %>%
                mutate(win_rate = ifelse(Games == 0, "-",
-                                        scales::percent(Wins/Games, accuracy = 1))) %>%
+                                        scales::percent(round(Wins/Games, 2)))) %>%
                .$win_rate,
-            "Overall",
-            color = "blue")
+             "Overall",
+             color = "blue")
   })
 
   output$win_rate_home <- renderValueBox({
@@ -308,7 +308,7 @@ function(input, output, session) {
                summarise(Games = n(),
                          Wins = sum(Result == "W", na.rm = T)) %>%
                mutate(win_rate = ifelse(Games == 0, "-",
-                                        scales::percent(Wins/Games, accuracy = 1))) %>%
+                                        scales::percent(round(Wins/Games, 2)))) %>%
                .$win_rate,
              "Home")
   })
@@ -319,7 +319,7 @@ function(input, output, session) {
                summarise(Games = n(),
                          Wins = sum(Result == "W", na.rm = T)) %>%
                mutate(win_rate = ifelse(Games == 0, "-",
-                                        scales::percent(Wins/Games, accuracy = 1))) %>%
+                                        scales::percent(round(Wins/Games, 2)))) %>%
                .$win_rate,
              "Away")
   })
