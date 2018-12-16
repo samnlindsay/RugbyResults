@@ -200,12 +200,12 @@ function(input, output, session) {
       pickerInput("stats_team", "Team",
                   choices = c("All", as.character(sort(unique(rugby_data$Data$Team)))),
                   selected = "All") %>%
-        popify(title = "",
+        popify(title = "", placement = "top",
                content = "Select an Ealing team played for, or \"All\" to include games for all teams."),
       pickerInput("stats_season", "Season",
                   choices = c("All", unique(rugby_data$Data$Season)),
                   selected = "All") %>%
-        popify(title = "",
+        popify(title = "", placement = "top",
                content = "Select a season, or \"All\" to include all games."),
       pickerInput("stats_oppo", "Opposition",
                   choices = c("All", sort(unique(rugby_data$Data$Opposition_club))),
@@ -214,7 +214,7 @@ function(input, output, session) {
                     #style = "btn-primary",
                     `actions-box` = TRUE,
                     `live-search` = TRUE)) %>%
-        popify(title = "",
+        popify(title = "", placement = "top",
                content = "Select from a list of clubs played against, or \"All\" to include all opposition. There is no distinction between different teams from the same club.")
     )
   })

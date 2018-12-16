@@ -16,10 +16,11 @@ library(formattable)
 source("charts.R")
 
 ui <- dashboardPage(skin = "green",
-                    dashboardHeader(title = HTML("<a href='https://ealingrugby.co.uk/?page_id=12100'><img src='Trailfinders_rfc_logo.png' height='40px'></a> Ealing Rugby Men's: <b>Sam Lindsay</b>"),
-                                    titleWidth = '95%'),
+                    title = "Ealing Rugby Men's: Sam Lindsay",
+                    dashboardHeader(title = HTML("<div align='left'><a href='https://ealingrugby.co.uk/?page_id=12100'><img src='Trailfinders_rfc_logo.png' height='40px'></a> Ealing Rugby Men's: <b>Sam Lindsay</b></div>"),
+                                    titleWidth = '420'),
                     dashboardSidebar(
-                      width = 200,
+                      width = 150,
                       sidebarMenu(
                         menuItem("Game data", tabName = "data", icon = icon("table")),
                         menuItem("Stats",tabName = "stats", icon = icon("bar-chart-o")),
@@ -31,6 +32,7 @@ ui <- dashboardPage(skin = "green",
                       )
                     ),
                     dashboardBody(
+                      tags$head(tags$link(rel = "icon", type = "image/png", href = "Trailfinders_rfc_logo.png")),
                       useShinyjs(),
                       tags$style(type="text/css",
                                  ".shiny-output-error { visibility: hidden; }",
@@ -121,8 +123,7 @@ ui <- dashboardPage(skin = "green",
                               collapsed = T,
                               solidHeader = T,
                               status = "success",
-                              fluidRow(column(6, highchartOutput("plot_scores")),
-                                       column(3, highchartOutput("plot_games_team")))
+                              highchartOutput("plot_scores")
                             ),
                             box(
                               title = "Cumulative games/minutes played",
@@ -131,26 +132,9 @@ ui <- dashboardPage(skin = "green",
                               collapsed = T,
                               solidHeader = T,
                               status = "success",
-                              fluidRow(
-                                column(
-                                  6,
-                                  radioGroupButtons("cum_games_or_mins", label = NULL, choices = c("Games", "Minutes"), justified = TRUE),
-                                  conditionalPanel("input.cum_games_or_mins == 'Games'", highchartOutput("plot_cum_games")),
-                                  conditionalPanel("input.cum_games_or_mins == 'Minutes'", highchartOutput("plot_cum_time"))
-                                ),
-                                column(
-                                  6,
-                                  box(
-                                    width = 12,
-                                    formattableOutput("table_win_rate")
-                                  ),
-                                  box(
-                                    width = 12,
-                                    formattableOutput("table_avg_score_team"),
-                                    formattableOutput("table_avg_score_season")
-                                  )
-                                )
-                              )
+                              radioGroupButtons("cum_games_or_mins", label = NULL, choices = c("Games", "Minutes"), justified = TRUE),
+                              conditionalPanel("input.cum_games_or_mins == 'Games'", highchartOutput("plot_cum_games")),
+                              conditionalPanel("input.cum_games_or_mins == 'Minutes'", highchartOutput("plot_cum_time"))
                             )
                           ),
                           fluidRow(
@@ -161,7 +145,7 @@ ui <- dashboardPage(skin = "green",
                               collapsed = T,
                               solidHeader = T,
                               status = "success",
-                              switchInput("toggle_by_team", "Break down by team", value = T, labelWidth = "150px", onStatus = "warning"),
+                              switchInput("toggle_by_team", "Break down by team", value = F, labelWidth = "150px", onStatus = "warning"),
                               br(),
                               uiOutput("plot_games")
                             )

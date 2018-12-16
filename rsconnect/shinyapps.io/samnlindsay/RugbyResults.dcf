@@ -1,0 +1,10 @@
+name: RugbyResults
+title: RugbyResults
+username:
+account: samnlindsay
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 599732
+bundleId: 1761134
+url: https://samnlindsay.shinyapps.io/rugbyresults/
+when: 1544715555.33464
