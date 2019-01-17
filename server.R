@@ -22,8 +22,14 @@ for_display <- function(df){
     select(-Season, -`Home/Away`)
 }
 
-df <- read_csv("Rugby_clean.csv", col_types = "cDccccccciicilllicc") %>%
-  mutate_at(c("Team", "Stage", "Home/Away", "Result"), as.factor)
+#df <- read_csv("Rugby_clean.csv", col_types = "cDccccccciicilllicc") %>%
+#  mutate_at(vars(Team, Stage, `Home/Away`, Result), as.factor)
+
+key = "1keX2eGbyiBejpfMPMbL7aXYLy7IDJZDBXQqiKVQavz0"
+sheet <- gs_key(key)
+data <- gs_read(sheet)
+
+df <- mutate_at(data, vars(Team, Stage, `Home/Away`, Result), as.factor)
 
 
 function(input, output, session) {
@@ -158,8 +164,13 @@ function(input, output, session) {
              Opposition_club = str_replace_all(Opposition, "\\s\\(?[0-9](st|nd|rd|th)\\)?", ""))
 
     write_csv(rugby_data$Data, "Rugby_clean.csv")
+    gs_add_row(sheet, input = last(rugby_data$Data))
 
-    showModal(modalDialog(title = "Game saved", em("Rugby_clean.csv"), " overwritten with new data", easyClose = TRUE, size = "s"))
+
+    showModal(modalDialog(title = "Game saved",
+                          tags$a(href = sheet$links$href[1], "Rugby_data", target="_blank"),
+                          "and", em("Rugby_clean.csv"), " overwritten with new data",
+                          easyClose = TRUE, size = "s"))
   })
 
 
