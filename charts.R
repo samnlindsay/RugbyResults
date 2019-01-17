@@ -7,6 +7,8 @@ hc_games_by_season <- function(df){
     rename(Games = n)
 
   hchart(games_by_team, "column", hcaes(x = Season, y = Games, group = Team)) %>%
+    #hc_title(text = "Games per season") %>%
+    #hc_subtitle(text = "subtitle") %>%
     hc_colors(cols) %>%
     hc_add_theme(theme) %>%
     hc_legend(align = "left", verticalAlign = "top",
@@ -15,7 +17,7 @@ hc_games_by_season <- function(df){
     hc_yAxis(tickInterval = 5) %>%
     hc_plotOptions(column = list(dataLabels = list(enabled = T)))
 }
-#hc_games_by_season(df)
+hc_games_by_season(df)
 
 hc_tot_games_by_season <- function(df){
   games_by_team <- df %>% count(Start, Season) %>%

@@ -17,8 +17,8 @@ for_display <- function(df){
     mutate(Date = format(Date, "%d %b %Y"),
            Start = ifelse(Start, "<i class='fa fa-check' style='color:green' align='center'></i>", ""),
            MOTM = ifelse(MOTM, "<i class='fa fa-trophy' style='color:green' align='center'></i>", ""),
-           YC = ifelse(YC, "<i class='fa fa-square' style='color:#ffcc00' align='center''></i>", ""),
-           Try = ifelse(Try > 0, strrep("<i class='fa fa-star' style='color:green' align='center'></i>", Try), "")) %>%
+           Try = ifelse(Try > 0, strrep("<i class='fa fa-star' style='color:green' align='center'></i>", Try), ""),
+           YC = ifelse(YC, "<i class='fa fa-square' style='color:#ffcc00' align='center''></i>", "")) %>%
     select(-Season, -`Home/Away`)
 }
 
@@ -200,12 +200,12 @@ function(input, output, session) {
       pickerInput("stats_team", "Team",
                   choices = c("All", as.character(sort(unique(rugby_data$Data$Team)))),
                   selected = "All") %>%
-        popify(title = "", placement = "top",
+        popify(title = "", placement = "bottom",
                content = "Select an Ealing team played for, or \"All\" to include games for all teams."),
       pickerInput("stats_season", "Season",
                   choices = c("All", unique(rugby_data$Data$Season)),
                   selected = "All") %>%
-        popify(title = "", placement = "top",
+        popify(title = "", placement = "bottom",
                content = "Select a season, or \"All\" to include all games."),
       pickerInput("stats_oppo", "Opposition",
                   choices = c("All", sort(unique(rugby_data$Data$Opposition_club))),
@@ -214,7 +214,7 @@ function(input, output, session) {
                     #style = "btn-primary",
                     `actions-box` = TRUE,
                     `live-search` = TRUE)) %>%
-        popify(title = "", placement = "top",
+        popify(title = "", placement = "bottom",
                content = "Select from a list of clubs played against, or \"All\" to include all opposition. There is no distinction between different teams from the same club.")
     )
   })
@@ -296,7 +296,7 @@ function(input, output, session) {
                summarise(Games = n(),
                          Wins = sum(Result == "W", na.rm = T)) %>%
                mutate(win_rate = ifelse(Games == 0, "-",
-                                        scales::percent(round(Wins/Games, 2)))) %>%
+                                        scales::percent(Wins/Games, accuracy = 1))) %>%
                .$win_rate,
              "Overall",
              color = "blue")
@@ -308,7 +308,7 @@ function(input, output, session) {
                summarise(Games = n(),
                          Wins = sum(Result == "W", na.rm = T)) %>%
                mutate(win_rate = ifelse(Games == 0, "-",
-                                        scales::percent(round(Wins/Games, 2)))) %>%
+                                        scales::percent(Wins/Games, accuracy = 1))) %>%
                .$win_rate,
              "Home")
   })
@@ -319,7 +319,7 @@ function(input, output, session) {
                summarise(Games = n(),
                          Wins = sum(Result == "W", na.rm = T)) %>%
                mutate(win_rate = ifelse(Games == 0, "-",
-                                        scales::percent(round(Wins/Games, 2)))) %>%
+                                        scales::percent(Wins/Games, accuracy = 1))) %>%
                .$win_rate,
              "Away")
   })

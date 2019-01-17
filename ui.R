@@ -22,7 +22,7 @@ ui <- dashboardPage(skin = "green",
                     dashboardSidebar(
                       width = 150,
                       sidebarMenu(
-                        menuItem("Game data", tabName = "data", icon = icon("table")),
+                        menuItem("Game data", tabName = "data", icon = icon("list-ul")),
                         menuItem("Stats",tabName = "stats", icon = icon("bar-chart-o")),
                         menuItem("Fixtures", icon = icon("calendar"),
                                  menuSubItem("1st", href = "https://ealingrugby.co.uk/?page_id=17590", icon = icon("external-link"), newtab = T),
@@ -74,47 +74,38 @@ ui <- dashboardPage(skin = "green",
                         ),
                         tabItem(
                           tabName = "stats",
-                          fluidRow(box(
-                            title = "Summary stats",
-                            width = 12,
-                            collapsible = T,
-                            solidHeader = T,
-                            status = "warning",
-                            #background = "yellow",
+                          fluidRow(
                             uiOutput("stats_filters"),
-                            box(
-                              title = "Quick stats",
-                              width = 4,
-                              solidHeader = T,
-                              status = "success",
-                              fluidRow(valueBoxOutput("game_count", width = 12)),
-                              fluidRow(valueBoxOutput("minute_count", width = 12)),
-                              fluidRow(valueBoxOutput("try_count", width = 6),
-                                       valueBoxOutput("card_count", width = 6))
-                            ),
-                            box(
-                              title = "Win percentage",
-                              width = 3,
-                              solidHeader = T,
-                              status = "success",
-                              fluidRow(valueBoxOutput("win_rate", width = 12)),
-                              fluidRow(valueBoxOutput("win_rate_home", width = 12)),
-                              fluidRow(valueBoxOutput("win_rate_away", width = 12))
-                            ) %>%
-                              popify(title = "", content = "Overall win rate (top) and separately at home and away.",
-                                     placement = "top", trigger = "hover"),
-                            box(
-                              title = "Average score",
-                              width = 3,
-                              solidHeader = T,
-                              status = "success",
-                              fluidRow(valueBoxOutput("avg_score", width = 12)),
-                              fluidRow(valueBoxOutput("avg_score_home", width = 12)),
-                              fluidRow(valueBoxOutput("avg_score_away", width = 12))
-                            ) %>%
-                              popify(title = "", placement = "top", trigger = "hover",
-                                     content = "Average points for and against in all games (top), home games and away games. Ealing score is shown first.")
-                          )),
+                            tabBox(
+                              title = "Summary stats",
+                              side = "right",
+                              width = 10,
+                              tabPanel(
+                                title = "Quick stats",
+                                fluidRow(valueBoxOutput("game_count", width = 12)),
+                                fluidRow(valueBoxOutput("minute_count", width = 12)),
+                                fluidRow(valueBoxOutput("try_count", width = 6),
+                                         valueBoxOutput("card_count", width = 6))
+                              ),
+                              tabPanel(
+                                title = "Win percentage",
+                                status = "success",
+                                tags$div(fluidRow(valueBoxOutput("win_rate", width = 12)),
+                                fluidRow(valueBoxOutput("win_rate_home", width = 12)),
+                                fluidRow(valueBoxOutput("win_rate_away", width = 12))
+                              ) %>%
+                                popify(title = "", content = "Overall win rate (top) and separately at home and away.",
+                                       placement = "top", trigger = "hover")),
+                              tabPanel(
+                                title = "Average score",
+                                status = "success",
+                                tags$div(fluidRow(valueBoxOutput("avg_score", width = 12)),
+                                fluidRow(valueBoxOutput("avg_score_home", width = 12)),
+                                fluidRow(valueBoxOutput("avg_score_away", width = 12))
+                              ) %>%
+                                popify(title = "", placement = "top", trigger = "hover",
+                                       content = "Average points for and against in all games (top), home games and away games. Ealing score is shown first.")))
+                          ),
                           fluidRow(
                             box(
                               title = "Scores",
@@ -126,7 +117,7 @@ ui <- dashboardPage(skin = "green",
                               highchartOutput("plot_scores")
                             ),
                             box(
-                              title = "Cumulative games/minutes played",
+                              title = "Cumulative game time",
                               width = 6,
                               collapsible = T,
                               collapsed = T,
