@@ -17,7 +17,7 @@ hc_games_by_season <- function(df){
     hc_yAxis(tickInterval = 5) %>%
     hc_plotOptions(column = list(dataLabels = list(enabled = T)))
 }
-hc_games_by_season(df)
+#hc_games_by_season(df)
 
 hc_tot_games_by_season <- function(df){
   games_by_team <- df %>% count(Start, Season) %>%

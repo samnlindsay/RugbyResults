@@ -81,4 +81,7 @@ Season,Date,Team,Competition,Stage,Opposition,Home/Away,Venue,Result,F,A,Positio
 2018/2019,2018-12-01,2nd,MMT 1,NA,Chiswick 2nd,H,Ealing,L,18,42,Lock,45,TRUE,FALSE,FALSE,0,NA,Chiswick
 2018/2019,2018-12-08,1st,Zoo Sports Shield 2,NA,Worthing Raiders A,A,Away,L,7,42,Lock,20,FALSE,FALSE,FALSE,0,NA,Worthing Raiders A
 2018/2019,2019-01-05,Exiles,MMT 4,NA,Wasps 2nd,H,Ealing,D,34,34,Lock,80,TRUE,TRUE,FALSE,0,NA,Wasps
-2018/2019,2019-01-12,2nd,MMT 1,,London Cornish 3rd,H,Ealing,L,24,35,Lock,80,TRUE,FALSE,FALSE,0,Captain,London Cornish
+2018/2019,2019-01-12,2nd,MMT 1,NA,London Cornish 3rd,H,Ealing,L,24,35,Lock,80,TRUE,FALSE,FALSE,0,Captain,London Cornish
+2018/2019,2019-01-18,Evergreens,MMT Vets A,NA,Chiswick,A,Away,L,22,30,Lock,60,TRUE,FALSE,FALSE,0,NA,Chiswick
+2018/2019,2019-01-19,Exiles,MMT Vase,Semi Final,Twickenham 3rd,A,Away,L,10,38,Lock/No. 8,80,TRUE,FALSE,FALSE,0,NA,Twickenham
+2018/2019,2019-01-26,2nd,MMT 1,,Grasshoppers 2nd,H,Ealing,W,34,14,Lock,80,TRUE,FALSE,FALSE,0,Captain,Grasshoppers
