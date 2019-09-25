@@ -10,7 +10,9 @@ library(shinyWidgets)
 library(shinyjs)
 library(highcharter)
 library(formattable)
+library(googlesheets)
 source("charts.R")
+source("update_team_lists.R")
 
 for_display <- function(df){
   df %>%
@@ -27,10 +29,18 @@ for_display <- function(df){
 
 key = "1keX2eGbyiBejpfMPMbL7aXYLy7IDJZDBXQqiKVQavz0"
 sheet <- gs_key(key)
-data <- gs_read(sheet)
+data <- gs_read(sheet, 1)
+
+# Automatic update of team sheets (to catch new games)
+team_lists <- gs_read(sheet, 2)
+#update <- latest_team_lists(team_lists)
+
+if(length(update) > 0){
+  gs_edit_cells(sheet, "Team Sheets", input = update,
+                anchor = paste0("R", nrow(team_lists) + 1, "C1"), trim = T, col_names = F)
+}
 
 df <- mutate_at(data, vars(Team, Stage, `Home/Away`, Result), as.factor)
-
 
 function(input, output, session) {
 
@@ -101,26 +111,48 @@ function(input, output, session) {
 
   ## Table of results
   output$dataTable <- DT::renderDataTable({
-    DT = for_display(rugby_data$Data %>%
-                       filter((Team == input$team_filter | input$team_filter == "All"),
-                              (Season == input$season_filter | input$season_filter == "All"),
-                              (Opposition_club %in% input$oppo_filter | is.null(input$oppo_filter))) %>%
-                       arrange(desc(Date)) %>%
-                       select(-Opposition_club))
+    input$add_new_team
 
-    table <- datatable(DT,
+    DT = add_html_team(rugby_data$Data, team_lists) %>%
+      filter((Team == input$team_filter | input$team_filter == "All"),
+             (Season == input$season_filter | input$season_filter == "All"),
+             (Opposition_club %in% input$oppo_filter | is.null(input$oppo_filter))) %>%
+      arrange(desc(Date)) %>%
+      select(-Opposition_club) %>%
+    for_display()
+
+    table <- datatable(cbind(' ' = '&oplus;', DT),
                        escape = F,
                        #extensions = 'FixedHeader',
                        options = list(
-                         columnDefs = list(list(visible=FALSE, targets=c(6))),
-                         pageLength = 10,
+                         columnDefs = list(
+                           list(visible=FALSE,
+                                targets=c(7, 17)),
+                           list(orderable = FALSE, className = 'details-control',
+                                targets = 0)),
+                         pageLength = 25,
                          fixedHeader = TRUE,
                          dom = 'ltp',
                          ordering = F,
                          autoWidth = TRUE
                        ),
                        rownames = F,
-                       selection = "none")
+                       selection = "none",
+                       callback = JS("
+                table.column(1).nodes().to$().css({cursor: 'pointer'});
+                                     var format = function(d) {
+                                     return '<div style=\"background-color:#eee; padding: .5em;\">' + d[17] + '</div>';
+                                     };
+                                     table.on('click', 'td.details-control', function() {
+                                     var td = $(this), row = table.row(td.closest('tr'));
+                                     if (row.child.isShown()) {
+                                     row.child.hide();
+                                     td.html('&oplus;');
+                                     } else {
+                                     row.child(format(row.data())).show();
+                                     td.html('&CircleMinus;');
+                                     }
+                                     });"))
 
     if(input$color_data_by == "Result"){
       table <- table %>%
@@ -250,6 +282,7 @@ function(input, output, session) {
   output$table_win_rate <- renderFormattable(dt_win_rate(rugby_data$Data))
   output$table_avg_score_team <- renderFormattable(dt_average_score_team(rugby_data$Data))
   output$table_avg_score_season <- renderFormattable(dt_average_score_season(rugby_data$Data))
+  output$plot_team_mates <- renderHighchart(hc_games_by_teammate(rugby_data$Data, team_lists, 600))
 
   output$plot_games <- renderUI({
     if(input$toggle_by_team){

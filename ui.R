@@ -140,6 +140,19 @@ ui <- dashboardPage(skin = "green",
                               br(),
                               uiOutput("plot_games")
                             )
+                          ),
+                          fluidRow(
+                            box(
+                              title = "Team mates",
+                              width = 6,
+                              height = "660px",
+                              collapsible = T,
+                              collapsed = T,
+                              solidHeader = T,
+                              status = "success",
+                              highchartOutput("plot_team_mates") %>%
+                                withSpinner()
+                            )
                           )
                         )
                       ))

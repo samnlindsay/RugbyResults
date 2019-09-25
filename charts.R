@@ -1,6 +1,33 @@
 theme = hc_theme_google()
 cols <- c("green", "orange", "grey", "black")
 
+# TEAM MATES
+hc_games_by_teammate <- function(data, team_lists, pixels){
+  data2 <- add_team_sheets(data, team_lists) %>%
+    group_by(Name = name, team) %>%
+    summarise(Games = n()) %>%
+    ungroup() %>%
+    complete(Name, team, fill = list(Games = 0)) %>%
+    group_by(Name) %>%
+    mutate(sum_n = sum(Games)) %>%
+    arrange(desc(sum_n))
+
+  n_games <- data2 %>% filter(Name == "Sam Lindsay") %>% .$sum_n %>% unique()
+
+  hchart(data2 %>% filter(sum_n >= 15, Name != "Sam Lindsay"), "bar",
+         hcaes(x = Name, y = Games, group = team)) %>%
+    hc_title(text = "Team mates") %>%
+    hc_subtitle(text = paste0("(from ", n_games, " out of ", nrow(data), " games with team sheets)")) %>%
+    hc_colors(cols) %>%
+    hc_add_theme(theme) %>%
+    hc_tooltip(pointFormat = "{point.team}:  {point.Games} <br> <b>{point.sum_n} total</b>") %>%
+    hc_plotOptions(
+      bar = list(stacking = "normal")) %>%
+    hc_xAxis(labels = list(style = list(fontSize = "8pt"))) %>%
+    hc_chart(height = pixels)
+}
+#hc_games_by_teammate(data, team_lists)
+
 # GAMES BY SEASON
 hc_games_by_season <- function(df){
   games_by_team <- df %>% count(Team, Season) %>%
@@ -153,7 +180,7 @@ hc_score_map <- function(df){
     hc_tooltip(crosshairs = T,
                pointFormat = "<b>Season:</b> {point.Season} <br> {point.F} - {point.A} <br> {point.Opposition} ({point.Home/Away})") %>%
     hc_yAxis(tickInterval = 20) %>%
-    hc_xAxis(tickInterval = 10, min = 0, max = 60)
+    hc_xAxis(tickInterval = 10, min = 0)
 }
 #hc_score_map(df)
 

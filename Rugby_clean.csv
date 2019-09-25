@@ -64,7 +64,7 @@ Season,Date,Team,Competition,Stage,Opposition,Home/Away,Venue,Result,F,A,Positio
 2017/2018,2018-03-10,Exiles,MMT 5,NA,Northolt 2nd,A,Away,D,5,5,Lock,80,TRUE,FALSE,FALSE,0,NA,Northolt
 2017/2018,2018-03-17,2nd,MMT 2,NA,HAC 3rd,H,Ealing,W,12,10,Lock,80,TRUE,FALSE,FALSE,0,NA,HAC
 2017/2018,2018-03-24,Exiles,Friendly,NA,Wasps 2nd,A,Away,W,43,41,Lock,80,TRUE,FALSE,FALSE,0,NA,Wasps
-2017/2018,2018-04-07,Exiles,Friendly,NA,Feltham,H,Ealing,L,12,29,Lock,70,TRUE,FALSE,FALSE,0,NA,Feltham
+2017/2018,2018-04-07,2nd,Friendly,NA,Feltham,H,Ealing,L,12,29,Lock,70,TRUE,FALSE,FALSE,0,NA,Feltham
 2017/2018,2018-04-14,Exiles,MMT 5,Final,Hayes,A,Away,L,14,22,Lock,80,TRUE,FALSE,FALSE,0,NA,Hayes
 2017/2018,2018-04-27,Evergreens,Middlesex Vets,Final,UCS Old Boys,H,Ealing,W,8,6,Lock,40,FALSE,FALSE,FALSE,0,NA,UCS Old Boys
 2017/2018,2018-05-05,2nd,Friendly,NA,UCFB,H,Ealing,W,39,17,Lock,80,TRUE,FALSE,FALSE,0,NA,UCFB
@@ -84,4 +84,14 @@ Season,Date,Team,Competition,Stage,Opposition,Home/Away,Venue,Result,F,A,Positio
 2018/2019,2019-01-12,2nd,MMT 1,NA,London Cornish 3rd,H,Ealing,L,24,35,Lock,80,TRUE,FALSE,FALSE,0,Captain,London Cornish
 2018/2019,2019-01-18,Evergreens,MMT Vets A,NA,Chiswick,A,Away,L,22,30,Lock,60,TRUE,FALSE,FALSE,0,NA,Chiswick
 2018/2019,2019-01-19,Exiles,MMT Vase,Semi Final,Twickenham 3rd,A,Away,L,10,38,Lock/No. 8,80,TRUE,FALSE,FALSE,0,NA,Twickenham
-2018/2019,2019-01-26,2nd,MMT 1,,Grasshoppers 2nd,H,Ealing,W,34,14,Lock,80,TRUE,FALSE,FALSE,0,Captain,Grasshoppers
+2018/2019,2019-01-26,2nd,MMT 1,NA,Grasshoppers 2nd,H,Ealing,W,34,14,Lock,80,TRUE,FALSE,FALSE,0,Captain,Grasshoppers
+2018/2019,2019-02-02,Exiles,Memorial Match,NA,Old Actonians,A,Away,L,0,60,Lock,80,TRUE,FALSE,FALSE,0,Captain,Old Actonians
+2018/2019,2019-02-09,2nd,MMT 1,NA,Belsize Park 3rd,A,Away,W,43,20,Lock,80,TRUE,FALSE,FALSE,0,Captain,Belsize Park
+2018/2019,2019-02-16,2nd,MMT 1,NA,HAC 3rd,H,Ealing,L,26,31,Lock,80,TRUE,FALSE,FALSE,0,Captain,HAC
+2018/2019,2019-02-22,Evergreens,MMT Vets A,NA,Hammersmith & Fulham,H,Ealing,W,50,17,Lock,80,TRUE,FALSE,FALSE,0,NA,Hammersmith & Fulham
+2018/2019,2019-03-02,2nd,MMT 1,NA,Chiswick 2nd,A,Away,L,28,35,Lock,80,TRUE,FALSE,FALSE,0,Captain,Chiswick
+2018/2019,2019-03-09,2nd,MMT 1,NA,Ruislip 2nd,H,Ealing,W,39,7,Lock,80,TRUE,FALSE,FALSE,0,Captain,Ruislip
+2018/2019,2019-03-23,Exiles,MMT 4,Semi Final,Hampstead 4th,A,Away,L,21,29,Lock,80,TRUE,TRUE,FALSE,1,NA,Hampstead
+2018/2019,2019-03-30,1st,Friendly,NA,Old Priorians 2nd,H,Ealing,W,46,17,Lock,65,TRUE,FALSE,FALSE,0,NA,Old Priorians
+2018/2019,2019-04-12,2nd,Friendly,NA,UCFB,H,Ealing,L,25,45,Lock,80,TRUE,FALSE,FALSE,0,Captain,UCFB
+2018/2019,2019-04-24,1st,NW Middlesex Floodlit Cup,Final,Ruislip 1st,A,Away,L,25,32,Lock,90,FALSE,FALSE,FALSE,0,Extra time; Captain 2nd half,Ruislip
