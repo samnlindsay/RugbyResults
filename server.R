@@ -11,8 +11,9 @@ library(shinyjs)
 library(highcharter)
 library(formattable)
 library(googlesheets)
+library(glue)
 source("charts.R")
-source("update_team_lists.R")
+source("gmail_scraper.R")
 
 for_display <- function(df){
   df %>%
@@ -33,13 +34,19 @@ data <- gs_read(sheet, 1)
 
 # Automatic update of team sheets (to catch new games)
 team_lists <- gs_read(sheet, 2)
-#update <- latest_team_lists(team_lists)
+update <- scrape_gmail(min_date = max(team_lists$Date)) %>%
+  #{ if(is.null(.), ., add_match_dates(data, .)) }
+  `if`(!is.null(.), add_match_dates(data, .), .)
 
+# Write new team sheets to google and add to `team_lists`
 if(length(update) > 0){
-  gs_edit_cells(sheet, "Team Sheets", input = update,
-                anchor = paste0("R", nrow(team_lists) + 1, "C1"), trim = T, col_names = F)
+  gs_edit_cells(sheet, 2, input = update,
+                anchor = glue("R{nrow(team_lists) + 2}C1"),
+                trim = T, col_names = F)
+  team_lists <- team_lists %>% rbind(update)
 }
 
+# Input data for app
 df <- mutate_at(data, vars(Team, Stage, `Home/Away`, Result), as.factor)
 
 function(input, output, session) {

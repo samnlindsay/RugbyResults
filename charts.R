@@ -2,20 +2,20 @@ theme = hc_theme_google()
 cols <- c("green", "orange", "grey", "black")
 
 # TEAM MATES
-hc_games_by_teammate <- function(data, team_lists, pixels){
-  data2 <- add_team_sheets(data, team_lists) %>%
-    group_by(Name = name, team) %>%
+hc_games_by_teammate <- function(data, team_lists, height = '100%', min = 20){
+  data <- data %>% left_join(team_lists) %>%
+    group_by(Name = name, Team) %>%
     summarise(Games = n()) %>%
     ungroup() %>%
-    complete(Name, team, fill = list(Games = 0)) %>%
+    complete(Name, Team, fill = list(Games = 0)) %>%
     group_by(Name) %>%
     mutate(sum_n = sum(Games)) %>%
     arrange(desc(sum_n))
 
-  n_games <- data2 %>% filter(Name == "Sam Lindsay") %>% .$sum_n %>% unique()
+  n_games <- data %>% filter(Name == "Sam Lindsay") %>% .$sum_n %>% unique()
 
-  hchart(data2 %>% filter(sum_n >= 15, Name != "Sam Lindsay"), "bar",
-         hcaes(x = Name, y = Games, group = team)) %>%
+  hchart(data %>% filter(sum_n >= min, Name != "Sam Lindsay"), "bar",
+         hcaes(x = Name, y = Games, group = Team)) %>%
     hc_title(text = "Team mates") %>%
     hc_subtitle(text = paste0("(from ", n_games, " out of ", nrow(data), " games with team sheets)")) %>%
     hc_colors(cols) %>%
@@ -24,9 +24,9 @@ hc_games_by_teammate <- function(data, team_lists, pixels){
     hc_plotOptions(
       bar = list(stacking = "normal")) %>%
     hc_xAxis(labels = list(style = list(fontSize = "8pt"))) %>%
-    hc_chart(height = pixels)
+    hc_chart(height = height)
 }
-#hc_games_by_teammate(data, team_lists)
+hc_games_by_teammate(data, team_lists, height = 500)
 
 # GAMES BY SEASON
 hc_games_by_season <- function(df){
@@ -227,7 +227,7 @@ hc_cum_games <- function(df){
     hc_tooltip(dateTimeLabelFormats = list(day = "%e %b")) %>%
     hc_add_theme(theme)
 }
-#hc_cum_games(df)
+#hc_cum_games(data)
 
 ###############################################################################
 

@@ -84,7 +84,7 @@ Season,Date,Team,Competition,Stage,Opposition,Home/Away,Venue,Result,F,A,Positio
 2018/2019,2019-01-12,2nd,MMT 1,NA,London Cornish 3rd,H,Ealing,L,24,35,Lock,80,TRUE,FALSE,FALSE,0,Captain,London Cornish
 2018/2019,2019-01-18,Evergreens,MMT Vets A,NA,Chiswick,A,Away,L,22,30,Lock,60,TRUE,FALSE,FALSE,0,NA,Chiswick
 2018/2019,2019-01-19,Exiles,MMT Vase,Semi Final,Twickenham 3rd,A,Away,L,10,38,Lock/No. 8,80,TRUE,FALSE,FALSE,0,NA,Twickenham
-2018/2019,2019-01-26,2nd,MMT 1,NA,Grasshoppers 2nd,H,Ealing,W,34,14,Lock,80,TRUE,FALSE,FALSE,0,Captain,Grasshoppers
+2018/2019,2019-01-26,2nd,MMT 1,NA,Grasshoppers 2nd,A,Away,W,34,14,Lock,80,TRUE,FALSE,FALSE,0,Captain,Grasshoppers
 2018/2019,2019-02-02,Exiles,Memorial Match,NA,Old Actonians,A,Away,L,0,60,Lock,80,TRUE,FALSE,FALSE,0,Captain,Old Actonians
 2018/2019,2019-02-09,2nd,MMT 1,NA,Belsize Park 3rd,A,Away,W,43,20,Lock,80,TRUE,FALSE,FALSE,0,Captain,Belsize Park
 2018/2019,2019-02-16,2nd,MMT 1,NA,HAC 3rd,H,Ealing,L,26,31,Lock,80,TRUE,FALSE,FALSE,0,Captain,HAC
@@ -95,3 +95,10 @@ Season,Date,Team,Competition,Stage,Opposition,Home/Away,Venue,Result,F,A,Positio
 2018/2019,2019-03-30,1st,Friendly,NA,Old Priorians 2nd,H,Ealing,W,46,17,Lock,65,TRUE,FALSE,FALSE,0,NA,Old Priorians
 2018/2019,2019-04-12,2nd,Friendly,NA,UCFB,H,Ealing,L,25,45,Lock,80,TRUE,FALSE,FALSE,0,Captain,UCFB
 2018/2019,2019-04-24,1st,NW Middlesex Floodlit Cup,Final,Ruislip 1st,A,Away,L,25,32,Lock,90,FALSE,FALSE,FALSE,0,Extra time; Captain 2nd half,Ruislip
+2019/2020,2019-09-14,2nd,MMT 1,NA,HAC 3rd,H,Ealing,W,43,15,Lock,65,TRUE,FALSE,FALSE,0,Captain,HAC
+2019/2020,2019-09-21,1st,Herts/Middlesex 1,NA,West London 1st,A,Away,W,72,10,Lock,40,TRUE,FALSE,FALSE,0,NA,West London
+2019/2020,2019-09-28,2nd,MMT 1,NA,London Scottish Lions 2nd,A,Away,L,24,31,Lock,70,FALSE,FALSE,FALSE,0,NA,London Scottish Lions
+2019/2020,2019-10-05,1st,Zoo Sports Shield 2,NA,Taunton,H,Ealing,L,17,92,Lock,40,FALSE,FALSE,FALSE,0,NA,Taunton
+2019/2020,2019-10-12,2nd,Friendly,NA,Hammersmith & Fulham 2nd,A,Away,L,19,31,Lock,80,TRUE,FALSE,FALSE,0,NA,Hammersmith & Fulham
+2019/2020,2019-10-19,1st,Zoo Sports Shield 2,NA,Henley,H,Ealing,L,5,88,Lock,40,FALSE,FALSE,FALSE,0,NA,Henley
+2019/2020,2019-10-26,2nd,MMT 1,,Belsize Park 3rd,A,Away,W,13,10,Lock,80,TRUE,FALSE,FALSE,0,,Belsize Park
