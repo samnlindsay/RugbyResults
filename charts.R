@@ -3,7 +3,7 @@ cols <- c("green", "orange", "grey", "black")
 
 # TEAM MATES
 hc_games_by_teammate <- function(data, team_lists, height = '100%', min = 20){
-  data <- data %>% left_join(team_lists) %>%
+  data2 <- data %>% left_join(team_lists) %>%
     group_by(Name = name, Team) %>%
     summarise(Games = n()) %>%
     ungroup() %>%
@@ -12,15 +12,15 @@ hc_games_by_teammate <- function(data, team_lists, height = '100%', min = 20){
     mutate(sum_n = sum(Games)) %>%
     arrange(desc(sum_n))
 
-  n_games <- data %>% filter(Name == "Sam Lindsay") %>% .$sum_n %>% unique()
+  n_games <- team_lists %>% select(Team, Date) %>% unique() %>% nrow()
 
-  hchart(data %>% filter(sum_n >= min, Name != "Sam Lindsay"), "bar",
+  hchart(data2 %>% filter(sum_n >= min, Name != "Sam Lindsay"), "bar",
          hcaes(x = Name, y = Games, group = Team)) %>%
     hc_title(text = "Team mates") %>%
     hc_subtitle(text = paste0("(from ", n_games, " out of ", nrow(data), " games with team sheets)")) %>%
     hc_colors(cols) %>%
     hc_add_theme(theme) %>%
-    hc_tooltip(pointFormat = "{point.team}:  {point.Games} <br> <b>{point.sum_n} total</b>") %>%
+    hc_tooltip(pointFormat = "<b>{point.Team}:</b>  {point.Games} <br> <b>{point.sum_n} total</b>") %>%
     hc_plotOptions(
       bar = list(stacking = "normal")) %>%
     hc_xAxis(labels = list(style = list(fontSize = "8pt"))) %>%
@@ -28,7 +28,7 @@ hc_games_by_teammate <- function(data, team_lists, height = '100%', min = 20){
 }
 hc_games_by_teammate(data, team_lists, height = 500)
 
-# GAMES BY SEASON
+  # GAMES BY SEASON
 hc_games_by_season <- function(df){
   games_by_team <- df %>% count(Team, Season) %>%
     rename(Games = n)

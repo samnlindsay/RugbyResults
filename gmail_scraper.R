@@ -4,15 +4,13 @@ library(readr)
 library(XML)
 library(stringr)
 library(glue)
-library(crayon)
-
 
 # Configure ---------------------------------------------------------------
 gm_auth_configure(path = "Rugby-app.json")
-gm_auth(cache = ".secret")
+gm_auth(email = "sam.n.lindsay@gmail.com", cache = ".secret")
 
 
-min_date = format(as.Date("2019-01-01"), "%Y/%m/%d")
+#min_date = format(as.Date("2019-01-01"), "%Y/%m/%d")
 scrape_gmail <- function(min_date = "2015-10-01"){
   # Get raw email data ------------------------------------------------------
   search_term = glue("label:ealing-rugby
@@ -218,7 +216,6 @@ scrape_gmail <- function(min_date = "2015-10-01"){
 
 #all_team_lists <- scrape_gmail(min_date = "2015-10-01")
 
-
 # Join to match data #-----------------------------------------------
 
 #data <- read_csv("Rugby_clean.csv")
@@ -235,7 +232,7 @@ add_match_dates <- function(data, team_lists){
     filter(date == max(date)) %>%
     ungroup() %>%
     select(Team, name, Date, cap, pos)
-    #summarise(team_list = list(name))
+  #summarise(team_list = list(name))
   return(team_lists2)
 }
 
@@ -244,10 +241,12 @@ add_match_dates <- function(data, team_lists){
 # Add HTML team sheet to match data ---------------------------------
 add_html_team <- function(data, team_lists){
   df <- left_join(data, team_lists, by = c("Date", "Team")) %>%
-    select(-c(pos, cap)) %>%
+    group_by_at(vars(-c(pos, cap, name))) %>%
     unique() %>%
-    group_by_at(vars(-name)) %>%
-    summarise(name = glue_collapse(name, sep = "<br>")) %>%
+    arrange(pos) %>%
+    mutate(html = glue("<b>{pos}</b> - {name}{ifelse(cap, ' (C)','')}", .na = "")) %>%
+    summarise(name = glue_collapse(html, sep = "<br>")) %>%
     ungroup()
   return(df)
 }
+
