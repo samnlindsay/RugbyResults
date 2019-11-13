@@ -39,7 +39,7 @@ update <- scrape_gmail(min_date = max(team_lists$Date)) %>%
   `if`(!is.null(.), add_match_dates(data, .), .)
 
 # Write new team sheets to google and add to `team_lists`
-if(length(update) > 0){
+if(!(is.null(update)) & length(update) > 0){
   gs_edit_cells(sheet, 2, input = update,
                 anchor = glue("R{nrow(team_lists) + 2}C1"),
                 trim = T, col_names = F)
@@ -205,6 +205,18 @@ function(input, output, session) {
     write_csv(rugby_data$Data, "Rugby_clean.csv")
     gs_add_row(sheet, input = last(rugby_data$Data))
 
+    # Automatic update of team sheets (to catch new games)
+    update <- scrape_gmail(min_date = max(team_lists$Date)) %>%
+      #{ if(is.null(.), ., add_match_dates(data, .)) }
+      `if`(!is.null(.), add_match_dates(data, .), .)
+
+    # Write new team sheets to google and add to `team_lists`
+    if(!(is.null(update)) & length(update) > 0){
+      gs_edit_cells(sheet, 2, input = update,
+                    anchor = glue("R{nrow(team_lists) + 2}C1"),
+                    trim = T, col_names = F)
+      team_lists <- team_lists %>% rbind(update)
+    }
 
     showModal(modalDialog(title = "Game saved",
                           tags$a(href = sheet$links$href[1], "Rugby_data", target="_blank"),

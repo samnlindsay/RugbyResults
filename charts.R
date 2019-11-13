@@ -1,9 +1,13 @@
+require(dplyr)
+require(highcharter)
+
 theme = hc_theme_google()
 cols <- c("green", "orange", "grey", "black")
 
 # TEAM MATES
 hc_games_by_teammate <- function(data, team_lists, height = '100%', min = 20){
-  data2 <- data %>% left_join(team_lists) %>%
+  data2 <- data %>%
+    left_join(team_lists) %>%
     group_by(Name = name, Team) %>%
     summarise(Games = n()) %>%
     ungroup() %>%
@@ -26,7 +30,7 @@ hc_games_by_teammate <- function(data, team_lists, height = '100%', min = 20){
     hc_xAxis(labels = list(style = list(fontSize = "8pt"))) %>%
     hc_chart(height = height)
 }
-hc_games_by_teammate(data, team_lists, height = 500)
+#hc_games_by_teammate(data, team_lists, height = 500)
 
   # GAMES BY SEASON
 hc_games_by_season <- function(df){

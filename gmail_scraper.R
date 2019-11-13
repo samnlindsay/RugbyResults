@@ -49,7 +49,7 @@ scrape_gmail <- function(min_date = "2015-10-01"){
       bind_rows() %>%
       purrr::compact() %>%
       select(team = `Position/Team`, name = Name, date) %>%
-      mutate(cap = str_detect(team, " (?<!v)cap"),
+      mutate(cap = str_detect(team, " (?<!v\\s?)cap"),
              pos = str_extract(team, "(?<=-)\\d+"),
              team = str_extract(team, "^\\w+")) %>%
       filter(!is.na(name))
