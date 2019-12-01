@@ -16,7 +16,7 @@ hc_games_by_teammate <- function(data, team_lists, height = '100%', min = 20){
     mutate(sum_n = sum(Games)) %>%
     arrange(desc(sum_n))
 
-  n_games <- team_lists %>% select(Team, Date) %>% unique() %>% nrow()
+  n_games <- team_lists %>% inner_join(data) %>% select(Team, Date) %>% unique() %>% nrow()
 
   hchart(data2 %>% filter(sum_n >= min, Name != "Sam Lindsay"), "bar",
          hcaes(x = Name, y = Games, group = Team)) %>%

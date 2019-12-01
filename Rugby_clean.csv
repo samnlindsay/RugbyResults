@@ -88,7 +88,7 @@ Season,Date,Team,Competition,Stage,Opposition,Home/Away,Venue,Result,F,A,Positio
 2018/2019,2019-02-02,Exiles,Memorial Match,NA,Old Actonians,A,Away,L,0,60,Lock,80,TRUE,FALSE,FALSE,0,Captain,Old Actonians
 2018/2019,2019-02-09,2nd,MMT 1,NA,Belsize Park 3rd,A,Away,W,43,20,Lock,80,TRUE,FALSE,FALSE,0,Captain,Belsize Park
 2018/2019,2019-02-16,2nd,MMT 1,NA,HAC 3rd,H,Ealing,L,26,31,Lock,80,TRUE,FALSE,FALSE,0,Captain,HAC
-2018/2019,2019-02-16,Exiles,MMT 4,,Bank of England,A,Away,W,25,0,Lock,80,TRUE,FALSE,FALSE,0,,Bank of England
+2018/2019,2019-02-16,Exiles,MMT 4,NA,Bank of England,A,Away,W,25,0,Lock,80,TRUE,FALSE,FALSE,0,NA,Bank of England
 2018/2019,2019-02-22,Evergreens,MMT Vets A,NA,Hammersmith & Fulham,H,Ealing,W,50,17,Lock,80,TRUE,FALSE,FALSE,0,NA,Hammersmith & Fulham
 2018/2019,2019-03-02,2nd,MMT 1,NA,Chiswick 2nd,A,Away,L,28,35,Lock,80,TRUE,FALSE,FALSE,0,Captain,Chiswick
 2018/2019,2019-03-09,2nd,MMT 1,NA,Ruislip 2nd,H,Ealing,W,39,7,Lock,80,TRUE,FALSE,FALSE,0,Captain,Ruislip
@@ -104,3 +104,5 @@ Season,Date,Team,Competition,Stage,Opposition,Home/Away,Venue,Result,F,A,Positio
 2019/2020,2019-10-19,1st,Zoo Sports Shield 2,NA,Henley,H,Ealing,L,5,88,Lock,40,FALSE,FALSE,FALSE,0,NA,Henley
 2019/2020,2019-10-26,2nd,MMT 1,NA,Belsize Park 3rd,A,Away,W,13,10,Lock,80,TRUE,FALSE,FALSE,0,NA,Belsize Park
 2019/2020,2019-11-09,1st,Herts/Middlesex 2,NA,Uxbridge 1st,H,Ealing,W,26,7,Lock,45,TRUE,FALSE,FALSE,0,NA,Uxbridge
+2019/2020,2019-11-16,1st,Zoo Sports Shield 2,NA,St Jacques Vikings,A,Away,L,20,29,Lock,80,TRUE,FALSE,FALSE,1,Guernsey; try last play of the game (Arian -> me -> Nyall -> me),St Jacques Vikings
+2019/2020,2019-11-30,1st,Friendly,,Fullerians,A,Away,L,17,19,Lock,80,TRUE,FALSE,FALSE,0,,Fullerians

@@ -39,11 +39,13 @@ update <- scrape_gmail(min_date = max(team_lists$Date)) %>%
   `if`(!is.null(.), add_match_dates(data, .), .)
 
 # Write new team sheets to google and add to `team_lists`
-if(!(is.null(update)) & length(update) > 0){
-  gs_edit_cells(sheet, 2, input = update,
-                anchor = glue("R{nrow(team_lists) + 2}C1"),
-                trim = T, col_names = F)
-  team_lists <- team_lists %>% rbind(update)
+if(!(is.null(update))){
+  if(nrow(update) > 0){
+    gs_edit_cells(sheet, 2, input = update,
+                  anchor = glue("R{nrow(team_lists) + 2}C1"),
+                  trim = T, col_names = F)
+    team_lists <- team_lists %>% rbind(update)
+  }
 }
 
 # Input data for app
@@ -187,7 +189,7 @@ function(input, output, session) {
               Venue = input$venue,
               `F` = input$`for`,
               `A` = input$against,
-              Position = glue::collapse(input$position, sep = "/"),
+              Position = glue_collapse(input$position, sep = "/"),
               Time = input$time,
               Start = input$start,
               MOTM = input$motm,
@@ -211,11 +213,13 @@ function(input, output, session) {
       `if`(!is.null(.), add_match_dates(data, .), .)
 
     # Write new team sheets to google and add to `team_lists`
-    if(!(is.null(update)) & length(update) > 0){
-      gs_edit_cells(sheet, 2, input = update,
-                    anchor = glue("R{nrow(team_lists) + 2}C1"),
-                    trim = T, col_names = F)
-      team_lists <- team_lists %>% rbind(update)
+    if(!(is.null(update))){
+      if(nrow(update) > 0){
+        gs_edit_cells(sheet, 2, input = update,
+                      anchor = glue("R{nrow(team_lists) + 2}C1"),
+                      trim = T, col_names = F)
+        team_lists <- team_lists %>% rbind(update)
+      }
     }
 
     showModal(modalDialog(title = "Game saved",
