@@ -28,6 +28,10 @@ for_display <- function(df){
 #df <- read_csv("Rugby_clean.csv", col_types = "cDccccccciicilllicc") %>%
 #  mutate_at(vars(Team, Stage, `Home/Away`, Result), as.factor)
 
+#auth <- gs_auth()
+#saveRDS(auth, "shiny_app_token.rds")
+gs_auth(token = "shiny_app_token.rds")
+
 key = "1keX2eGbyiBejpfMPMbL7aXYLy7IDJZDBXQqiKVQavz0"
 sheet <- gs_key(key)
 data <- gs_read(sheet, 1)

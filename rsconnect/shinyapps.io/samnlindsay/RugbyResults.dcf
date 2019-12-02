@@ -5,6 +5,6 @@ account: samnlindsay
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 599732
-bundleId: 1866324
+bundleId: 2633329
 url: https://samnlindsay.shinyapps.io/rugbyresults/
-when: 1549753916.14791
+when: 1575316455.26981
