@@ -1,0 +1,289 @@
+,,,,,,,,,,,,,,,,,,
+,,Game,,,Pre-throw,,,Throw,,,Post-throw,,,Players,,Result,,
+#,Half,Season,Date,Opposition,Numbers,Call,Movement,Front,Middle,Back,Drive,Transfer,Flyby,Hooker,Jumper,Won,Error,
+1,1,2021/22,2021-08-28,London Irish,5,,,,x,,,,,Ben,Sam,Y,,1
+2,1,2021/22,2021-08-28,London Irish,4,Snap,,x,,,,,,Ben,Gus,Y,,1
+3,1,2021/22,2021-08-28,London Irish,6,Even,,,x,,x,,,Ben,Sam,Y,,1
+4,1,2021/22,2021-08-28,London Irish,6,,,,x,,x,,,Ben,Sam,Y,,1
+5,1,2021/22,2021-08-28,London Irish,6,Green,,,,x,,,,Ben,Rory,Y,,1
+6,1,2021/22,2021-08-28,London Irish,5,,,,x,,,,,Ben,Sam,N,Throw,0
+7,2,2021/22,2021-08-28,London Irish,4,Yes,x,,,x,,,,Ben,Sam,N,Throw,0
+8,2,2021/22,2021-08-28,London Irish,4,Snap,,x,,,,,,Ben,Gus,Y,,1
+9,2,2021/22,2021-08-28,London Irish,4,Snap,,x,,,,,,Ben,Gus,N,Stolen,0
+10,2,2021/22,2021-08-28,London Irish,5,RD,x,,x,,,,,Ben,Sam,Y,,1
+11,2,2021/22,2021-08-28,London Irish,6,Red,,x,,,,,,Ben,Gus,Y,,1
+1,1,2021/22,2021-09-04,Horsham 2nd,5,RD,x,,x,,,,,Ben,Sam,Y,,1
+2,1,2021/22,2021-09-04,Horsham 2nd,6,,,,x,,,,,Ben,Sam,Y,,1
+3,1,2021/22,2021-09-04,Horsham 2nd,5,,,,x,,,,,Ben,Sam,Y,,1
+4,1,2021/22,2021-09-04,Horsham 2nd,7,,,,x,,,,,Ben,Sam,Y,,1
+5,1,2021/22,2021-09-04,Horsham 2nd,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+6,1,2021/22,2021-09-04,Horsham 2nd,4,No,x,x,,,,,,Ben,Sam,Y,,1
+7,2,2021/22,2021-09-04,Horsham 2nd,6,Odd,,,x,,x,,,Ben,Tim,N,Throw,0
+8,2,2021/22,2021-09-04,Horsham 2nd,6,,,,x,,x,,,Ben,Sam,Y,,1
+9,2,2021/22,2021-09-04,Horsham 2nd,6,,,,x,,x,,,Ben,Sam,Y,,1
+10,2,2021/22,2021-09-04,Horsham 2nd,6,Odd,,,x,,x,,,Ben,Tim,Y,,1
+11,2,2021/22,2021-09-04,Horsham 2nd,5,Red,,x,,,,,,Ben,Pete,Y,,1
+12,2,2021/22,2021-09-04,Horsham 2nd,6,,,,x,,x,,,Ben,Sam,Y,,1
+13,2,2021/22,2021-09-04,Horsham 2nd,6,RD,x,,x,,x,,,Ben,Sam,Y,,1
+14,2,2021/22,2021-09-04,Horsham 2nd,4,Snap,,x,,,,,,Ben,Pete,Y,,1
+15,2,2021/22,2021-09-04,Horsham 2nd,6,,,,x,,x,,,Ben,Sam,Y,,1
+16,2,2021/22,2021-09-04,Horsham 2nd,6,RD,,,x,,x,,,Ben,Sam,Y,,1
+1,1,2021/22,2021-09-25,Eastbourne,4,Snap,,x,,,,,,Ben,John,Y,,1
+2,1,2021/22,2021-09-25,Eastbourne,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+3,1,2021/22,2021-09-25,Eastbourne,6,,,,x,,x,,,Ben,Sam,Y,,1
+4,1,2021/22,2021-09-25,Eastbourne,4,Snap,,x,,,,,,Ben,John,Y,,1
+5,1,2021/22,2021-09-25,Eastbourne,6,,,,x,,x,,,Ben,Sam,Y,,1
+6,1,2021/22,2021-09-25,Eastbourne,4,No,x,x,,,,,,Ben,Sam,Y,,1
+7,1,2021/22,2021-09-25,Eastbourne,5,,,,x,,,,,Ben,Sam,N,Throw,0
+8,1,2021/22,2021-09-25,Eastbourne,4,No,x,x,,,,,,Ben,Sam,Y,,1
+9,1,2021/22,2021-09-25,Eastbourne,6,,,,x,,x,,,Ben,Sam,Y,,1
+10,1,2021/22,2021-09-25,Eastbourne,6,Red,,x,,,x,,,Ben,John,Y,,1
+11,2,2021/22,2021-09-25,Eastbourne,4,Snap,,x,,,,,,Ben,John,Y,,1
+12,2,2021/22,2021-09-25,Eastbourne,6,Odd,,,x,,,,,Ben,Dan B,N,Throw,0
+13,2,2021/22,2021-09-25,Eastbourne,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+14,2,2021/22,2021-09-25,Eastbourne,5,,,,x,,,,,Ben,Sam,Y,,1
+15,2,2021/22,2021-09-25,Eastbourne,5,,,,x,,,,,Ben,Sam,Y,,1
+16,2,2021/22,2021-09-25,Eastbourne,6,,,,x,,x,,,Ben,Sam,Y,,1
+17,2,2021/22,2021-09-25,Eastbourne,6,RD,x,,x,,x,,,Ben,Sam,Y,,1
+1,1,2021/22,2021-10-16,Burgess Hill,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+2,1,2021/22,2021-10-16,Burgess Hill,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+3,2,2021/22,2021-10-16,Burgess Hill,6,RD,x,,x,,,,,Ben,Sam,N,Stolen,0
+4,2,2021/22,2021-10-16,Burgess Hill,6,,,,x,,,,1,Ben,Sam,Y,,1
+5,2,2021/22,2021-10-16,Burgess Hill,6,RD,x,,x,,,,2,Ben,Sam,Y,,1
+6,2,2021/22,2021-10-16,Burgess Hill,4,No,x,x,,,x,,,Ben,Sam,Y,,1
+1,1,2021/22,2021-10-31,Lewes,5,,,,x,,x,,,Ben,John,Y,,1
+2,1,2021/22,2021-10-31,Lewes,5,,,,x,,,,,Ben,John,N,Throw,0
+3,1,2021/22,2021-10-31,Lewes,4,Yes,x,,,x,,,,Ben,John,Y,,1
+4,1,2021/22,2021-10-31,Lewes,5,Red,,x,,,,,,Ben,Ryan,Y,,1
+5,1,2021/22,2021-10-31,Lewes,4,Snap,,x,,,,,,Ben,Ryan,Y,,1
+1,1,2021/22,2021-11-13,Uckfield,6,Even,,,x,,,,,Ben,John,Y,,1
+2,1,2021/22,2021-11-13,Uckfield,6,Red,,x,,,x,x,,Ben,Dan A,Y,,1
+3,1,2021/22,2021-11-13,Uckfield,5,,,,x,,,,,Ben,John,Y,,1
+4,1,2021/22,2021-11-13,Uckfield,4,Snap,,x,,,,,,Ben,Dan A,N,Throw,0
+5,1,2021/22,2021-11-13,Uckfield,6,,,,x,,x,,,Ben,John,Y,,1
+6,2,2021/22,2021-11-13,Uckfield,5,RD,x,,x,,,,,Ben,John,Y,,1
+7,2,2021/22,2021-11-13,Uckfield,6,Red,,x,,,x,,,Ben,Dan A,Y,,1
+8,2,2021/22,2021-11-13,Uckfield,4,No,x,,,x,,,,Ben,John,Y,,1
+9,2,2021/22,2021-11-13,Uckfield,5,,,,x,,,,,Ben,John,N,Throw,0
+10,2,2021/22,2021-11-13,Uckfield,5,,,,x,,,,,Ben,John,Y,,1
+11,2,2021/22,2021-11-13,Uckfield,6,,,,x,,x,,,Ben,John,Y,,1
+1,1,2021/22,2022-02-12,Seaford,4,No,x,x,,,,,,Ben,Sam,Y,,1
+2,1,2021/22,2022-02-12,Seaford,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+3,1,2021/22,2022-02-12,Seaford,5,,,,x,,,,,Ben,Sam,N,Throw,0
+4,1,2021/22,2022-02-12,Seaford,4,No,x,x,,,x,,,Ben,Sam,Y,,1
+5,1,2021/22,2022-02-12,Seaford,4,Snap,,x,,,,,,Ben,John,Y,,1
+6,1,2021/22,2022-02-12,Seaford,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+7,1,2021/22,2022-02-12,Seaford,5,,,,x,,,,,Ben,Sam,Y,,1
+8,2,2021/22,2022-02-12,Seaford,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+9,2,2021/22,2022-02-12,Seaford,4,Snap,,x,,,,,,Ben,John,Y,,1
+10,2,2021/22,2022-02-12,Seaford,6,,,,x,,x,,,Ben,Sam,Y,,1
+11,2,2021/22,2022-02-12,Seaford,4,Snap,,x,,,x,,,Ben,John,Y,,1
+12,2,2021/22,2022-02-12,Seaford,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+1,1,2021/22,2022-02-26,Burgess Hill,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+2,1,2021/22,2022-02-26,Burgess Hill,6,,,,x,,x,,,Ben,Sam,Y,,1
+3,1,2021/22,2022-02-26,Burgess Hill,4,No,x,x,,,,,,Ben,Sam,Y,,1
+4,1,2021/22,2022-02-26,Burgess Hill,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+5,1,2021/22,2022-02-26,Burgess Hill,5,RD,x,,x,,,,,Ben,Sam,Y,,1
+6,1,2021/22,2022-02-26,Burgess Hill,5,,,,x,,,,,Ben,Sam,Y,,1
+7,1,2021/22,2022-02-26,Burgess Hill,5,RD,x,,x,,x,,,Ben,Sam,Y,,1
+8,2,2021/22,2022-02-26,Burgess Hill,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+9,2,2021/22,2022-02-26,Burgess Hill,4,No,x,x,,,,,,Ben,Sam,N,Stolen,0
+10,2,2021/22,2022-02-26,Burgess Hill,6,Odd,,,x,,x,,,Ben,John ,Y,,1
+11,2,2021/22,2022-02-26,Burgess Hill,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+12,2,2021/22,2022-02-26,Burgess Hill,6,RD,x,,x,,x,,,Ben,Sam,Y,,1
+13,2,2021/22,2022-02-26,Burgess Hill,6,,,,x,,,,2,Ben,Sam,Y,,1
+14,2,2021/22,2022-02-26,Burgess Hill,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+1,1,2021/22,2022-03-26,Eastbourne,4,Snap,,x,,,,,,Ben,Sam,Y,,1
+2,1,2021/22,2022-03-26,Eastbourne,6,,,,x,,x,,,Ben,Sam,Y,,1
+3,1,2021/22,2022-03-26,Eastbourne,4,Yes,x,,,x,x,,,Ben,Sam,Y,,1
+4,1,2021/22,2022-03-26,Eastbourne,7,,,,x,,,,2,Ben,Sam,Y,,1
+5,1,2021/22,2022-03-26,Eastbourne,5,RD,x,,x,,,,,Ben,Sam,Y,,1
+6,1,2021/22,2022-03-26,Eastbourne,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+7,1,2021/22,2022-03-26,Eastbourne,7,,,,x,,x,,,Ben,Sam,Y,,1
+8,2,2021/22,2022-03-26,Eastbourne,4,Snap,,x,,,,,,Ben,Sam,Y,,1
+9,2,2021/22,2022-03-26,Eastbourne,7,,,,x,,x,,,Ben,Sam,Y,,1
+10,2,2021/22,2022-03-26,Eastbourne,5,,,,x,,,,,Ben,Sam,Y,,1
+11,2,2021/22,2022-03-26,Eastbourne,6,,,,x,,,,,Ben,Sam,Y,,1
+1,1,2021/22,2022-04-02,Uckfield,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+2,1,2021/22,2022-04-02,Uckfield,7,RD,x,,x,,,,,Ben,Sam,Y,,1
+3,2,2021/22,2022-04-02,Uckfield,4,Snap,,x,,,x,,,Ben,John,Y,,1
+4,2,2021/22,2022-04-02,Uckfield,5,,,,x,,,,,Ben,Sam,Y,,1
+5,2,2021/22,2022-04-02,Uckfield,4,No,x,,x,,x,,,Ben,Sam,Y,,1
+6,2,2021/22,2022-04-02,Uckfield,4,Snap,,x,,,,,,Ben,John,N,Throw,0
+1,1,2022/23,2022-09-17,Lewes,4,Yes,x,,,x,,,,Josh,Sam,N,Overthrow,0
+2,1,2022/23,2022-09-17,Lewes,6,RD,x,,x,,x,,,Josh,Sam,Y,,1
+3,1,2022/23,2022-09-17,Lewes,7,,,,x,,,,,Josh,Sam,N,Dropped in transfer,0
+4,1,2022/23,2022-09-17,Lewes,4,Snap,,x,,,,,,Josh,John,Y,,1
+5,1,2022/23,2022-09-17,Lewes,4,Snap,,x,,,x,,,Josh,John,Y,,1
+6,1,2022/23,2022-09-17,Lewes,7,,,,x,,,,2,Josh,Sam,Y,,1
+7,1,2022/23,2022-09-17,Lewes,5,Red,,x,,,,,,Josh,John,Y,,1
+8,2,2022/23,2022-09-17,Lewes,5,,,,x,,,,,Josh,Sam,Y,,1
+9,2,2022/23,2022-09-17,Lewes,7,,,,x,,,,,Josh,Sam,Y,,1
+10,2,2022/23,2022-09-17,Lewes,4,Yes,x,,,x,,,,Josh,Sam,Y,,1
+11,2,2022/23,2022-09-17,Lewes,4,Snap,,x,,,,,,Josh,John,N,Overthrow,0
+12,2,2022/23,2022-09-17,Lewes,5,,,,x,,,,,Josh,Sam,Y,,1
+13,2,2022/23,2022-09-17,Lewes,4,Snap,,x,,,,,,Josh,John,Y,,1
+1,1,2022/23,2022-09-24,Uckfield,6,RD,x,,x,,x,,,Ben,Sam,Y,,1
+2,2,2022/23,2022-09-24,Uckfield,4,Snap,,x,,,,,,Ben,John,Y,,1
+3,2,2022/23,2022-09-24,Uckfield,6,,,,x,,x,,,Ben,Sam,Y,,1
+1,1,2022/23,2022-10-01,Crawley,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+2,1,2022/23,2022-10-01,Crawley,4,Snap,,x,,,,,,Ben,John,Y,,1
+3,1,2022/23,2022-10-01,Crawley,6,,,,x,,x,,,Ben,Sam,Y,,1
+4,1,2022/23,2022-10-01,Crawley,4,Snap,,x,,,x,,,Ben,John,Y,,1
+5,1,2022/23,2022-10-01,Crawley,5,RD,x,,x,,,,,Ben,Sam,Y,,1
+6,2,2022/23,2022-10-01,Crawley,6,,,,x,,x,x,,Ben,Sam,Y,,1
+7,2,2022/23,2022-10-01,Crawley,4,No,x,x,,,,,,Ben,Sam,Y,,1
+8,2,2022/23,2022-10-01,Crawley,5,,,,x,,x,,,Ben,Sam,Y,,1
+9,2,2022/23,2022-10-01,Crawley,5,Red,,x,,,,,,Ben,John,Y,,1
+10,2,2022/23,2022-10-01,Crawley,5,,,,x,,,,,Ben,Sam,Y,,1
+11,2,2022/23,2022-10-01,Crawley,4,Snap,,x,,,x,,,Ben,John,Y,,1
+1,1,2022/23,2022-10-15,Shoreham,4,Snap,,x,,,,,,Ben,John,Y,,1
+2,1,2022/23,2022-10-15,Shoreham,4,Snap,,x,,,,,,Ben,John,Y,,1
+3,1,2022/23,2022-10-15,Shoreham,5,,,,x,,,,,Ben,Sam,Y,,1
+4,1,2022/23,2022-10-15,Shoreham,4,Yes,x,,,x,x,,,Ben,Sam,Y,,1
+5,1,2022/23,2022-10-15,Shoreham,4,Yes,x,,,x,,,,Ben,Sam,Y,George dropped,1
+6,2,2022/23,2022-10-15,Shoreham,5,RD,x,,x,,,,,Ben,Sam,Y,,1
+7,2,2022/23,2022-10-15,Shoreham,4,Snap,,x,,,,,,Ben,John,Y,,1
+8,2,2022/23,2022-10-15,Shoreham,5,Even,x,,x,,,,,Ben,Sam,Y,,1
+9,2,2022/23,2022-10-15,Shoreham,4,Snap,,x,,,,,,Ben,John,Y,,1
+10,2,2022/23,2022-10-15,Shoreham,6,RD,x,,x,,x,,,Ben,Sam,Y,,1
+1,1,2022/23,2022-10-22,Seaford,6,RD,x,,x,,x,,,Ben,Sam,Y,,1
+2,1,2022/23,2022-10-22,Seaford,6,,,,x,,x,,,Ben,Sam,Y,,1
+3,1,2022/23,2022-10-22,Seaford,4,No,x,,x,,,,,Ben,Sam,N,Spilled,0
+4,1,2022/23,2022-10-22,Seaford,5,,,,x,,,,,Ben,Sam,Y,,1
+5,1,2022/23,2022-10-22,Seaford,5,,,,x,,,,,Ben,Sam,Y,,1
+6,2,2022/23,2022-10-22,Seaford,4,Snap,,x,,,x,,,Ben,John,Y,,1
+7,2,2022/23,2022-10-22,Seaford,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+1,1,2022/23,2022-10-29,Burgess Hill,4,Snap,,x,,,,,,Ben,John,Y,,1
+2,1,2022/23,2022-10-29,Burgess Hill,6,RD,x,,x,,x,,,Ben,Sam,Y,,1
+3,1,2022/23,2022-10-29,Burgess Hill,4,No,x,x,,,x,,,Ben,Sam,Y,,1
+4,1,2022/23,2022-10-29,Burgess Hill,6,RD,x,,x,,x,x,,Ben,Sam,N,Not straight,0
+5,1,2022/23,2022-10-29,Burgess Hill,4,Snap,,x,,,,,,Ben,John,Y,,1
+6,1,2022/23,2022-10-29,Burgess Hill,5,,,,x,,,,,Ben,Sam,Y,,1
+7,1,2022/23,2022-10-29,Burgess Hill,5,,,,x,,,,,Ben,Sam,Y,,1
+8,1,2022/23,2022-10-29,Burgess Hill,6,Plus,x,x,,,x,,,Ben,Sam,Y,,1
+9,1,2022/23,2022-10-29,Burgess Hill,4,Snap,,x,,,x,,,Ben,John,Y,,1
+10,2,2022/23,2022-10-29,Burgess Hill,6,,,,x,,,,2,Ben,Sam,Y,,1
+11,2,2022/23,2022-10-29,Burgess Hill,6,,,,x,,x,,,Ben,Sam,Y,,1
+12,2,2022/23,2022-10-29,Burgess Hill,4,Snap,,x,,,,,,Ben,Sam,Y,,1
+13,2,2022/23,2022-10-29,Burgess Hill,5,,,,x,,,,,Ben,John,Y,,1
+14,2,2022/23,2022-10-29,Burgess Hill,4,Yes,x,,,x,,,,Ben,John,Y,,1
+1,1,2022/23,2022-11-05,Eastbourne,4,No,x,x,,,,,,Ben,John,Y,,1
+2,1,2022/23,2022-11-05,Eastbourne,5,,,,x,,,,,Ben,John,Y,,1
+3,1,2022/23,2022-11-05,Eastbourne,4,Snap,,x,,,,,,Ben,John,Y,,1
+4,1,2022/23,2022-11-05,Eastbourne,5,Red,,x,,,,,,Ben,Dan B,N,Stolen,0
+5,1,2022/23,2022-11-05,Eastbourne,5,,,x,,,,,,Ben,John,Y,,1
+6,1,2022/23,2022-11-05,Eastbourne,5,RD,x,,x,,,,,Ben,John,N,Spilled forward,0
+7,1,2022/23,2022-11-05,Eastbourne,6,,,,x,,x,,,Ben,John,Y,,1
+8,2,2022/23,2022-11-05,Eastbourne,4,Snap,,x,,,,,,Ben,John,Y,,1
+9,2,2022/23,2022-11-05,Eastbourne,4,Snap,,x,,,,,,Ben,John,Y,,1
+10,2,2022/23,2022-11-05,Eastbourne,6,,,,x,,x,,,Ben,John,N,Overthrow / Not straight,0
+11,2,2022/23,2022-11-05,Eastbourne,5,,,,x,,,,,Ben,Dan B,Y,,1
+12,2,2022/23,2022-11-05,Eastbourne,5,,,,x,,,,,Ben,Dan B,Y,,1
+13,2,2022/23,2022-11-05,Eastbourne,5,,,,x,,,,,Ben,Dan B,N,Stolen (bad positioning),0
+14,2,2022/23,2022-11-05,Eastbourne,5,Even,,,x,,,,,Ben,Dan B,Y,,1
+1,1,2022/23,2022-11-26,Haywards Heath,5,,,,x,,,,,Ben,John,Y,,1
+2,1,2022/23,2022-11-26,Haywards Heath,4,Snap,,x,,,,,,Ben,John,Y,,1
+3,1,2022/23,2022-11-26,Haywards Heath,6,Even,,,x,,x,,,Ben,John,N,Not straight,0
+4,1,2022/23,2022-11-26,Haywards Heath,6,Red,,x,,,,,,Ben,Pete,N,Spilled,0
+5,1,2022/23,2022-11-26,Haywards Heath,5,,,,x,,,,,Ben,John,Y,,1
+6,1,2022/23,2022-11-26,Haywards Heath,5,RD,x,,x,,,,,Ben,John ,N,Stolen,0
+7,1,2022/23,2022-11-26,Haywards Heath,4,Yes,x,,,x,,,,Ben,John,N,Overthrow / Not straight,0
+8,1,2022/23,2022-11-26,Haywards Heath,4,No,x,x,,,x,,,Ben,John,Y,,1
+9,2,2022/23,2022-11-26,Haywards Heath,6,,,,x,,x,,,Ben,John,Y,,1
+10,2,2022/23,2022-11-26,Haywards Heath,6,,,,x,,x,,,Ben,John,Y,,1
+11,2,2022/23,2022-11-26,Haywards Heath,5,RD,x,,x,,,,,Josh,John,Y,,1
+12,2,2022/23,2022-11-26,Haywards Heath,4,Snap,,x,,,x,,,Ben,John,Y,,1
+13,2,2022/23,2022-11-26,Haywards Heath,4,Yes,x,,,x,x,,,Ben,John,Y,,1
+1,1,2022/23,2022-12-10,Crawley,5,,,,x,,,,,Ben,Pete,Y,,1
+2,1,2022/23,2022-12-10,Crawley,6,,,,x,,x,,,Ben,Pete,Y,,1
+3,1,2022/23,2022-12-10,Crawley,5,,,,x,,,,,Ben,Pete,Y,,1
+4,2,2022/23,2022-12-10,Crawley,5,,,,x,,,,,Ben,Pete,N,Overthrow / Not straight,0
+5,2,2022/23,2022-12-10,Crawley,5,,,,x,,,,,Ben,Pete,Y,,1
+1,1,2022/23,2023-01-14,Shoreham,4,No,x,x,,,,,,Ben,Sam,Y,,1
+2,1,2022/23,2023-01-14,Shoreham,6,Orange,,x,,,,,,Ben,John,Y,,1
+3,1,2022/23,2023-01-14,Shoreham,4,Yes,x,,,x,x,,,Ben,Sam,Y,,1
+4,1,2022/23,2023-01-14,Shoreham,6,,,,x,,x,,,Ben,Sam,Y,,1
+5,1,2022/23,2023-01-14,Shoreham,6,RD,x,,x,,x,,,Ben,Sam,Y,"Bad call, but recovered",1
+6,2,2022/23,2023-01-14,Shoreham,6,,,,x,,x,,,Ben,Sam,Y,,1
+7,2,2022/23,2023-01-14,Shoreham,6,RD,x,,x,,x,,,Ben,Sam,N,,0
+8,2,2022/23,2023-01-14,Shoreham,4,Snap,,x,,,,,,Ben,John,Y,,1
+9,2,2022/23,2023-01-14,Shoreham,4,Orange,,x,,,,,,Ben,John,Y,,1
+1,1,2022/23,2023-01-21,Seaford,4,Snap,,x,,,x,,,Ben,John,Y,,1
+2,1,2022/23,2023-01-21,Seaford,6,,,,x,,x,,,Ben,Sam,Y,,1
+3,1,2022/23,2023-01-21,Seaford,6,,,,x,,x,,,Ben,Sam,Y,,1
+4,1,2022/23,2023-01-21,Seaford,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+5,1,2022/23,2023-01-21,Seaford,6,,,,x,,x,,,Ben,Sam,Y,,1
+6,1,2022/23,2023-01-21,Seaford,4,Yes,x,,,x,,,,Ben,Sam,N,Penalty,0
+7,2,2022/23,2023-01-21,Seaford,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+8,2,2022/23,2023-01-21,Seaford,6,RD,x,,x,,x,,,Ben,Sam,Y,Free kick,1
+9,2,2022/23,2023-01-21,Seaford,5,,,,x,,x,,,Ben,Sam,Y,,1
+10,2,2022/23,2023-01-21,Seaford,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+11,2,2022/23,2023-01-21,Seaford,4,Yes,x,,,x,x,,,Ben,Sam,N,Not straight,0
+12,2,2022/23,2023-01-21,Seaford,5,,,,x,,,,,Ben,Sam,Y,,1
+13,2,2022/23,2023-01-21,Seaford,6,,,,x,,,,2,Ben,Sam,Y,,1
+1,1,2022/23,2023-01-28,Burgess Hill,5,,,,x,,,,,Ben,John,Y,,1
+2,1,2022/23,2023-01-28,Burgess Hill,4,Snap,,x,,,x,,,Ben,Ryland,N,Spilled,0
+3,1,2022/23,2023-01-28,Burgess Hill,4,Snap,,x,,,,,,Ben,Ryland,Y,,1
+4,1,2022/23,2023-01-28,Burgess Hill,5,,,,x,,x,,,Ben,John,Y,,1
+5,1,2022/23,2023-01-28,Burgess Hill,5,,,,x,,,,,Ben,John,Y,,1
+6,1,2022/23,2023-01-28,Burgess Hill,4,Snap,,x,,,,,,Ben,Ryland,N,,0
+7,1,2022/23,2023-01-28,Burgess Hill,4,Yes,x,,,x,,,,Ben,John,Y,,1
+8,1,2022/23,2023-01-28,Burgess Hill,5,,,,x,,x,,,Ben,John,Y,,1
+9,1,2022/23,2023-01-28,Burgess Hill,5,Orange,,x,,,,,,Ben,Ryland,Y,,1
+10,1,2022/23,2023-01-28,Burgess Hill,5,,,,x,,x,,,Ben,John,Y,,1
+11,2,2022/23,2023-01-28,Burgess Hill,4,Snap,,x,,,,,,Ben,Ryland,Y,,1
+12,2,2022/23,2023-01-28,Burgess Hill,5,Red,,x,,,x,,,Ben,Ryland,Y,Dropped,1
+13,2,2022/23,2023-01-28,Burgess Hill,5,,,,x,,,,,Ben,John,Y,,1
+14,2,2022/23,2023-01-28,Burgess Hill,5,,,,x,,,,,Ben,John,Y,,1
+1,1,2022/23,2023-02-11,Eastbourne,6,,,,x,,x,,,Ben,Sam,Y,,1
+2,1,2022/23,2023-02-11,Eastbourne,4,Yes,x,,,x,x,,,Ben,Sam,Y,,1
+3,1,2022/23,2023-02-11,Eastbourne,4,Snap,,x,,,,,,Ben,John,Y,,1
+4,1,2022/23,2023-02-11,Eastbourne,6,RD,x,,x,,,,,Ben,Sam,Y,Dropped,1
+5,1,2022/23,2023-02-11,Eastbourne,6,Red,,x,,,,,,Ben,John,Y,Dropped,1
+6,1,2022/23,2023-02-11,Eastbourne,4,Yes,x,,,x,x,,,Ben,Sam,Y,,1
+7,2,2022/23,2023-02-11,Eastbourne,5,,,,x,,x,,,Ben,Sam,Y,,1
+8,2,2022/23,2023-02-11,Eastbourne,5,Plus,x,x,,,x,,,Ben,Sam,Y,,1
+9,2,2022/23,2023-02-11,Eastbourne,4,Snap,,x,,,x,,,Ben,John,Y,,1
+1,1,2022/23,2023-02-18,Pulborough,4,Snap,,x,,,x,,,Ben,Pete,Y,,1
+2,1,2022/23,2023-02-18,Pulborough,4,Yes,x,,,x,x,,,Ben,Sam,Y,,1
+3,1,2022/23,2023-02-18,Pulborough,6,,,,x,,x,,,Ben,Sam,Y,Crusaders,1
+4,1,2022/23,2023-02-18,Pulborough,5,RD,x,,x,,x,,,Ben,Sam,Y,,1
+5,1,2022/23,2023-02-18,Pulborough,4,Yes,x,,,x,x,,,Ben,Sam,Y,,1
+6,1,2022/23,2023-02-18,Pulborough,5,RD,x,,x,,x,,,Ben,Sam,Y,,1
+7,1,2022/23,2023-02-18,Pulborough,5,,,,x,,,,,Ben,Sam,Y,Dropped,1
+8,2,2022/23,2023-02-18,Pulborough,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+9,2,2022/23,2023-02-18,Pulborough,4,Snap,x,x,,,,,,Ben,Pete,Y,,1
+10,2,2022/23,2023-02-18,Pulborough,5,,,,x,,,,,Ben,Sam,Y,,1
+11,2,2022/23,2023-02-18,Pulborough,4,Snap,,x,,,x,,,Ben,Pete,Y,,1
+1,1,2022/23,2023-03-04,Haywards Heath,6,,,,x,,x,,,Ben,Sam,Y,Crusaders,1
+2,1,2022/23,2023-03-04,Haywards Heath,6,Plus,x,x,,,x,,,Ben,Sam,N,Dummy throw,0
+3,1,2022/23,2023-03-04,Haywards Heath,4,Snap,,x,,,,,,Ben,John,Y,,1
+4,1,2022/23,2023-03-04,Haywards Heath,4,Yes,x,,,x,x,,,Ben,Sam,Y,Truck and trailer,1
+5,1,2022/23,2023-03-04,Haywards Heath,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+6,1,2022/23,2023-03-04,Haywards Heath,5,,,,x,,,,,Ben,Sam,Y,Overthrow,1
+7,1,2022/23,2023-03-04,Haywards Heath,6,RD,x,,x,,x,,,Ben,Sam,Y,Not straight,1
+8,1,2022/23,2023-03-04,Haywards Heath,4,Snap,,x,,,x,,,Ben,John,Y,,1
+9,1,2022/23,2023-03-04,Haywards Heath,5,Plus,x,x,,,,,,Ben,Sam,Y,,1
+10,2,2022/23,2023-03-04,Haywards Heath,5,,,,x,,x,,,Ben,Sam,N,Stolen,0
+11,2,2022/23,2023-03-04,Haywards Heath,4,Yes,x,,,x,,,,Ben,Sam,N,Overthrow,0
+12,2,2022/23,2023-03-04,Haywards Heath,5,,,,x,,,,,Ben,Sam,N,Overthrow,0
+1,1,2022/23,2023-04-22,Cheshunt,4,Snap,,x,,,,,,Ben,John,Y,,1
+2,1,2022/23,2023-04-22,Cheshunt,4,Snap,,x,,,,,,Ben,John,Y,,1
+3,2,2022/23,2023-04-22,Cheshunt,6,,,,x,,x,,,Ben,Sam,N,Not straight,0
+4,2,2022/23,2023-04-22,Cheshunt,6,Plus,x,x,,,x,,,Ben,Sam,Y,Tapped back,1
+5,2,2022/23,2023-04-22,Cheshunt,4,No,x,x,,,x,,,Ben,Sam,Y,Tapped back,1
+6,2,2022/23,2023-04-22,Cheshunt,4,Yes,x,,,x,x,,,Ben,Sam,Y,Overthrow,1
+1,1,2022/23,2023-04-29,Wensleydale,4,Snap,,x,,,,,,Ben,John,Y,,1
+2,1,2022/23,2023-04-29,Wensleydale,5,,,,x,,,,,Ben,Sam,Y,,1
+3,1,2022/23,2023-04-29,Wensleydale,5,RD,x,,x,,,,,Ben,Sam,Y,Tapped back,1
+4,1,2022/23,2023-04-29,Wensleydale,4,Yes,x,,x,,x,,,Ben,Sam,N,Overthrow,0
+5,1,2022/23,2023-04-29,Wensleydale,5,Odd +,x,,x,,,,,Ben,John,N,Stolen,0
+6,1,2022/23,2023-04-29,Wensleydale,5,RD,x,,x,,,,,Ben,Sam,Y,Free kick,1
+7,1,2022/23,2023-04-29,Wensleydale,5,,,,x,,,,,Ben,Sam,Y,,1
+8,2,2022/23,2023-04-29,Wensleydale,4,Snap,,x,,,,,,Ben,John,Y,,1
+9,2,2022/23,2023-04-29,Wensleydale,6,,,,x,,,,2,Ben,Sam,Y,,1
+10,2,2022/23,2023-04-29,Wensleydale,4,Yes,x,,,x,,,,Ben,Sam,Y,,1
+11,2,2022/23,2023-04-29,Wensleydale,5,,,,x,,,,,Ben,Sam,Y,,1
+12,2,2022/23,2023-04-29,Wensleydale,6,RD,x,,x,,x,,,Ben,Sam,Y,Crusaders,1
+13,2,2022/23,2023-04-29,Wensleydale,6,,,,x,,x,,,Ben,Sam,N,Not straight,0
