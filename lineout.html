@@ -2,7 +2,7 @@
 <html>
 <head>
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <title>Rugby Lineouts</title>
     <style>
@@ -38,10 +38,10 @@
             color: white;
             font-weight: bold;
         }
-        .content-container {
+        /* .content-container {
             overflow-y: auto;
             height: 650px
-        }
+        } */
         .button-group {
             border: 2px solid #111;
             background-color: #fff;
@@ -76,18 +76,9 @@
         </div>
     </div>
 
-    <div id="vis"></div>
-
-    <script type="text/javascript">
-      var spec = "https://github.com/samnlindsay/RugbyResults/blob/master/setup_6_A.html";
-      vegaEmbed('#vis', spec).then(function(result) {
-        // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
-      }).catch(console.error);
-    </script>
+    <div id="setup-chart" class="content-container"></div>
+    <div id="throw-chart" class="content-container"></div>
     
-    <div id="content" class="content-container">
-        <!-- Content will be loaded here -->
-    </div>
 
     <script>
         var n = null;
@@ -115,12 +106,18 @@
 
             // Check if both n and setup have been selected
             if (n !== null && setup !== null) {
-                // Use vegaEmbed to embed vega lite chart from json
+                var spec1 = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/setup_" + n + "_" + setup + ".json";
+                vegaEmbed('#setup-chart', spec1, { actions: false })
+                    .catch(console.error);
 
-                
+                var spec2 = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/throw_" + n + "_" + setup + call + ".json";
+                vegaEmbed('#throw-chart', spec2, { actions: false })
+                    .catch(console.error);
             } else {
-                // Clear the content
-                var contentDiv = document.getElementById('content');
+                // // Clear the content
+                var contentDiv = document.getElementById('setup-chart');
+                contentDiv.innerHTML = '';
+                var contentDiv = document.getElementById('throw-chart');
                 contentDiv.innerHTML = '';
             }
         }
