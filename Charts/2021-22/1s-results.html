@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5.17.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"opacity": 0.7, "axis": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 14, "titleFontSize": 18}, "header": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 18, "titleFontSize": 20, "labelFontWeight": "bold", "orient": "left"}, "legend": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 14, "titleFontSize": 14}, "title": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "fontSize": 24, "fontWeight": "bold", "anchor": "middle", "align": "center"}, "axisX": {"labelAngle": 0}, "facet": {"title": null, "header": {"title": null}, "font": "Helvetica Neue, Helvetica, Arial, sans-serif", "align": {"row": "each", "column": "all"}}, "resolve": {"scale": {"y": "independent", "facet": "independent"}}, "background": "aliceblue"}, "layer": [{"mark": {"type": "bar", "point": true}, "encoding": {"color": {"field": "Result", "legend": {"offset": 20, "padding": 10, "strokeColor": "black"}, "scale": {"domain": ["W", "L"], "range": ["darkgreen", "red"]}, "type": "nominal"}, "x": {"axis": {"offset": 5, "orient": "bottom"}, "field": "PF", "title": "Points", "type": "quantitative"}, "x2": {"field": "PA"}, "y": {"axis": {"domain": false, "grid": false, "offset": 15, "ticks": false, "title": null}, "field": "Game", "sort": null, "type": "nominal"}}}, {"mark": {"type": "text", "align": "right", "color": "black", "dx": -2, "dy": 0}, "encoding": {"text": {"field": "loser", "type": "nominal"}, "x": {"axis": {"offset": 5, "orient": "top"}, "field": "loser", "title": null, "type": "quantitative"}, "y": {"field": "Game", "sort": null, "type": "nominal"}}}, {"mark": {"type": "text", "align": "left", "color": "black", "dx": 2, "dy": 0}, "encoding": {"text": {"field": "winner", "type": "nominal"}, "x": {"axis": {"offset": 5, "orient": "top"}, "field": "winner", "title": null, "type": "quantitative"}, "y": {"field": "Game", "sort": null, "type": "nominal"}}}], "data": {"name": "data-3b1571ad99f33272ffb4ae56eb01b8bc"}, "title": {"text": "1st XV Results", "offset": 20}, "$schema": "https://vega.github.io/schema/vega-lite/v5.17.0.json", "datasets": {"data-3b1571ad99f33272ffb4ae56eb01b8bc": [{"Season": "2021/22", "Competition": "Friendly", "Opposition": "London Irish", "Score": "33 - 10", "Squad": "1st", "Home/Away": "Away", "Game": "London Irish (A)", "PF": 10, "PA": 33, "Result": "L", "loser": 10, "winner": 33}, {"Season": "2021/22", "Competition": "Friendly", "Opposition": "Horsham", "Score": "56 - 26", "Squad": "1st", "Home/Away": "Away", "Game": "Horsham (A)", "PF": 26, "PA": 56, "Result": "L", "loser": 26, "winner": 56}, {"Season": "2021/22", "Competition": "Friendly", "Opposition": "Purley John Fisher", "Score": "19 - 33", "Squad": "1st", "Home/Away": "Home", "Game": "Purley John Fisher (H)", "PF": 19, "PA": 33, "Result": "L", "loser": 19, "winner": 33}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Eastbourne", "Score": "47 - 0", "Squad": "1st", "Home/Away": "Home", "Game": "Eastbourne (H)", "PF": 47, "PA": 0, "Result": "W", "loser": 0, "winner": 47}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Hellingly", "Score": "12 - 27", "Squad": "1st", "Home/Away": "Away", "Game": "Hellingly (A)", "PF": 27, "PA": 12, "Result": "W", "loser": 12, "winner": 27}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Burgess Hill", "Score": "64 - 15", "Squad": "1st", "Home/Away": "Home", "Game": "Burgess Hill (H)", "PF": 64, "PA": 15, "Result": "W", "loser": 15, "winner": 64}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Lewes", "Score": "87 - 10", "Squad": "1st", "Home/Away": "Home", "Game": "Lewes (H)", "PF": 87, "PA": 10, "Result": "W", "loser": 10, "winner": 87}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Uckfield", "Score": "43 - 0", "Squad": "1st", "Home/Away": "Home", "Game": "Uckfield (H)", "PF": 43, "PA": 0, "Result": "W", "loser": 0, "winner": 43}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Seaford", "Score": "21 - 36", "Squad": "1st", "Home/Away": "Away", "Game": "Seaford (A)", "PF": 36, "PA": 21, "Result": "W", "loser": 21, "winner": 36}, {"Season": "2021/22", "Competition": "Friendly", "Opposition": "Horsham", "Score": "44 - 26", "Squad": "1st", "Home/Away": "Home", "Game": "Horsham (H)", "PF": 44, "PA": 26, "Result": "W", "loser": 26, "winner": 44}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Lewes", "Score": "12 - 36", "Squad": "1st", "Home/Away": "Away", "Game": "Lewes (A)", "PF": 36, "PA": 12, "Result": "W", "loser": 12, "winner": 36}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Uckfield", "Score": "19 - 21", "Squad": "1st", "Home/Away": "Away", "Game": "Uckfield (A)", "PF": 21, "PA": 19, "Result": "W", "loser": 19, "winner": 21}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Seaford", "Score": "67 - 5", "Squad": "1st", "Home/Away": "Home", "Game": "Seaford (H)", "PF": 67, "PA": 5, "Result": "W", "loser": 5, "winner": 67}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Eastbourne", "Score": "3 - 36", "Squad": "1st", "Home/Away": "Away", "Game": "Eastbourne (A)", "PF": 36, "PA": 3, "Result": "W", "loser": 3, "winner": 36}, {"Season": "2021/22", "Competition": "Sussex 1", "Opposition": "Burgess Hill", "Score": "30 - 64", "Squad": "1st", "Home/Away": "Away", "Game": "Burgess Hill (A)", "PF": 64, "PA": 30, "Result": "W", "loser": 30, "winner": 64}, {"Season": "2021/22", "Competition": "Sussex Cup", "Opposition": "Eastbourne", "Score": "31 - 35", "Squad": "1st", "Home/Away": "Away", "Game": "Eastbourne (A)", "PF": 35, "PA": 31, "Result": "W", "loser": 31, "winner": 35}, {"Season": "2021/22", "Competition": "Sussex Cup", "Opposition": "Uckfield ", "Score": "57 - 7", "Squad": "1st", "Home/Away": "Away", "Game": "Uckfield (H) ", "PF": 7, "PA": 57, "Result": "L", "loser": 7, "winner": 57}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>

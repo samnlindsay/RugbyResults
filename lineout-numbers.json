@@ -1,0 +1,94 @@
+{
+  "facet": {"field": "Season", "header": null},
+  "spec": {
+    "layer": [
+      {
+        "mark": {"type": "bar", "opacity": 0.7},
+        "encoding": {
+          "color": {
+            "field": "Numbers",
+            "legend": null,
+            "type": "nominal"
+          },
+          "tooltip": [
+            {"field": "Numbers", "type": "nominal"},
+            {"field": "Success", "format": ".0%", "type": "nominal"},
+            {"field": "Total", "type": "quantitative"}
+          ],
+          "x": {
+            "field": "Numbers",
+            "title": "Lineout Numbers",
+            "type": "nominal"
+          },
+          "y": {
+            "axis": {"orient": "left"},
+            "field": "Proportion",
+            "type": "quantitative"
+          }
+        }
+      },
+      {
+        "mark": {"type": "line", "point": true},
+        "encoding": {
+          "color": {"value": "black"},
+          "x": {
+            "field": "Numbers",
+            "title": "Lineout Numbers",
+            "type": "nominal"
+          },
+          "y": {
+            "axis": {"format": ".0%", "orient": "right"},
+            "field": "Success",
+            "title": "Success Rate",
+            "type": "quantitative"
+          }
+        }
+      },
+      {
+        "mark": {"type": "text", "yOffset": 15, "fontSize": 14},
+        "encoding": {
+          "x": {
+            "field": "Numbers",
+            "title": "Lineout Numbers",
+            "type": "nominal"
+          },
+          "y": {
+            "axis": {"format": ".0%", "orient": "right"},
+            "field": "Success",
+            "title": "Success Rate",
+            "type": "quantitative"
+          },
+          "text": {"field": "Success", "format": ".0%"}
+        }
+      },
+      {
+        "mark": {
+          "type": "text",
+          "align": "center",
+          "baseline": "bottom",
+          "dy": -5
+        },
+        "encoding": {
+          "color": {"value": "black"},
+          "text": {"field": "SuccessText", "type": "nominal"},
+          "tooltip": [
+            {"field": "Numbers", "type": "nominal"},
+            {"field": "Success", "format": ".0%", "type": "nominal"},
+            {"field": "Total", "type": "quantitative"}
+          ],
+          "x": {"field": "Numbers", "title": null, "type": "nominal"},
+          "y": {
+            "axis": {"orient": "left"},
+            "field": "Proportion",
+            "type": "quantitative"
+          }
+        }
+      }
+    ],
+    "height": 500,
+    "width": {"step": 50}
+  },
+  "resolve": {"scale": {"color": "shared", "y": "shared"}},
+  "title": "Lineout Numbers",
+  "data": {"values": []}
+}

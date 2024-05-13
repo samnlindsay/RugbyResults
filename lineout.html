@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <title>Rugby Lineouts</title>
+    <style>
+
+        body,
+            html {
+                height: 100%;
+                overflow: hidden;
+            }
+        
+        .selections {
+            background-color: #ccddff;
+            padding: 10px;
+            z-index: 1;
+            font: 16px sans-serif;
+            height: auto;
+
+        }
+
+        .tablinks {
+            width: 100%;
+            padding: 10px;
+            cursor: pointer;
+            margin-bottom: 3px;
+            background-color: #ccc;
+            border: 2px solid #111;
+            color: #111;
+            font-size: 16px;
+            border-radius: 6px;
+        }
+        .active {
+            background-color: blue;
+            color: white;
+            font-weight: bold;
+        }
+        .content-container {
+            overflow-y: auto;
+            height: 650px
+        }
+        .button-group {
+            border: 2px solid #111;
+            background-color: #fff;
+            display: inline-block;
+            vertical-align: top;
+            width: 150px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="selections">
+        <h1>Rugby Lineouts</h1>
+        <div class="button-group">
+            <h2>Numbers</h2>
+            <button class="tablinks" onclick="select('n', this, '6')">6-man</button>
+            <button class="tablinks" onclick="select('n', this, '7')">7-man</button>
+        </div>
+        <div class="button-group">
+            <h2>Setup</h2>
+            <button class="tablinks" onclick="select('setup', this, 'A')">Auckland</button>
+            <button class="tablinks" onclick="select('setup', this, 'C')">Canterbury</button>
+            <button class="tablinks" onclick="select('setup', this, 'H')">Highlanders</button>
+            <button class="tablinks" onclick="select('setup', this, 'W')">Waikato</button>
+        </div>
+        <div class="button-group">
+            <h2>Target</h2>
+            <button class="tablinks" style="width: 40px;" onclick="select('call', this, '1')">1</button><br>
+            <button class="tablinks" style="width: 40px;" onclick="select('call', this, '2')">2</button><br>
+            <button class="tablinks" style="width: 40px;" onclick="select('call', this, '3')">3</button>
+        </div>
+    </div>
+
+    <div id="vis"></div>
+
+    <script type="text/javascript">
+      var spec = "https://github.com/samnlindsay/RugbyResults/blob/master/setup_6_A.html";
+      vegaEmbed('#vis', spec).then(function(result) {
+        // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
+      }).catch(console.error);
+    </script>
+    
+    <div id="content" class="content-container">
+        <!-- Content will be loaded here -->
+    </div>
+
+    <script>
+        var n = null;
+        var setup = null;
+        var call = '1';
+
+        function select(type, element, value) {
+            // Remove active class from all buttons of the same type
+            var buttons = element.parentNode.querySelectorAll('.tablinks');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove('active');
+            }
+
+            // Add active class to the clicked button
+            element.classList.add('active');
+
+            // Update the corresponding variable
+            if (type === 'n') {
+                n = value;
+            } else if (type === 'setup') {
+                setup = value;
+            } else if (type === 'call') {
+                call = value;
+            }
+
+            // Check if both n and setup have been selected
+            if (n !== null && setup !== null) {
+                // Use vegaEmbed to embed vega lite chart from json
+
+                
+            } else {
+                // Clear the content
+                var contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = '';
+            }
+        }
+    </script>
+</body>
+</html>

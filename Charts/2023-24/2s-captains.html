@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5.17.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"opacity": 0.7, "axis": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 14, "titleFontSize": 18}, "header": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 18, "titleFontSize": 20, "labelFontWeight": "bold", "orient": "left"}, "legend": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 14, "titleFontSize": 12, "titlePadding": 5, "fillColor": "white", "strokeColor": "black", "padding": 10, "titleFontWeight": "lighter", "titleFontStyle": "italic", "titleColor": "gray"}, "title": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "fontSize": 24, "fontWeight": "bold", "anchor": "middle", "align": "center", "titlePadding": 20, "subtitlePadding": 10, "subtitleFontWeight": "lighter", "subtitleFontSize": 12, "subtitleColor": "gray", "subtitleFontStyle": "italic"}, "axisX": {"labelAngle": 0}, "facet": {"title": null, "header": {"title": null}, "font": "Helvetica Neue, Helvetica, Arial, sans-serif", "align": {"row": "each", "column": "all"}}, "resolve": {"scale": {"y": "independent", "facet": "independent"}}, "background": "aliceblue"}, "data": {"name": "data-c2e35486cf42ede34a92a08a901461f3"}, "mark": {"type": "bar"}, "encoding": {"color": {"field": "Role", "legend": {"orient": "bottom-right", "title": null}, "scale": {"domain": ["Captain", "VC"], "range": ["darkblue", "lightblue"]}, "type": "nominal"}, "x": {"aggregate": "count", "sort": {"field": "Role", "order": "descending"}, "title": "Games", "type": "quantitative"}, "y": {"field": "Player", "sort": "-x", "title": null, "type": "nominal"}}, "title": {"text": "2nd XV Captains", "subtitle": "League & Cup Captains and Vice-Captains"}, "width": 400, "$schema": "https://vega.github.io/schema/vega-lite/v5.17.0.json", "datasets": {"data-c2e35486cf42ede34a92a08a901461f3": [{"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Ben Watkinson"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Ryan Morlen"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Mark Oliver"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Ben Watkinson"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Ben Watkinson"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Ben Watkinson"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Ben Watkinson"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Ben Watkinson"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Max Crawley-Moore"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Ben Watkinson"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Ben Watkinson"}, {"Season": "2023/24", "GameType": "League", "Role": "Captain", "Player": "Ben Watkinson"}, {"Season": "2023/24", "GameType": "League", "Role": "VC", "Player": "Jack Andrews"}, {"Season": "2023/24", "GameType": "League", "Role": "VC", "Player": "Tim Morris"}, {"Season": "2023/24", "GameType": "League", "Role": "VC", "Player": "Tim Morris"}, {"Season": "2023/24", "GameType": "League", "Role": "VC", "Player": "Jack Andrews"}, {"Season": "2023/24", "GameType": "League", "Role": "VC", "Player": "Mark Oliver"}, {"Season": "2023/24", "GameType": "League", "Role": "VC", "Player": "James Funnell"}, {"Season": "2023/24", "GameType": "League", "Role": "VC", "Player": "Max Crawley-Moore"}, {"Season": "2023/24", "GameType": "League", "Role": "VC", "Player": "Max Crawley-Moore"}, {"Season": "2023/24", "GameType": "League", "Role": "VC", "Player": "Max Crawley-Moore"}, {"Season": "2023/24", "GameType": "League", "Role": "VC", "Player": "Max Crawley-Moore"}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>
