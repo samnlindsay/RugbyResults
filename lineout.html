@@ -11,6 +11,7 @@
             html {
                 height: 100%;
                 overflow: hidden;
+                font-family: sans-serif;
             }
         
         .selections {
@@ -22,22 +23,56 @@
 
         }
 
+        .button-text {
+            font-size: 12px;
+            font-weight:lighter;
+            padding-bottom: 10px;
+        }
+
         .tablinks {
             width: 100%;
             padding: 10px;
             cursor: pointer;
             margin-bottom: 3px;
-            background-color: #ccc;
+            background-color: #03c2;
             border: 2px solid #111;
             color: #111;
-            font-size: 16px;
+            font-size: 20px;
             border-radius: 6px;
         }
         .active {
+            background-color: #03c;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Set active background-color for id="Hot" */
+        #Hot.active {
+            background-color: red;
+            color: white;
+            font-weight: bold;
+        }
+        #Flyby.active {
+            background-color: orange;
+            color: white;
+            font-weight: bold;
+        }
+        #Crusaders.active {
+            background-color: orange;
+            color: white;
+            font-weight: bold;
+        }
+        #Transfer.active {
             background-color: blue;
             color: white;
             font-weight: bold;
         }
+        #Cold.active {
+            background-color: blue;
+            color: white;
+            font-weight: bold;
+        }
+
         /* .content-container {
             overflow-y: auto;
             height: 650px
@@ -49,41 +84,93 @@
             vertical-align: top;
             width: 150px;
             padding: 10px;
+            padding-top: 0px;
+            border-radius: 10px;
+        }
+
+        /* Add style options for disabled button */
+        .tablinks:disabled {
+            cursor: not-allowed;
+            opacity: 0.2;
+        }
+
+        .chart-container {
+            padding: 10px;
+            border: 2px solid #111;
+            background-color: #fff;
+            margin: 10px;
             border-radius: 10px;
         }
     </style>
 </head>
 <body>
     <div class="selections">
-        <h1>Rugby Lineouts</h1>
+        <h1>East Grinstead RFC Lineout Viewer</h1>
+        <p>Select the options to view the lineout setup and throw:</p>
         <div class="button-group">
-            <h2>Numbers</h2>
+            <h2 style="text-align: center;">Numbers</h2>
+            <div class="button-text">Number of players in the lineout</div>
+            <button class="tablinks" onclick="select('n', this, '4')">4-man</button>
+            <button class="tablinks" onclick="select('n', this, '5')">5-man</button>
             <button class="tablinks" onclick="select('n', this, '6')">6-man</button>
             <button class="tablinks" onclick="select('n', this, '7')">7-man</button>
         </div>
         <div class="button-group">
-            <h2>Setup</h2>
+            <h2 style="text-align: center;">Receiver</h2>
+            <div class="button-text">Optional player standing off the lineout (usually the 9)</div>
+            <button class="tablinks active" onclick="select('receiver', this, '')">Scrum Half</button>
+            <button class="tablinks" onclick="select('receiver', this, '+1')">Forward</button>
+            <button class="tablinks" onclick="select('receiver', this, 'N')">None</button>
+        </div>
+        <div class="button-group">
+            <h2 style="text-align: center;">Setup</h2>
+            <div class="button-text">How we line up to show the defence a different picture</div>
             <button class="tablinks" onclick="select('setup', this, 'A')">Auckland</button>
             <button class="tablinks" onclick="select('setup', this, 'C')">Canterbury</button>
             <button class="tablinks" onclick="select('setup', this, 'H')">Highlanders</button>
             <button class="tablinks" onclick="select('setup', this, 'W')">Waikato</button>
         </div>
-        <div class="button-group">
-            <h2>Target</h2>
-            <button class="tablinks" style="width: 40px;" onclick="select('call', this, '1')">1</button><br>
-            <button class="tablinks" style="width: 40px;" onclick="select('call', this, '2')">2</button><br>
-            <button class="tablinks" style="width: 40px;" onclick="select('call', this, '3')">3</button>
+        <div class="button-group" style="width: 150px;">
+            <h2 style="text-align: center;">Target</h2>
+            <div class="button-text">Where we jump: Front (2), middle (3), or back (1)</div>
+            <button class="tablinks" onclick="select('call', this, '1')">1</button><br>
+            <button class="tablinks" onclick="select('call', this, '2')">2</button><br>
+            <button class="tablinks" onclick="select('call', this, '3')">3</button>
+        </div>
+        <div class="button-group" style="width: 180px;">
+            <h2 style="text-align: center;">Play</h2>
+            <div class="button-text">First phase: Off the top (Hot), maul (Cold) or hybrid options</div>
+            <button class="tablinks" id="Hot" onclick="select('play', this, 'Hot')">Hot</button><br>
+            <button class="tablinks" id="Flyby" onclick="select('play', this, 'Flyby')">Flyby</button><br>
+            <button class="tablinks" id="Crusaders" onclick="select('play', this, 'Crusaders')">Crusaders</button>
+            <button class="tablinks" id="Transfer" onclick="select('play', this, 'Transfer')">Transfer</button>
+            <button class="tablinks" id="Cold" onclick="select('play', this, 'Cold')">Cold</button>
         </div>
     </div>
 
-    <div id="setup-chart" class="content-container"></div>
-    <div id="throw-chart" class="content-container"></div>
-    
+    <div class="container" style="width: 100%; display: flex; justify-content:left">
+        <div class="chart-container">
+            <h2 style="text-align: center;">Setup</h2>
+            <!-- Add accompanying text, dependent on which setup is selected -->
+            <p id="setup-text"></p>
+
+            <div id="setup-chart"></div>
+        </div>
+        <div class="chart-container">
+            <h2 style="text-align: center;">Throw</h2>
+            <div id="throw-chart"></div>
+        </div>
+        <div class="chart-container">
+            <h2 style="text-align: center;">Play</h2>
+            <div id="play-chart"></div>
+        </div>
+    </div>
 
     <script>
         var n = null;
         var setup = null;
-        var call = '1';
+        var call = null;
+        var receiver = '';
 
         function select(type, element, value) {
             // Remove active class from all buttons of the same type
@@ -102,17 +189,117 @@
                 setup = value;
             } else if (type === 'call') {
                 call = value;
+            } else if (type === 'receiver') {
+                receiver = value;
+            } else if (type === 'play') {
+                play = value;
+            }
+
+            // Update the setup text
+            var setupText = document.getElementById('setup-text');
+
+            if (setup === 'A') {
+                setupText.innerHTML = '<b>Auckland</b> has no walk-in pod, and no obvious target. The lineout is initiated by the dummy jumper at the front (D)';
+            } else if (setup === 'C') {
+                setupText.innerHTML = 'Canterbury setup: 1, 3, 5, 7, 9, 11, 13';
+            } else if (setup === 'H') {
+                setupText.innerHTML = 'Highlanders setup: 1, 2, 3, 4, 5, 6, 7';
+            } else if (setup === 'W') {
+                setupText.innerHTML = 'Waikato setup: 1, 2, 3, 4, 5, 6, 7';
+            }
+
+            var noneButton = document.querySelector('.tablinks[onclick="select(\'receiver\', this, \'N\')"]');
+            var forwardButton = document.querySelector('.tablinks[onclick="select(\'receiver\', this, \'+1\')"]');
+            var scrumHalfButton = document.querySelector('.tablinks[onclick="select(\'receiver\', this, \'\')"]');
+
+            var hotButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Hot\')"]');
+            var flybyButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Flyby\')"]');
+            var crusadersButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Crusaders\')"]');
+            var transferButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Transfer\')"]');
+            var coldButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Cold\')"]');
+
+            // If n === 4, disable the None receiver button, all Setup buttons and Flyby and Crusaders buttons (and remove active class from them)
+            var setupButtons = document.querySelectorAll('.tablinks[onclick^="select(\'setup\', this"]');
+            var targetButtons = document.querySelectorAll('.tablinks[onclick^="select(\'call\', this"]');
+            if (n === '4') {
+                noneButton.disabled = true;
+                noneButton.classList.remove('active');
+                crusadersButton.disabled = true;
+                crusadersButton.classList.remove('active');
+                transferButton.disabled = true;
+                transferButton.classList.remove('active');
+                for (i = 0; i < setupButtons.length; i++) {
+                    setupButtons[i].disabled = true;
+                    setupButtons[i].classList.remove('active');
+                }
+                for (i = 0; i < targetButtons.length; i++) {
+                    targetButtons[i].disabled = true;
+                    targetButtons[i].classList.remove('active');
+                }
+
+                if (receiver === '+1') {
+                    coldButton.classList.add('active');
+                    hotButton.classList.remove('active');
+                    scrumHalfButton.classList.remove('active');
+                    forwardButton.classList.add('active');
+                }
+                if (receiver === '') {
+                    hotButton.classList.add('active');
+                    coldButton.classList.remove('active');
+                    forwardButton.classList.remove('active');
+                    scrumHalfButton.classList.add('active');
+                }
+                if (play === 'Hot') {
+                    scrumHalfButton.classList.add('active');
+                    forwardButton.classList.remove('active');
+                    coldButton.classList.remove('active');
+                    hotButton.classList.add('active');
+                }
+                if (play === 'Cold') {
+                    forwardButton.classList.add('active');
+                    scrumHalfButton.classList.remove('active');
+                    hotButton.classList.remove('active');
+                    coldButton.classList.add('active');
+                }
+
+
+            } else {
+                noneButton.disabled = false;
+                flybyButton.disabled = false;
+                crusadersButton.disabled = false;
+                transferButton.disabled = false;
+                for (i = 0; i < setupButtons.length; i++) {
+                    setupButtons[i].disabled = false;
+                }
+                for (i = 0; i < targetButtons.length; i++) {
+                    targetButtons[i].disabled = false;
+                }
+            }
+
+            // If n === 7, disable the forward receiver button
+            if (n === '7') {
+                forwardButton.classList.remove('active');
+                forwardButton.disabled = true;
+            } else {
+                forwardButton.disabled = false;
+                
             }
 
             // Check if both n and setup have been selected
-            if (n !== null && setup !== null) {
+            if (n !== null && setup !== null && receiver !== null) {
                 var spec1 = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/setup_" + n + "_" + setup + ".json";
                 vegaEmbed('#setup-chart', spec1, { actions: false })
                     .catch(console.error);
+                
+                if (call !== null) {
+                    var spec2 = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/throw_" + n + "_" + setup + call + ".json";
+                    vegaEmbed('#throw-chart', spec2, { actions: false })
+                        .catch(console.error);
+                } else {
+                    var contentDiv = document.getElementById('throw-chart');
+                    contentDiv.innerHTML = '';
+                }
 
-                var spec2 = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/throw_" + n + "_" + setup + call + ".json";
-                vegaEmbed('#throw-chart', spec2, { actions: false })
-                    .catch(console.error);
             } else {
                 // // Clear the content
                 var contentDiv = document.getElementById('setup-chart');
