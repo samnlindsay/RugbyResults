@@ -120,7 +120,7 @@
             <div class="button-text">Optional player standing off the lineout (usually the 9)</div>
             <button class="tablinks active" onclick="select('receiver', this, '')">Scrum Half</button>
             <button class="tablinks" onclick="select('receiver', this, '+1')">Forward</button>
-            <button class="tablinks" onclick="select('receiver', this, 'N')">None</button>
+            <button class="tablinks" onclick="select('receiver', this, 'no9')">None</button>
         </div>
         <div class="button-group">
             <h2 style="text-align: center;">Setup</h2>
@@ -208,91 +208,91 @@
                 setupText.innerHTML = 'Waikato setup: 1, 2, 3, 4, 5, 6, 7';
             }
 
-            var noneButton = document.querySelector('.tablinks[onclick="select(\'receiver\', this, \'N\')"]');
-            var forwardButton = document.querySelector('.tablinks[onclick="select(\'receiver\', this, \'+1\')"]');
-            var scrumHalfButton = document.querySelector('.tablinks[onclick="select(\'receiver\', this, \'\')"]');
+            // var noneButton = document.querySelector('.tablinks[onclick="select(\'receiver\', this, \'no9\')"]');
+            // var forwardButton = document.querySelector('.tablinks[onclick="select(\'receiver\', this, \'+1\')"]');
+            // var scrumHalfButton = document.querySelector('.tablinks[onclick="select(\'receiver\', this, \'\')"]');
 
-            var hotButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Hot\')"]');
-            var flybyButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Flyby\')"]');
-            var crusadersButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Crusaders\')"]');
-            var transferButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Transfer\')"]');
-            var coldButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Cold\')"]');
+            // var hotButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Hot\')"]');
+            // var flybyButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Flyby\')"]');
+            // var crusadersButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Crusaders\')"]');
+            // var transferButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Transfer\')"]');
+            // var coldButton = document.querySelector('.tablinks[onclick="select(\'play\', this, \'Cold\')"]');
 
-            // If n === 4, disable the None receiver button, all Setup buttons and Flyby and Crusaders buttons (and remove active class from them)
-            var setupButtons = document.querySelectorAll('.tablinks[onclick^="select(\'setup\', this"]');
-            var targetButtons = document.querySelectorAll('.tablinks[onclick^="select(\'call\', this"]');
-            if (n === '4') {
-                noneButton.disabled = true;
-                noneButton.classList.remove('active');
-                crusadersButton.disabled = true;
-                crusadersButton.classList.remove('active');
-                transferButton.disabled = true;
-                transferButton.classList.remove('active');
-                for (i = 0; i < setupButtons.length; i++) {
-                    setupButtons[i].disabled = true;
-                    setupButtons[i].classList.remove('active');
-                }
-                for (i = 0; i < targetButtons.length; i++) {
-                    targetButtons[i].disabled = true;
-                    targetButtons[i].classList.remove('active');
-                }
+            // // If n === 4, disable the None receiver button, all Setup buttons and Flyby and Crusaders buttons (and remove active class from them)
+            // var setupButtons = document.querySelectorAll('.tablinks[onclick^="select(\'setup\', this"]');
+            // var targetButtons = document.querySelectorAll('.tablinks[onclick^="select(\'call\', this"]');
+            // if (n === '4') {
+            //     noneButton.disabled = true;
+            //     noneButton.classList.remove('active');
+            //     crusadersButton.disabled = true;
+            //     crusadersButton.classList.remove('active');
+            //     transferButton.disabled = true;
+            //     transferButton.classList.remove('active');
+            //     for (i = 0; i < setupButtons.length; i++) {
+            //         setupButtons[i].disabled = true;
+            //         setupButtons[i].classList.remove('active');
+            //     }
+            //     for (i = 0; i < targetButtons.length; i++) {
+            //         targetButtons[i].disabled = true;
+            //         targetButtons[i].classList.remove('active');
+            //     }
 
-                if (receiver === '+1') {
-                    coldButton.classList.add('active');
-                    hotButton.classList.remove('active');
-                    scrumHalfButton.classList.remove('active');
-                    forwardButton.classList.add('active');
-                }
-                if (receiver === '') {
-                    hotButton.classList.add('active');
-                    coldButton.classList.remove('active');
-                    forwardButton.classList.remove('active');
-                    scrumHalfButton.classList.add('active');
-                }
-                if (play === 'Hot') {
-                    scrumHalfButton.classList.add('active');
-                    forwardButton.classList.remove('active');
-                    coldButton.classList.remove('active');
-                    hotButton.classList.add('active');
-                }
-                if (play === 'Cold') {
-                    forwardButton.classList.add('active');
-                    scrumHalfButton.classList.remove('active');
-                    hotButton.classList.remove('active');
-                    coldButton.classList.add('active');
-                }
+            //     if (receiver === '+1') {
+            //         coldButton.classList.add('active');
+            //         hotButton.classList.remove('active');
+            //         scrumHalfButton.classList.remove('active');
+            //         forwardButton.classList.add('active');
+            //     }
+            //     if (receiver === '') {
+            //         hotButton.classList.add('active');
+            //         coldButton.classList.remove('active');
+            //         forwardButton.classList.remove('active');
+            //         scrumHalfButton.classList.add('active');
+            //     }
+            //     if (play === 'Hot') {
+            //         scrumHalfButton.classList.add('active');
+            //         forwardButton.classList.remove('active');
+            //         coldButton.classList.remove('active');
+            //         hotButton.classList.add('active');
+            //     }
+            //     if (play === 'Cold') {
+            //         forwardButton.classList.add('active');
+            //         scrumHalfButton.classList.remove('active');
+            //         hotButton.classList.remove('active');
+            //         coldButton.classList.add('active');
+            //     }
 
 
-            } else {
-                noneButton.disabled = false;
-                flybyButton.disabled = false;
-                crusadersButton.disabled = false;
-                transferButton.disabled = false;
-                for (i = 0; i < setupButtons.length; i++) {
-                    setupButtons[i].disabled = false;
-                }
-                for (i = 0; i < targetButtons.length; i++) {
-                    targetButtons[i].disabled = false;
-                }
-            }
+            // } else {
+            //     noneButton.disabled = false;
+            //     flybyButton.disabled = false;
+            //     crusadersButton.disabled = false;
+            //     transferButton.disabled = false;
+            //     for (i = 0; i < setupButtons.length; i++) {
+            //         setupButtons[i].disabled = false;
+            //     }
+            //     for (i = 0; i < targetButtons.length; i++) {
+            //         targetButtons[i].disabled = false;
+            //     }
+            // }
 
-            // If n === 7, disable the forward receiver button
-            if (n === '7') {
-                forwardButton.classList.remove('active');
-                forwardButton.disabled = true;
-            } else {
-                forwardButton.disabled = false;
+            // // If n === 7, disable the forward receiver button
+            // if (n === '7') {
+            //     forwardButton.classList.remove('active');
+            //     forwardButton.disabled = true;
+            // } else {
+            //     forwardButton.disabled = false;
                 
-            }
+            // }
 
             // Check if both n and setup have been selected
             if (n !== null && setup !== null && receiver !== null) {
-                var spec1 = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/setup_" + n + "_" + setup + ".json";
+                var spec1 = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/setup_" + n + receiver + "_" + setup + ".json";
                 vegaEmbed('#setup-chart', spec1, { actions: false })
                     .catch(console.error);
                 
                 if (call !== null) {
-                    var spec2 = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/throw_" + n + "_" + setup + call + ".json";
+                    var spec2 = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/throw_" + n + receiver + "_" + setup + call + ".json";
                     vegaEmbed('#throw-chart', spec2, { actions: false })
                         .catch(console.error);
                 } else {
