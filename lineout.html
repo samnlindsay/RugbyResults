@@ -185,6 +185,7 @@
             align-items: center;
             justify-content: space-between;
             min-height: 200px;
+            overflow: scroll;
         }
         
 
@@ -256,7 +257,7 @@
                     <button class="button" style="border-top-right-radius: 0px; border-bottom-right-radius: 0px;margin: 0px;" onclick="select('n', this, '6'); select('receiver', this, '')"">6</button>
                     <button class=" button" style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;margin: 0px; border-left: transparent;" onclick="select('n', this, '6'); select('receiver', this, '+1')">6+1</button>
                 </div>
-                <button class="button four" onclick="select('n', this, '7'); select('receiver', this, '')" >7</button>
+                <button class="button four active" onclick="select('n', this, '7'); select('receiver', this, '')" >7</button>
             </div>
         </div>
 
@@ -294,10 +295,10 @@
             <div class="box-title">Play</div>
             <div class="box-text">How we play off the lineout</div>
             <div class="button-group">
-                <button class="button five" style="padding: 6.5px;" id="Hot" onclick="select('play', this, 'Hot')">Hot</button>
-                <button class="button five" style="padding: 6.5px;" id="Flyby" onclick="select('play', this, 'Flyby')">Flyby</button>
+                <button class="button five active" style="padding: 6.5px;" id="Hot" onclick="select('play', this, 'Hot')">Hot</button>
+                <button class="button five" disabled style="padding: 6.5px;" id="Flyby" onclick="select('play', this, 'Flyby')">Flyby</button>
                 <button class="button five" style="padding: 6.5px;" id="Crusaders" onclick="select('play', this, 'Crusaders')">Crusaders</button>
-                <button class="button five" style="padding: 6.5px;" id="Transfer" onclick="select('play', this, 'Transfer')">Transfer</button>
+                <button class="button five" disabled style="padding: 6.5px;" id="Transfer" onclick="select('play', this, 'Transfer')">Transfer</button>
                 <button class="button five" style="padding: 6.5px;" id="Cold" onclick="select('play', this, 'Cold')">Cold</button>
             </div>
         </div>
@@ -347,7 +348,6 @@
             </div>
             <div class="chart-and-text">
                 <div class="chart-text" id="play-text"></div>
-                <div style="text-align: center;"><img src="https://pngimg.com/uploads/under_construction/under_construction_PNG40.png" alt="Under Construction" style="width: 50%"></div>
                 <div class="chart" id="play-chart" ></div>
             </div>  
         </div>
@@ -355,12 +355,12 @@
     </div>
 
     <script>
-        var n = null;
+        var n = 7;
         var setup = null;
         var call = null;
         var receiver = '';
         var receiver_yn = true;
-        var play = null;
+        var play = "Hot";
 
         function select(type, element, value) {
             
@@ -522,10 +522,22 @@
                     //     text += "Depending on how the players join the line, W" + call + " can use the middle jumper as a lifter or else in a dummy pod at the " + ((call === '1') ? "front" : "back") + ".";
                     // }
                 }
-                
-
                 throwText.innerHTML = text;
             }
+
+            ///////////////////////////
+            // PLAY TEXT DESCRIPTION //
+            ///////////////////////////
+            var playText = document.getElementById("play-text");
+            var text = ""
+            if (play === "Hot") {
+                text = "<p>This is the default play off the top of the lineout to the scrum half. The half backs really don't want front ball at the lineout ("+ setup + call +") because it puts more pressure on longer passes.</p>";
+            } else if (play === "Crusaders") {
+                text = "<p><b>Crusaders</b> is a play that initiates a maul, but leaves forward options on one or both sides to carry into the space vacated by defenders joining the maul.</p>";
+            } else if (play === "Cold") {
+                text = "<p>With or without a scrum half, any lineout can form a maul. The nearest forward to the jumping pod will be first over the ball to initiate the maul, before others join to form a long, narrow formation.</p>";
+            }
+            playText.innerHTML = text;
 
             ///////////////////////////
             //      LOAD CHARTS      //
@@ -558,23 +570,24 @@
                     vegaEmbed("#throw-chart", spec2, { actions: false }).catch(
                         console.error
                     );
-                    // if (play !== null) {
-                    //     var spec3 =
-                    //         "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/play_" +
-                    //         n +
-                    //         (receiver_yn ? receiver : 'no9') +
-                    //         "_" +
-                    //         setup +
-                    //         call +
-                    //         play +
-                    //         ".json";
-                    //     vegaEmbed("#play-chart", spec3, { actions: false }).catch(
-                    //         console.error
-                    //     );
-                    // } else {
-                    //     var contentDiv = document.getElementById("play-chart");
-                    //     contentDiv.innerHTML = "";
-                    // }
+                    if (play !== null) {
+                        var spec3 =
+                            "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/play_" +
+                            n +
+                            (receiver_yn ? receiver : 'no9') +
+                            "_" +
+                            setup +
+                            call +
+                            '_' +
+                            play +
+                            ".json";
+                        vegaEmbed("#play-chart", spec3, { actions: false }).catch(
+                            console.error
+                        );
+                    } else {
+                        var contentDiv = document.getElementById("play-chart");
+                        contentDiv.innerHTML = "";
+                    }
                 } else {
                     var contentDiv = document.getElementById("throw-chart");
                     contentDiv.innerHTML = "";
@@ -592,11 +605,11 @@
         // TEMPORARY - BUTTONS TO DISABLE //
         ////////////////////////////////////
 
-        // Disable all play buttons
-        var playButtons = document.querySelectorAll('.button[onclick^="select(\'play\', this"]');
-        for (var i = 0; i < playButtons.length; i++) {
-            playButtons[i].disabled = true;
-        }
+        // // Disable all play buttons
+        // var playButtons = document.querySelectorAll('.button[onclick^="select(\'play\', this"]');
+        // for (var i = 0; i < playButtons.length; i++) {
+        //     playButtons[i].disabled = true;
+        // }
 
         // Disable 4/4+1 buttons
         var fourPlusOneButton = document.querySelector(
