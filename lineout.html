@@ -542,9 +542,10 @@
             ///////////////////////////
             //      LOAD CHARTS      //
             ///////////////////////////
+            var with_angle = true;
             if (n !== null && setup !== null) {
                 var spec1 =
-                    "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json/setup_" +
+                    "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json" + (with_angle ?  "/angle" : "") + "/setup_" +
                     n +
                     (receiver_yn ? receiver : 'no9') +
                     "_" +
@@ -560,7 +561,7 @@
                     document.getElementById("fullCallText").innerHTML = '<div class="text-box">\"' + numbers + ' ' + fullcall + '\"</div>';
 
                     var spec2 =
-                        "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json/throw_" +
+                        "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json" + (with_angle ? "/angle" : "") + "/throw_" +
                         n +
                         (receiver_yn ? receiver : 'no9') +
                         "_" +
@@ -572,7 +573,7 @@
                     );
                     if (play !== null) {
                         var spec3 =
-                            "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json/play_" +
+                            "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json" + (with_angle ? "/angle" : "") + "/play_" +
                             n +
                             (receiver_yn ? receiver : 'no9') +
                             "_" +

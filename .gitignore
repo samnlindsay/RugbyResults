@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 .httr-oauth
+client_secret.json
+env/
+.log
