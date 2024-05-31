@@ -483,7 +483,7 @@
                 <div class="button-title">Play</div>
                 <div class="button-group">
                     <button class="button four" style="padding: 6.5px;" id="Hot" onclick="select('play', this, 'Hot')">Hot</button>
-                    <button class="button four" disabled style="padding: 6.5px;" id="Flyby" onclick="select('play', this, 'Flyby')">Flyby</button>
+                    <button class="button four" style="padding: 6.5px;" id="Flyby" onclick="select('play', this, 'Flyby')">Flyby</button>
                     <button class="button four" style="padding: 6.5px;" id="Crusaders" onclick="select('play', this, 'Crusaders')">Crusaders</button>
                     <!-- <button class="button five" disabled style="padding: 6.5px;" id="Transfer" onclick="select('play', this, 'Transfer')">Transfer</button> -->
                     <button class="button four" style="padding: 6.5px;" id="Cold" onclick="select('play', this, 'Cold')">Cold</button>
@@ -713,6 +713,8 @@
                 text = "<p>This is the default play off the top of the lineout to the scrum half. The half backs really don't want front ball at the lineout ("+ setup + call +") because it puts more pressure on longer passes.</p>";
             } else if (play === "Crusaders") {
                 text = "<p><b>Crusaders</b> is a play that initiates a maul, but leaves forward options on one or both sides to carry into the space vacated by defenders joining the maul.</p>";
+            } else if (play === "Flyby") {
+                text = "<p><b>Flyby</b> is a play that initiates a maul, but while the maul is being formed, a player peels around the corner into the space vacated by defenders joining the maul.</p>";
             } else if (play === "Cold") {
                 text = "<p>With or without a scrum half, any lineout can form a maul. The nearest forward to the jumping pod will be first over the ball to initiate the maul, before others join to form a long, narrow formation.</p>";
             }
@@ -778,6 +780,7 @@
                         "Hot": "The ball is coming <span style='color:red; font-weight:bold;'>straight to the backs...</span>",
                         "Cold": "<span style='color:hsl(225, 100%, 20%); font-weight:bold;'>The forwards are mauling</span>",
                         "Crusaders": "<span style='color:hsl(225, 100%, 20%); font-weight:bold;'>The forwards are mauling</span> or carrying",
+                        "Flyby": "The hooker is carrying round the corner",
                     };
                     backsText += "<li>" + play_text[play] + "</li>";
                 }
@@ -823,4 +826,4 @@
     </script>
 </body>
 
-</html> 
+</html>
