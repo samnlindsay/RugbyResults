@@ -41,7 +41,7 @@
             flex-direction: row;
             justify-content: left;
             padding: 0px;
-            max-width: 1000px;
+            max-width: 1020px;
         }
         .flex-column {
             width: max-content;
@@ -54,7 +54,7 @@
         #call-summary {
             display: none; 
             height: max-content; 
-            max-width: 997px;
+            max-width: 1017px;
             justify-content: space-around; 
             border: 2px solid black; 
             padding: 20px 0; 
@@ -336,7 +336,7 @@
             display: none; 
             flex-direction: row;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1020px;
         }
         .chart-title {
             display: block;
@@ -418,7 +418,7 @@
                 <ul style="line-height:130%;">
                 <li><b>Numbers:</b> Select the number of forwards involved in the lineout (including a "+1" at receiver).</li>
                 <li><b>Setup:</b> Choose how the lineout is formed to show the defence a different picture.</li>
-                <li><b>Target:</b> Select where we want to jump - each setup has 3 options (front, middle or back).</li>
+                <li><b>Throw:</b> Select where we want to jump - each setup has 3 options (front, middle or back).</li>
                 <li><b>Play:</b> Choose how we play off the lineout:
                     <ul>
                         <li style="list-style:inside">"Hot" - straight out to the back line</li>
@@ -725,6 +725,7 @@
             ///////////////////////////
             var with_angle = true;
             var url_root = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json" + (with_angle ? "/angle" : "");
+            var throwPlay = (play === "Hot" | play === null) ? "Hot" : "Cold"; 
 
             if (n !== null && setup !== null) {
                 document.getElementsByClassName("container")[0].style.display = "flex";
@@ -734,9 +735,10 @@
                 vegaEmbed("#setup-chart", spec1, { actions: false }).catch(console.error);
 
                 if (call !== null) {
+                    // var spec2 = url_root + "/throw_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + "_" + throwPlay + ".json";
                     var spec2 = url_root + "/throw_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + ".json";
                     vegaEmbed("#throw-chart", spec2, { actions: false }).catch(console.error);
-                    
+
                     if (play !== null) {
                         var spec3 = url_root + "/play_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + '_' + play + ".json";
                         vegaEmbed("#play-chart", spec3, { actions: false }).catch(console.error);
