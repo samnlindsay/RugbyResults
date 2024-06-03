@@ -735,9 +735,10 @@
                 vegaEmbed("#setup-chart", spec1, { actions: false }).catch(console.error);
 
                 if (call !== null) {
-                    // var spec2 = url_root + "/throw_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + "_" + throwPlay + ".json";
-                    var spec2 = url_root + "/throw_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + ".json";
+                    var spec2 = url_root + "/throw_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + "_" + throwPlay + ".json";
+                    // var spec2 = url_root + "/throw_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + ".json";
                     vegaEmbed("#throw-chart", spec2, { actions: false }).catch(console.error);
+                    // document.getElementById("throw-chart").innerHTML = "<a href='" + spec2 + "'>View full screen</a>";
 
                     if (play !== null) {
                         var spec3 = url_root + "/play_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + '_' + play + ".json";
