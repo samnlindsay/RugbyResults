@@ -76,7 +76,7 @@
             flex-direction: column;
             justify-content: left;
         }
-        .button-group {
+        .button-group, .target-button-group, .play-button-group {
             display: flex;
             flex-direction: column;
             vertical-align: bottom;
@@ -470,7 +470,7 @@
             <!-- ---------- -->
             <div class="button-panel">
                 <div class="button-title">Target</div>
-                <div class="button-group">
+                <div class="target-button-group">
                     <button class="button three" style="line-height: 81%; padding-bottom: 10px;" onclick="select('call', this, '1')">1<br><span style="font-weight: lighter; font-size: small;">back</span></button>
                     <button class="button three" style="line-height: 81%; padding-bottom: 10px;" onclick="select('call', this, '2')">2<br><span style="font-weight: lighter; font-size: small;">front</span></button>
                     <button class="button three" style="line-height: 81%; padding-bottom: 10px;" onclick="select('call', this, '3')">3<br><span style="font-weight: lighter; font-size: small;">middle</span></button>
@@ -481,7 +481,7 @@
             <!-- ---------- -->
             <div class="button-panel">
                 <div class="button-title">Play</div>
-                <div class="button-group">
+                <div class="play-button-group">
                     <button class="button four" style="padding: 6.5px;" id="Hot" onclick="select('play', this, 'Hot')">Hot</button>
                     <button class="button four" style="padding: 6.5px;" id="Flyby" onclick="select('play', this, 'Flyby')">Flyby</button>
                     <button class="button four" style="padding: 6.5px;" id="Crusaders" onclick="select('play', this, 'Crusaders')">Crusaders</button>
@@ -538,10 +538,10 @@
                 <button class="tablinks active" onclick="openTab(event, 'setup')">
                     Setup<br><span style="font-weight: normal; font-size: medium">Lineout forms</span>
                 </button>
-                <button class="tablinks" onclick="openTab(event, 'throw')">
+                <button class="tablinks" id="throw-panel" onclick="openTab(event, 'throw')">
                     Throw<br><span style="font-weight: normal; font-size: medium">Lineout begins</span>
                 </button>
-                <button class="tablinks" onclick="openTab(event, 'play')">
+                <button class="tablinks" id="play-panel" onclick="openTab(event, 'play')">
                     Play<br><span style="font-weight: normal; font-size: medium">Lineout ends</span>
                 </button>
             </div>
@@ -549,24 +549,14 @@
             <!--    SETUP   -->
             <!-- ---------- -->
             <div class="chart-container" id="setup" style="display: inline-block; justify-content: space-around;">
-                <!-- <div class="chart-title">
-                    <span style="font-weight: lighter;">Stage 1 - </span><b +1>Setup</b><br>
-                    <span style="font-weight: lighter; font-size: medium;">Lineout forms</span>
-                </div> -->
-                <!-- <div class="chart-and-text"> -->
                     <div class="chart-text" id="setup-text"></div>
                     <div class="chart" id="setup-chart"></div>
-                <!-- </div> -->
-                </details>
+                
             </div>
             <!-- ---------- -->
             <!--    THROW   -->
             <!-- ---------- -->
             <div class="chart-container" id="throw">
-                <!-- <div class="chart-title">
-                    <span style="font-weight: lighter;">Stage 2 - </span><b +1>THROW</b><br>
-                    <span style="font-weight: lighter; font-size: medium">Lineout begins</span>
-                </div> -->
                 <div class="chart-and-text">
                     <div class="chart-text" id="throw-text"></div>
                     <div class="chart" id="throw-chart"></div>
@@ -576,10 +566,6 @@
             <!--    PLAY    --> 
             <!-- ---------- -->
             <div class="chart-container" id="play">
-                <!-- <div class="chart-title">
-                    <span style="font-weight: lighter;">Stage 3 - </span><b +1>PLAY</b><br>
-                    <span style="font-weight: lighter; font-size: medium;">Lineout ends</span>
-                </div> -->
                 <div class="chart-and-text">
                     <div class="chart-text" id="play-text"></div>
                     <div class="chart" id="play-chart"></div>
@@ -596,7 +582,7 @@
         var play = null;
 
         function select(type, element, value) {
-            
+            console.log
             // Remove active class from all buttons 
             var buttons = document.querySelectorAll('.button[onclick^="select(\'' + type + '\', this"]');
             for (var i = 0; i < buttons.length; i++) {
@@ -723,9 +709,7 @@
             ///////////////////////////
             //      LOAD CHARTS      //
             ///////////////////////////
-            var with_angle = true;
-            var url_root = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json" + (with_angle ? "/angle" : "");
-            var throwPlay = (play === "Hot" | play === null) ? "Hot" : "Cold"; 
+            var url_root = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json/angle";
 
             if (n !== null && setup !== null) {
                 document.getElementsByClassName("container")[0].style.display = "flex";
@@ -734,15 +718,18 @@
                 var spec1 = url_root + "/setup_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + ".json";
                 vegaEmbed("#setup-chart", spec1, { actions: false }).catch(console.error);
 
-                if (call !== null) {
-                    var spec2 = url_root + "/throw_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + "_" + throwPlay + ".json";
-                    vegaEmbed("#throw-chart", spec2, { actions: false }).catch(console.error);
-                    document.getElementById("throw-chart").innerHTML += "<a href='" + spec2 + "'>View full screen</a>";
-
+                if (call !== null){
+                    spec2 = url_root + "/throw_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call;
+                
                     if (play !== null) {
+                        spec2 += (play === "Hot" ? "_Hot" : "_Cold") + ".json";
+                        vegaEmbed("#throw-chart", spec2, { actions: false }).catch(console.error);
                         var spec3 = url_root + "/play_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + '_' + play + ".json";
                         vegaEmbed("#play-chart", spec3, { actions: false }).catch(console.error);
+                    
                     } else {
+                        spec2 += (receiver === "9" ? "_Hot" : "_Cold") + ".json";
+                        vegaEmbed("#throw-chart", spec2, { actions: false }).catch(console.error);
                         document.getElementById("play-text").innerHTML = "";
                         document.getElementById("play-chart").innerHTML = "";
                     }
@@ -751,7 +738,7 @@
                     document.getElementById("throw-chart").innerHTML = "";
                 }
             } else {
-                // // Clear the content
+                // Clear the content
                 document.getElementById("setup-text").innerHTML = "";
                 document.getElementById("setup-chart").innerHTML = "";
                 
@@ -825,7 +812,31 @@
             evt.currentTarget.className += " active";
         }
 
+        // Add event listeners after the DOM has loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the buttons
+            var targetButtons = document.querySelectorAll('.target-button-group button');
+            var playButtons = document.querySelectorAll('.play-button-group button');
+            var throwButton = document.querySelector('#throw-panel');
+            var playButton = document.querySelector('#play-panel');
+
+            // Add event listeners to the Target buttons
+            targetButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    throwButton.click();
+                });
+            });
+
+            // Add event listeners to the Play buttons
+            playButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    playButton.click();
+                });
+            });
+        });
+
     </script>
+    
 </body>
 
 </html>
