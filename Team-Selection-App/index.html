@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squad Selection</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Link to FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar">
+            <div class="button-group">
+                <button id="mark-all-available">Mark All Available</button>
+                <button id="mark-all-unavailable">Mark All Unavailable</button>
+            </div>
+            <div id="player-container">
+                <!-- Scrollable Available Players Section -->
+                <div class="section-header">Available</div>
+                <div id="available-players">
+                    <!-- Player list for available players will be dynamically added here -->
+                </div>
+                <!-- Scrollable Unavailable Players Section -->
+                <div class="section-header">Unavailable</div>
+                <div id="unavailable-players">
+                    <!-- Player list for unavailable players will be dynamically added here -->
+                </div>
+            </div>
+            <button id="save-availability"></i>Save Availability</button>
+        </div>
+
+        <div id="content">
+            <h1>Squad Selection</h1>
+            <div id="actions">
+                <button id="clear-selections">Clear Selections</button>
+                <button id="save-selection">Save Selection</button>
+                <button id="copy-to-clipboard">Copy to Clipboard</button>
+            </div>
+
+            <div id="select-squad">
+                <h2>Select Matchday Squad</h2>
+                <!-- This is where the position dropdowns will be added -->
+                <div id="position-select"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
