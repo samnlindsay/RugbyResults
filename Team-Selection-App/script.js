@@ -69,62 +69,57 @@ function initializePlayerAvailability() {
 function renderPositionSelect() {
   const positionSelectDiv = document.getElementById("position-select");
 
-  // Define rows of positions, each row references the position names
+  // Define rows of positions, including a separate section for replacements
   const rows = [
     ["Prop", "Hooker", "Prop"], // Row 1
     ["Flanker", "Second Row", "Second Row", "Flanker"], // Row 2
-    [null, "Number 8"], // Row 3
+    ["Number 8"], // Row 3
     ["Scrum Half"], // Row 4
     ["Fly Half"], // Row 5
     ["Centre"], // Row 6
     ["Centre"], // Row 7
     ["Wing", null, null, null, "Wing"], // Row 8
-    [null, null, "Full Back", null, null], // Row 9
+    ["Full Back"], // Row 9
   ];
 
   positionSelectDiv.innerHTML = ""; // Clear existing content
 
   // Collect all selected players in a set for filtering
-  const selectedPlayerIndices = new Set(
-    Object.values(selectedPlayers).map((val) => val.toString())
-  );
+  const selectedPlayerIndices = new Set(Object.values(selectedPlayers));
 
-
+  // Render main positions (1-15)
   rows.forEach((rowPositions, rowIndex) => {
     const rowDiv = document.createElement("div");
     rowDiv.className = `position-row row-${rowIndex + 1}`;
 
     rowPositions.forEach((positionName) => {
-      if (positionName) {
-        const positionDiv = document.createElement("div");
-        positionDiv.className = "position-cell";
+      const positionDiv = document.createElement("div");
+      positionDiv.className = "position-cell";
 
+      if (positionName) {
         const positionLabel = document.createElement("label");
         positionLabel.textContent = positionName;
 
         const positionSelect = document.createElement("select");
         positionSelect.id = `select-position-${positionName}`;
 
-        // Add a placeholder option
         const placeholderOption = document.createElement("option");
         placeholderOption.value = "";
         placeholderOption.textContent = " - ";
         positionSelect.appendChild(placeholderOption);
 
-        // Filter players based on the position (using positionMapping)
         const playerNumbersForPosition = positionMapping[positionName];
         players.forEach((player, playerIndex) => {
-          // Filter players who are available and can play the position
           if (
             player.available &&
-            player.position.includes(positionName) && // Check if player can play this position
-            !selectedPlayerIndices.has(playerIndex.toString()) // Ensure player is not already selected for another position
+            player.position.includes(positionName) &&
+            !selectedPlayerIndices.has(playerIndex.toString()) // Ensure player isn't already selected
           ) {
             const option = document.createElement("option");
             option.value = playerIndex;
             option.textContent = player.name;
 
-            // Preserve previously selected player for this position
+            // If player was previously selected for this position, mark it as selected
             if (selectedPlayers[positionName] === playerIndex.toString()) {
               option.selected = true;
             }
@@ -133,20 +128,69 @@ function renderPositionSelect() {
           }
         });
 
-        // Event listener to track selections
-        positionSelect.addEventListener("change", () => {
-          selectedPlayers[positionName] = positionSelect.value;
-        });
-
         positionDiv.appendChild(positionLabel);
         positionDiv.appendChild(positionSelect);
-        rowDiv.appendChild(positionDiv);
+      } else {
+        positionDiv.classList.add("empty");
       }
+
+      rowDiv.appendChild(positionDiv);
     });
 
     positionSelectDiv.appendChild(rowDiv);
   });
+
+  // Now handle replacements (players 16, 17, 18)
+  const replacementsDiv = document.createElement("div");
+  replacementsDiv.className = "position-row replacements";
+
+  // Render replacement player dropdowns (16, 17, 18)
+  [16, 17, 18].forEach((replacementNumber) => {
+    const replacementDiv = document.createElement("div");
+    replacementDiv.className = "position-cell replacement";
+
+    const positionLabel = document.createElement("label");
+    positionLabel.textContent = replacementNumber;
+
+    const positionSelect = document.createElement("select");
+    positionSelect.id = `select-replacement-${replacementNumber}`;
+
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.textContent = " - ";
+    positionSelect.appendChild(placeholderOption);
+
+    const availablePlayersForReplacement = players.filter(
+      (player, playerIndex) => {
+        return (
+          player.available &&
+          !selectedPlayerIndices.has(playerIndex.toString()) && // Ensure not already selected for a starting position
+          !positionMapping["Prop"].includes(playerIndex + 1) && // Make sure not already selected for a starting 15 position
+          playerIndex + 1 !== replacementNumber // Exclude this replacement from being selected for itself
+        );
+      }
+    );
+
+    availablePlayersForReplacement.forEach((player, playerIndex) => {
+      const option = document.createElement("option");
+      option.value = playerIndex;
+      option.textContent = player.name;
+
+      if (selectedPlayers[replacementNumber] === playerIndex.toString()) {
+        option.selected = true;
+      }
+
+      positionSelect.appendChild(option);
+    });
+
+    replacementDiv.appendChild(positionLabel);
+    replacementDiv.appendChild(positionSelect);
+    replacementsDiv.appendChild(replacementDiv);
+  });
+
+  positionSelectDiv.appendChild(replacementsDiv);
 }
+
 
 
 function renderPlayerList() {
@@ -244,12 +288,6 @@ function saveAvailabilityToFile() {
   alert("Availability saved to players.json!");
 }
 
-function clearSelections() {
-  selectedPlayers = {}; // Reset selections
-  renderPositionSelect(); // Re-render the dropdowns
-  alert("All selections have been cleared!");
-}
-
 
 function saveSelectionToFile() {
   let teamSheet = generateTeamSheet();
@@ -264,6 +302,16 @@ function saveSelectionToFile() {
 
   alert("Team sheet saved to team-sheet.txt!");
 }
+
+// Ensure clearSelections() only resets the UI, not the selected players
+function clearSelections() {
+  // You can reset the dropdowns and render the UI without resetting selectedPlayers
+  renderPositionSelect();
+  alert(
+    "All selections have been cleared! (Selections remain intact in the code.)"
+  );
+}
+
 
 function copyToClipboard() {
   let teamSheet = generateTeamSheet();
