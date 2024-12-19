@@ -15,7 +15,7 @@ h1 {
 }
 h2 {
     font-family: Tahoma, sans-serif;
-    font-size: 32px;
+    font-size: 30px;
     font-weight: bold;
     margin: 0;
 }
@@ -254,6 +254,15 @@ h2 {
     border-radius: 5px;
     width: 100%;
     text-align: center;
+    background-color: lightgray;
+}
+
+/* Style for select dropdown when a player is selected */
+.position-cell .select-selected {
+    background-color: navy;
+    border-color: black;
+    color: whitesmoke;
+    font-weight: bold;
 }
 
 .position-header {
@@ -309,9 +318,17 @@ h2 {
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    width: 100%;
+    width: 160px;
     text-align: center;
     align-self: center;
+    background-color: lightgray;
+}
+
+.replacement-cell .select-selected {
+    background-color: black;
+    border-color: whitesmoke;
+    color: whitesmoke;
+    font-weight: bold;
 }
 
 /* ---------------------- */ 

@@ -213,7 +213,21 @@ function renderPositionSelect() {
           positionSelect.addEventListener("change", (event) => {
             const selectedPlayerIndex = event.target.value;
             selectedPlayers[assignedNumber] = selectedPlayerIndex; // Assign player to the number
+
+            // Add class to indicate a selection has been made
+            if (selectedPlayerIndex !== "") {
+              positionSelect.classList.add("select-selected");
+            } else {
+              positionSelect.classList.remove("select-selected");
+            }
           });
+
+          // Check initial value and apply appropriate class
+          if (positionSelect.value !== "") {
+            positionSelect.classList.add("select-selected");
+          } else {
+            positionSelect.classList.remove("select-selected");
+          }
 
           positionDiv.appendChild(positionHeader);
           positionDiv.appendChild(positionSelect);
@@ -275,7 +289,21 @@ function renderPositionSelect() {
     positionSelect.addEventListener("change", (event) => {
       const selectedPlayerIndex = event.target.value;
       selectedPlayers[replacementNumber] = selectedPlayerIndex; // Assign player to replacement
+      
+      // Add class to indicate a selection has been made
+      if (selectedPlayerIndex !== "") {
+        positionSelect.classList.add("select-selected");
+      } else {
+        positionSelect.classList.remove("select-selected");
+      }
     });
+
+    // Check initial value and apply appropriate class
+    if (positionSelect.value !== "") {
+      positionSelect.classList.add("select-selected");
+    } else {
+      positionSelect.classList.remove("select-selected");
+    }
 
     replacementDiv.appendChild(positionNumberLabel);
     replacementDiv.appendChild(positionSelect);
@@ -403,9 +431,7 @@ function saveSelectionToFile() {
 function clearSelections() {
   // You can reset the dropdowns and render the UI without resetting selectedPlayers
   renderPositionSelect();
-  alert(
-    "All selections have been cleared! (Selections remain intact in the code.)"
-  );
+  selectedPlayers = {}; // Reset the selected players
 }
 
 
