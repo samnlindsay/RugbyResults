@@ -71,7 +71,7 @@ alt.themes.register("my_custom_theme", alt_theme)
 alt.themes.enable("my_custom_theme")
 
 
-def plot_starts_by_position(squad=1, season="2023/24", fb_only=False):
+def plot_starts_by_position(squad=1, season="2024/25", fb_only=False):
 
     df = players(squad)
 
@@ -134,8 +134,8 @@ def plot_games_by_season(games):
     )
     return chart
 
-# Plot the number of games played by each player in the 2023/24 season
-def plot_games_by_player(squad, season="2023/24", min_games=5):
+# Plot the number of games played by each player in the 2024/25 season
+def plot_games_by_player(squad, season="2024/25", min_games=5):
 
     if squad == 1:
         p = players(1)
@@ -169,9 +169,11 @@ def plot_games_by_player(squad, season="2023/24", min_games=5):
             ),
             legend=alt.Legend(
                 title="Click to filter", 
-                orient="none",
-                legendX=300,
-                legendY=250
+                # orient="none",
+                # direction="horizontal",
+                # legendX=0,
+                # legendY=-150
+                orient="bottom-right"
             )
         )
         o = alt.Order('GameType', sort='descending')
@@ -181,7 +183,7 @@ def plot_games_by_player(squad, season="2023/24", min_games=5):
     
     chart = alt.Chart(p).mark_bar(strokeWidth=2).encode(
         x=alt.X(
-            "count()", 
+            "count()",
             axis=alt.Axis(title="Appearances", orient="bottom")),
         y=alt.Y("Player", sort="-x", title=None),
         color=c,
@@ -250,7 +252,7 @@ def squads_by_season(squad=1, min_games=5, add_rule=False):
         .to_dict()
 
     charts = []
-    for season in ["2021/22", "2022/23", "2023/24"]:
+    for season in ["2021/22", "2022/23", "2023/24", "2024/25"]:
 
         chart = plot_games_by_player(squad=squad, season=season, min_games=min_games).properties(
             width=250,
@@ -266,7 +268,10 @@ def squads_by_season(squad=1, min_games=5, add_rule=False):
         
         charts.append(chart)
 
-    chart = alt.hconcat(*charts).properties(title=f"{t} Team Games")
+    for c in charts[:-1]:
+        c.encoding.color.legend = None
+
+    chart = alt.hconcat(*charts).properties(title=alt.Title(text=f"{t} Team Appearances", fontSize=40)).resolve_legend(color="independent")
 
     return chart
 
@@ -296,7 +301,7 @@ def top_by_position(x):
     else:
         return x.nlargest(3, "Count", "all")
 
-def team_of_the_season(squad=1, season="2023/24", bench_forwards=2, bench_backs=1):
+def team_of_the_season(squad=1, season="2024/25", bench_forwards=2, bench_backs=1):
 
     df = players(squad)
     df = df[df["Season"] == season]
@@ -320,15 +325,15 @@ def team_of_the_season(squad=1, season="2023/24", bench_forwards=2, bench_backs=
     unique = starters.groupby("Number").filter(lambda x: len(x) == 1)
 
     starters = pd.concat([unique, starters[~starters["Player"].isin(unique["Player"])]])
+    if len(starters) > len(set(starters["Player"])):
+        starters.sort_values(["CountPosition", "Count"], ascending=[False,False])
+        for p in set(starters["Player"]):
+            # Keep only the row with the highest Count for each Player
+            # Delete other rows for that player from starters
+            p_row = starters[starters["Player"] == p].nlargest(1, "Count")
+            starters = pd.concat([p_row, starters[(starters["Player"] != p) & (starters["Number"] != p_row["Number"].iloc[0])]])
 
-    starters.sort_values(["CountPosition", "Count"], ascending=[False,False])
-    for p in set(starters["Player"]):
-        # Keep only the row with the highest Count for each Player
-        # Delete other rows for that player from starters
-        p_row = starters[starters["Player"] == p].nlargest(1, "Count")
-        starters = pd.concat([p_row, starters[(starters["Player"] != p) & (starters["Number"] != p_row["Number"].iloc[0])]])
-
-    starters = starters[["Number", "Position", "Player", "CountPosition"]].sort_values("Number")
+        starters = starters[["Number", "Position", "Player", "CountPosition"]].sort_values("Number")
     starters.rename(columns={"CountPosition": "Count_p"}, inplace=True)
 
     #### BENCH ####
@@ -349,7 +354,7 @@ def team_of_the_season(squad=1, season="2023/24", bench_forwards=2, bench_backs=
 
     bench["Number"] = bench.index + 16
     bench = bench[["Number", "Player", "TotalStarts", "TotalGames"]]
-    bench.rename(columns={"TotalStarts": "Count_p", "TotalGames":"Count"}, inplace=True)
+    # bench.rename(columns={"TotalStarts": "Count_p", "TotalGames":"Count"}, inplace=True)
 
     # Count per Player
     apps = df.groupby("Player").size().reset_index(name="Count")
@@ -386,7 +391,7 @@ def team_of_the_season(squad=1, season="2023/24", bench_forwards=2, bench_backs=
 
     return starters
 
-def team_of_the_season_chart(squad=1, season="2023/24", **kwargs):
+def team_of_the_season_chart(squad=1, season="2024/25", **kwargs):
     
     top = team_of_the_season(squad, season, **kwargs)
 
@@ -396,7 +401,7 @@ def team_of_the_season_chart(squad=1, season="2023/24", **kwargs):
 
     prop = top_count/season_count
 
-    with open("lineup.json") as f:
+    with open("tots_lineup.json") as f:
         chart = json.load(f)
     
     chart["title"]["text"] = f"{'1st' if squad==1 else '2nd'} XV Team of the Season"
@@ -404,8 +409,88 @@ def team_of_the_season_chart(squad=1, season="2023/24", **kwargs):
     chart["data"]["values"] = top.to_dict(orient="records")
     
     return alt.Chart.from_dict(chart)
+def team_sheet_chart(
+        squad=1, 
+        names=None, 
+        captain=None, 
+        vc=None, 
+        opposition=None, 
+        home=True, 
+        competition="Counties 1 Sussex",
+        season="2024/25"
+    ):
+
+    if names is None:
+        df = team_sheets(squad=1) 
+
+        # Last row as dict
+        team = df.iloc[-1].to_dict()
 
 
+        label = f'{"1st" if squad==1 else "2nd"} XV vs {team["Opposition"]}({team["Home/Away"]})'
+        captain = team["Captain"]
+        vc = team["VC"]
+        season = team["Season"]
+        competition = team["Competition"]
+
+        # Keep keys that can be converted to integers
+        team = {int(k): v for k, v in team.items() if k.isnumeric() and v}
+
+        # Convert team to dataframe with Number and Player columns
+        team = pd.DataFrame(team.items(), columns=["Number", "Player"])
+
+    else:
+        label = f'{"1st" if squad==1 else "2nd"} XV vs {opposition} ({"H" if home else "A"})'
+
+        # Convert names to Player column of a dataframe with Number column (1-len(names))
+        team = pd.DataFrame({"Player": names, "Number": range(1, len(names)+1)})
+
+    coords = pd.DataFrame([
+                {"n": 1, "x": 10, "y": 81},
+                {"n": 2, "x": 25, "y": 81},
+                {"n": 3, "x": 40, "y": 81},
+                {"n": 4, "x": 18, "y": 69},
+                {"n": 5, "x": 32, "y": 69},
+                {"n": 6, "x": 6, "y": 61},
+                {"n": 7, "x": 44, "y": 61},
+                {"n": 8, "x": 25, "y": 56},
+                {"n": 9, "x": 20, "y": 42},
+                {"n": 10, "x": 38, "y": 36},
+                {"n": 11, "x": 8, "y": 18},
+                {"n": 12, "x": 56, "y": 30},
+                {"n": 13, "x": 74, "y": 24},
+                {"n": 14, "x": 92, "y": 18},
+                {"n": 15, "x": 50, "y": 10},
+                {"n": 16, "x": 80, "y": 82},
+                {"n": 17, "x": 80, "y": 74},
+                {"n": 18, "x": 80, "y": 66},
+                {"n": 19, "x": 80, "y": 58},
+                {"n": 20, "x": 80, "y": 50},
+                {"n": 21, "x": 80, "y": 42},
+                {"n": 22, "x": 80, "y": 34},
+                {"n": 23, "x": 80, "y": 26},
+            ])
+    team = team.merge(coords, left_on="Number", right_on="n", how="inner").drop(columns="n")
+
+    # Add captain (C) and vice captain (VC) else None
+    team["Captain"] = team["Player"].apply(lambda x: "C" if x == captain else "VC" if x == vc else None)
+
+    team["Player"] = team["Player"].str.split(" ")
+
+    team.to_dict(orient="records")
+
+    with open("team-sheet-lineup.json") as f:
+        chart = json.load(f)
+    chart["data"]["values"] = team.to_dict(orient="records")
+    chart["title"]["text"] = label
+    chart["title"]["subtitle"] = f"{season} - {competition}"
+
+    n_replacements = len(team) - 15
+    
+    y = 126 + (n_replacements * 64)
+    chart["layer"][0]["mark"]["y2"] = y
+    # return chart
+    return alt.Chart.from_dict(chart)
 # LINEOUTS
 
 # Color scales
@@ -416,8 +501,8 @@ n_scale = {
 
 calls4 = ["Yes", "No", "Snap"]
 cols4 = ["darkgreen", "red", "red"]
-calls7 = ["A1", "H1", "C1", "W1", "A2", "H2", "C2", "W2", "A3", "H3", "C3", "W3"]
-cols7 = 4*["darkgreen"] + 4*["red"] + 4*["orange"]
+calls7 = ["A*", "C*", "A1", "H1", "C1", "W1", "A2", "H2", "C2", "W2", "A3", "H3", "C3", "W3"]
+cols7 = 2*["orange"] + 4*["darkgreen"] + 4*["red"] + 4*["orange"]
 calls = ["Matlow", "Red", "Orange", "Plus", "Even +", "RD", "Even", "Odd", "Odd +", "Green +", "", "Green"]
 cols = 5*["red"] + 6*["orange"] + ["darkgreen"]
 
@@ -425,6 +510,11 @@ call_scale = {
     "domain": calls4 + calls7 + calls,
     "range": cols4 + cols7 + cols
 }
+setup_scale = {
+    "domain": ["A", "C", "H", "W"],
+    "range": ["dodgerblue", "crimson", "midnightblue", "black"]
+}
+setups = {"A": "Auckland", "C": "Canterbury", "H": "Highlanders", "W": "Waikato"}
 
 # Sort orders
 area_order = ["Front", "Middle", "Back"]
@@ -432,6 +522,7 @@ area_scale = {
     "domain": area_order, 
     "range": ['red', 'orange', 'darkgreen']
 }
+
 
 
 def counts(type, squad=1, season=None):
@@ -487,8 +578,6 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
 
     if type == "Call":
-        df["CallType"] = df["Call"].apply(call_type)
-
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["spec"]["encoding"]["x"]["title"] = None
         chart["spec"]["encoding"]["color"]["scale"] = call_scale
@@ -496,11 +585,18 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["transform"][2]["groupby"].append("CallType")
         chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
         chart["spec"]["encoding"]["tooltip"].append({"field": "sortcol"})
+
+    if type == "Setup":
+        chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
+        chart["spec"]["encoding"]["color"]["scale"] = setup_scale
+        chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
+        chart["transform"].append({"filter": "datum.Setup != null"})
+        chart["spec"]["encoding"]["tooltip"].append({"field": "sortcol"})
     
     if type == "Dummy":
         chart["spec"]["encoding"]["color"]["scale"] = {"range": ["red", "green", "black"]}
         chart["spec"]["encoding"]["x"]["title"] = None
-        chart["spec"]["encoding"]["x"]["sort"] = {"field": type, "order": "descending"}
+        chart["spec"]["encoding"]["x"]["sort"] = {"field": "Success", "order": "descending"}
         chart["spec"]["encoding"]["x"]["axis"] = {
             "ticks": False,
             "labelExpr": "datum.label == 'D' ? 'Dummy' : (datum.label == 'M' ? 'Move' : 'Jump')",
@@ -530,17 +626,19 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
 
 def lineout_chart(squad=1, season=None):
 
-    types = ["Numbers", "Area", "Hooker", "Jumper"]
+    types = ["Numbers", "Area", "Hooker", "Jumper", "Setup"]
 
     dummy_chart = count_success_chart("Dummy", squad, season)
     dummy_chart["transform"] = [{"filter": {"param": f"select{f}"}} for f in types] + dummy_chart["transform"]
-    dummy_chart["layer"][0]["encoding"]["y"]["axis"]["labels"] = False
-    dummy_chart["layer"][0]["encoding"]["y"]["title"] = None
+    # dummy_chart["layer"][0]["encoding"]["y"]["axis"]["labels"] = False
+    # dummy_chart["layer"][0]["encoding"]["y"]["title"] = None
     dummy_chart["layer"][1]["encoding"]["y"]["axis"]["labels"] = False
     dummy_chart["layer"][1]["encoding"]["y"]["title"] = None
 
     call_chart = count_success_chart("Call", squad, season)
     call_chart["transform"] = [{"filter": {"param": f"select{f}"}} for f in types + ["Dummy"]] + call_chart["transform"]
+    call_chart["spec"]["layer"][0]["encoding"]["y"]["axis"]["labels"] = False
+    call_chart["spec"]["layer"][0]["encoding"]["y"]["title"] = None
     
     charts = []
     for i,t in enumerate(types):
@@ -573,9 +671,10 @@ def lineout_chart(squad=1, season=None):
 
     return chart
 
-def points_scorers(squad=1):
+def points_scorers(squad=1, season="2024/25"):
 
-    scorers = pitchero_stats(squad).sort_values("Points", ascending=False)
+    scorers = pitchero_stats(squad, season).sort_values("Points", ascending=False)
+    scorers = scorers[scorers["Points"] > 0]
     scorers["sortfield"] = scorers["Points"] + scorers["PPG"]
     scorers = scorers.sort_values(["sortfield", "Player"], ascending=False).reset_index()
     scorers["sortfield"] = scorers.index
@@ -586,9 +685,9 @@ def points_scorers(squad=1):
 
     return scorers
 
-def points_scorers_chart(squad=1):
+def points_scorers_chart(squad=1, season="2024/25"):
 
-    scorers = points_scorers(squad)
+    scorers = points_scorers(squad, season)
     scorers = scorers.drop("Points", axis=1)
     scorers = scorers.melt(
         id_vars=[c for c in scorers.columns if c not in ["Tries", "Pens", "Cons"]], 
@@ -642,16 +741,22 @@ def points_scorers_chart(squad=1):
 
     return chart
 
-def card_chart():
-    s1 = pitchero_stats(1)
+def card_chart(squad=0, season="2024/25"):
+
+    s1 = pitchero_stats(1, season)
     s1["Cards"] = s1["YC"] + s1["RC"]
     s1 = (s1[s1["Cards"] > 0])[["Player","A","YC","RC", "Cards"]]
 
-    s2 = pitchero_stats(2)
+    s2 = pitchero_stats(2, season)
     s2["Cards"] = s2["YC"] + s2["RC"]
     s2 = (s2[s2["Cards"] > 0])[["Player","A","YC","RC", "Cards"]]
 
-    s = pd.concat([s1, s2]).sort_values(["Cards", "RC"], ascending=[False, False])    
+    if squad == 0:
+        s = pd.concat([s1, s2]).sort_values(["Cards", "RC"], ascending=[False, False])    
+    else:
+        s = s1 if squad == 1 else s2
+
+    title = f"{'1st' if squad==1 else ('2nd' if squad==2 else '1st & 2nd')} XV Cards"
 
     chart = alt.Chart(s).mark_bar().encode(
         y=alt.Y("Player", title=None, sort=alt.EncodingSortField(field="Cards", order="descending")),
@@ -659,14 +764,33 @@ def card_chart():
         color=alt.Color(
             "key:N", 
             title=None, 
-            legend=alt.Legend(orient="bottom-right")).scale(domain=["YC", "RC"], range=["#e6c719", "red"])
+            legend=alt.Legend(orient="bottom")).scale(domain=["YC", "RC"], range=["#e6c719", "red"])
     ).transform_fold(
         ["YC", "RC"]
-    ).properties(title=alt.Title(text="1st & 2nd XV Cards", subtitle="According to Pitchero data"), width=400)    
+    ).properties(title=alt.Title(text=title, subtitle=["According to Pitchero data", f"{len(results(squad, season))} games"]), width=400)    
 
     return chart
 
-def captains_chart(season="2023/24"): 
+def cards_by_season(squad=1):
+    charts = []
+    for season in ["2021/22", "2022/23", "2023/24", "2024/25"]:
+
+        chart = card_chart(squad=squad, season=season).properties(
+            width=150,
+            title=alt.Title(text=season, subtitle=f"{len(results(squad, season))} games")
+        )
+        charts.append(chart)
+
+    for c in charts[:-1]:
+        c.encoding.color.legend = None
+
+    title = f"{'1st' if squad==1 else '2nd' if squad==2 else '1st & 2nd'} XV Cards by Season"
+
+    chart = alt.hconcat(*charts).properties(title=alt.Title(text=title, subtitle="According to Pitchero data", fontSize=40)).resolve_legend(color="independent")
+
+    return chart
+
+def captains_chart(season="2024/25"): 
     captains = {}
     for squad in [1,2]:
         captains[squad] = team_sheets(squad)[["Season", "Captain", "VC", "GameType"]].melt(
@@ -703,6 +827,24 @@ def captains_chart(season="2023/24"):
         x="shared",
         y="independent"
     )
+
+    return chart
+
+def captains_by_season():
+    charts = []
+    for season in ["2023/24", "2024/25"]:
+        chart = captains_chart(season).properties(
+            width=400,
+            title=alt.Title(text=season)
+        )
+        charts.append(chart)
+
+    for c in charts[:-1]:
+        c.encoding.color.legend = None
+
+    title = f"1st XV Captains by Season"
+
+    chart = alt.hconcat(*charts).properties(title=alt.Title(text=title, subtitle="League & Cup Captains and Vice-Captains", fontSize=40)).resolve_legend(color="independent")
 
     return chart
 

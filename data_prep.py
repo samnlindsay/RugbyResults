@@ -32,12 +32,16 @@ def position_category(x):
 
 con = duckdb.connect()
 
+import gspread
+from google.oauth2.service_account import Credentials
 scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 creds = Credentials.from_service_account_file('client_secret.json', scopes=scope)
 client = gspread.authorize(creds)
 
 sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1pcO8iEpZuds9AWs4AFRmqJtx5pv5QGbP4yg2dEkl8fU/edit#gid=2100247664").worksheets()
+
+my_sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1keX2eGbyiBejpfMPMbL7aXYLy7IDJZDBXQqiKVQavz0/edit#gid=390656160").worksheets()
 
 ###
 
@@ -67,21 +71,20 @@ def results(squad=1, season=None):
 def team_sheets(squad=1):
 
     if squad == 1:
-        team = sheet[4].batch_get(['B4:AH'])[0]
+        team = sheet[4].batch_get(['B4:AG'])[0]
         team = pd.DataFrame(team, columns=team.pop(0)).replace('', pd.NA)
-        team.drop("", axis=1, inplace=True)
         team["Squad"]="1st"
     elif squad == 2:    
-        team = sheet[7].batch_get(['B4:AH'])[0]
+        team = sheet[7].batch_get(['B4:AK'])[0]
         team = pd.DataFrame(team, columns=team.pop(0)).replace('', pd.NA)
         team["Squad"]="2nd"
     elif squad == 0:
-        team1 = sheet[4].batch_get(['B4:AH'])[0]
+        team1 = sheet[4].batch_get(['B4:AG'])[0]
         team1 = pd.DataFrame(team1, columns=team1.pop(0)).replace('', pd.NA)
         team1.drop("", axis=1, inplace=True)
         team1["Squad"]="1st"
         
-        team2 = sheet[7].batch_get(['B4:AH'])[0]
+        team2 = sheet[7].batch_get(['B4:AK'])[0]
         team2 = pd.DataFrame(team2, columns=team2.pop(0)).replace('', pd.NA)
         team2["Squad"]="2nd"
         
@@ -175,9 +178,9 @@ def call_type(call):
     if call in ["Snap", "Yes", "No"]:
         return "4-man only"
     elif call in ["", "Red", "Orange", "RD", "Even", "Odd", "Green", "Plus", "Even +", "Odd +", "Green +", "Matlow"]:
-        return "Standard"
-    elif call in ["C1", "C2", "C3", "H1", "H2", "H3", "A1", "A2", "A3", "W1", "W2", "W3"]:
-        return "6/7-man only"
+        return "Old"
+    elif call in ["C*", "A*", "C1", "C2", "C3", "H1", "H2", "H3", "A1", "A2", "A3", "W1", "W2", "W3"]:
+        return "New"
     else:
         return "Other"
     
@@ -191,9 +194,9 @@ def dummy_movement(call):
 
 def lineouts(squad, season=None):
     if squad == 1:
-        lineouts = sheet[6].batch_get(['A3:R'])[0]
+        lineouts = sheet[6].batch_get(['A3:S'])[0]
     elif squad == 2:
-        lineouts = sheet[9].batch_get(['A3:R'])[0]
+        lineouts = sheet[9].batch_get(['A3:S'])[0]
 
     df = pd.DataFrame(lineouts, columns=lineouts.pop(0)).replace('', pd.NA)
 
@@ -207,11 +210,15 @@ def lineouts(squad, season=None):
     df["Area"] = df.apply(lambda x: "Front" if x["Front"] == "x" else ("Middle" if x["Middle"]=="x" else "Back"), axis=1)
     df["Won"] = df.apply(lambda x: True if x["Won"] == "Y" else False, axis=1)
     df["Drive"] = df.apply(lambda x: True if x["Drive"] == "x" else False, axis=1)
+    df["Crusaders"] = df.apply(lambda x: True if x["Crusaders"] == "x" else False, axis=1)
     df["Transfer"] = df.apply(lambda x: True if x["Transfer"] == "x" else False, axis=1)
     df["Flyby"] = df.apply(lambda x: None if x["Flyby"] == "" else int(x["Flyby"]), axis=1)
     df["Dummy"] = df.apply(lambda x: dummy_movement(x["Call"]), axis=1)
 
-    df = df[['Squad', 'Season', 'Opposition', 'Numbers', 'Call', 'Dummy', 'Area', 'Drive', 'Transfer', 'Flyby', 'Hooker', 'Jumper', 'Won']]
+    df["CallType"] = df["Call"].apply(call_type)
+    df["Setup"] = df["Call"].apply(lambda x: (x[0] if x[0] in ["A", "C", "H", "W"] else None) if len(x) > 0 else None)
+
+    df = df[['Squad', 'Season', 'Opposition', 'Numbers', 'Call', 'CallType', 'Setup', 'Dummy', 'Area', 'Drive', 'Crusaders', 'Transfer', 'Flyby', 'Hooker', 'Jumper', 'Won']]
 
     return df
 
@@ -223,9 +230,19 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-def pitchero_stats(squad=1):
+def pitchero_stats(squad=1, season=None):
 
     url = f"https://www.egrfc.com/teams/14206{8 if squad==1 else 9}/statistics"
+
+    if season is not None:
+        seasonID = {
+            "2021/22": 79578,
+            "2022/23": 83980,
+            "2023/24": 87941,
+            "2024/25": 91673,
+        }[season]
+
+        url += f"?season={seasonID}"
     
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -248,4 +265,4 @@ def pitchero_stats(squad=1):
     df["Points"] = df["T"]*5 + df["Con"]*2 + df["DG"]*3 + df["PK"]*3 
     df["PPG"] = df["Points"] / df["A"]
 
-    return df[df["Points"] > 0]
+    return df

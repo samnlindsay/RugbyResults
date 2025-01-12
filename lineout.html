@@ -11,10 +11,13 @@
     <style>
         body,
         html {
+            margin: 0px; 
+            padding: 0px;
             height: 100%;
             font-family: sans-serif;
             overflow: scroll;
             text-size-adjust: none;
+            background-color: hsl(225, 100%, 95%);
         }
 
         hr {
@@ -23,11 +26,21 @@
 
         h2 {
             font-size: xx-large; 
-            color: hsl(225, 100%, 20%)
+            /* font-style: italic; */
+            color: hsl(225, 100%, 0%)
         }
 
-        .header-panel {
-            background-color: hsl(225, 100%, 95%);
+        .main-body {
+            font: 16px sans-serif;
+            overflow: scroll;
+            max-width: 1040px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .banner {
+            display: flex; 
+            justify-content: space-between; 
+            background-color: hsl(225, 100%, 20%); 
             padding: 10px;
             z-index: 1;
             font: 16px sans-serif;
@@ -54,11 +67,11 @@
         #call-summary {
             display: none; 
             height: max-content; 
-            max-width: 1017px;
+            max-width: 1010px;
             justify-content: space-around; 
             border: 2px solid black; 
             padding: 20px 0; 
-            background-color: white;
+            background-color: hsl(0, 100%, 95%);
             border-radius: 10px;
             margin-bottom: 15px;
         }
@@ -67,9 +80,8 @@
             border: 2px solid #111;
             background-color: #fff;
             border-radius: 10px;
-            width: 20%;  
-            min-width: 150px;
-            max-width: 300px ;
+            width: 20%; 
+            min-width: fit-content; 
             margin: 2px;
             display: flex;
             flex: 1;
@@ -108,59 +120,6 @@
         }
         .five {
             height: 47px;
-        }
-
-        /* ------------ */
-        /* Instructions */
-        /* ------------ */
-        summary {
-            background-color: hsl(225, 100%, 20%);
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold; 
-            font-size: x-large; 
-            color: white;
-            display: inline-flex;
-        } 
-
-        summary::after {
-          content: '';
-          width: 24px;
-          height: 24px;
-          background: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21,22H3a1,1,0,0,1-1-1V3A1,1,0,0,1,3,2H21a1,1,0,0,1,1,1V21A1,1,0,0,1,21,22ZM4,20H20V4H4Z' fill='white'/%3E%3Cpath d='M16,15a1,1,0,0,1-.707-.293L12,11.414,8.707,14.707a1,1,0,1,1-1.414-1.414l4-4a1,1,0,0,1,1.414,0l4,4A1,1,0,0,1,16,15Z' fill='white'/%3E%3C/svg%3E") no-repeat;
-          transform: rotate(180deg);
-          background-size: cover;
-          margin-left: 10px;
-          margin-right: 2px;
-        }
-
-        details[open] > summary::after {
-          transform: rotate(0deg);
-        }
-
-        summary::-webkit-details-marker {
-          display: none;
-        }
-
-        details[open] summary {
-            border-radius: 10px 10px 0 0;
-        }
-            
-        details {
-          border-radius: 10px;
-          margin-bottom: 10px;
-          margin-left: 2px;
-        }
-
-        .instructions {
-            padding: 10px; 
-            padding-bottom: 5px;
-            margin: 0; 
-            background: hsl(225, 100%, 30%); 
-            border-radius: 0 10px 10px 10px;
-            color: white;
-            width: max-content;
-            font-size: large;
         }
 
         /* ------- */
@@ -310,7 +269,9 @@
         .chart-text {
             font-size: medium;
             font-weight: light;
-            padding-bottom: 10px;
+            margin: 0px 0px -10px 0px;
+            padding: 0px;
+            justify-self: space-around;
         }
 
         .backs-text {
@@ -333,10 +294,13 @@
         /*  CONTENT  */
         /* --------- */
         .container {
-            display: none; 
-            flex-direction: row;
+            /* display: none;  */
+            flex-direction: column;
             width: 100%;
+            height: max-content;
             max-width: 1020px;
+            padding: 0px;
+            /* margin: 10px; */
         }
         .chart-title {
             display: block;
@@ -351,39 +315,33 @@
             padding: 10px;
             border: 2px solid hsl(225, 100%, 20%);
             background-color: white;
-            margin: 5px 0px 0px 0px;
-            border-radius: 0px 10px 10px 0px;
-            /* width: 100%; */
-            width: min-content;
+            margin: 0px 10px 10px 0px;
+            border-radius: 10px 0px 10px 10px;
+            max-width: 1020px;
             min-width: 700px;
-            flex-direction: column;
             flex:1;
-            display: none;
-            align-items: center;
-            justify-content: space-between;
             min-height: 200px;
-        }
-
-        .chart-and-text {
-            width: min-content;
+            text-align: center;
+            justify-self: center;
+            justify-content: center;
+            /* display: none; */
         }
 
         .tablinks {
-            text-align: center;
-            font-size: xx-large;
+            font-size: x-large;
             font-weight: bold;
             cursor: pointer;
             width: 150px;
-            height: max-content;
-            padding: 20px;
-            border-radius: 10px 0px 0px 10px;
+            padding-top: 10px;
+            padding-bottom: 2px;
+            border-radius: 10px 10px 0px 0px;
             margin: 0px;
-            margin-top: 5px;
-            margin-right: -4px;
+            margin-top: 40px;
             border: 2px solid hsl(225, 100%, 20%);
-            border-right: none;
+            border-bottom: none;
             color:hsl(0, 0%, 50%);
             justify-content: right;
+            line-height: 80%;
         }
         .tablinks:hover {
             /* border: 4px solid hsl(225, 100%, 20%); */
@@ -391,8 +349,9 @@
             color: hsl(225, 100%, 20%);
         }
         .tablinks.active {
-            color: hsl(225, 100%, 20%);
-            background-color: white;
+            color: white;
+            background-color: hsl(225, 100%, 40%);
+
         }
             
         #throw-chart, #setup-chart, #play-chart {
@@ -403,39 +362,41 @@
     </style>
 </head>
 
-<body>
-    <div class="header-panel">
-       
-        <h1 style="font-size: 60px;font-weight: bold; font-style: italic; color: hsl(225, 100%, 20%); margin: 0px;">Lineout Builder</h1>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YHTVJ4HXMR"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
 
-        <!-- -------------- -->
-        <!--  Instructions  -->
-        <!-- -------------- -->
-        <details>
-            <summary>Instructions</summary>
-            <div class="instructions">
-                Select the components of a lineout call to see it in full, with diagrams and a description of each stage.
-                <ul style="line-height:130%;">
-                <li><b>Numbers:</b> Select the number of forwards involved in the lineout (including a "+1" at receiver).</li>
-                <li><b>Setup:</b> Choose how the lineout is formed to show the defence a different picture.</li>
-                <li><b>Throw:</b> Select where we want to jump - each setup has 3 options (front, middle or back).</li>
-                <li><b>Play:</b> Choose how we play off the lineout:
-                    <ul>
-                        <li style="list-style:inside">"Hot" - straight out to the back line</li>
-                        <li style="list-style:inside">"Cold" - either a direct maul, or else other play (mostly) within the forwards</li>
-                    </ul>
-                </li>
-                <li><b>Receiver:</b> Uncheck this box if you want to run the lineout without a receiver.</li>
-                </ul>
-            </div>
-        </details>
-        <hr>
-        <h2>Call selection</h2>
-        <div class="flex-row">
+    gtag('config', 'G-YHTVJ4HXMR');
+</script>
+
+<body>
+    <div class="banner">
+        <div style="min-width: 600px; margin: 5px;">
+            <h1 style="font-size: 60px;font-weight: bold; font-style: italic; color: white; margin: -10px 0px; display: flex; align-items: center;">
+                <img src="https://img-res.pitchero.com/?url=images.pitchero.com%2Fclub_logos%2F4860%2Fq8XL0Ot4QSqgy8nOKnCb_Logo.png" alt="EGRFC logo" style="width: 100px; height: 100px; padding: 10px; margin-right: 15px;">
+                Lineout Builder
+            </h1>
+        </div>
+        <div style="max-width: 370px;">
+            <h4 style="font-size:medium; color: #fffa; font-style: italic; line-height: 150%; background-color: hsl(225, 100%, 20%); text-align:right; ">
+                Use any combination of these calls to create over 200 potential lineout options
+                <br>For more detail go to <a href="https://www.google.com/url?q=http://www.tinyurl.com/egrfc-playbook&sa=D&source=editors&ust=1720432392092945&usg=AOvVaw1c_PAmx1zpYAtXqVlPwueX">EGRFC Playbook</a>
+            </h4>
+        </div>
+    </div>
+    <div class="main-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: -10px 10px;">
+            <div class="column" style="width: 25%;"><h2>Call selection</h2></div>
+            <div class="column" style="width: 75%; font-style: italic; text-align:right;">Select these 4 components of a call to fully define a lineout from initial setup to first phase</div>
+        </div>
+        <div class="flex-row" style="margin: 0px 10px;">
             <!-- ---------- -->
             <!--   NUMBERS  -->
             <!-- ---------- -->
-            <div class="button-panel" style="border-bottom-left-radius: 0px">
+            <div class="button-panel" style="border-bottom-left-radius: 0px; flex:2; max-width: 240px;">
                 <div class="button-title">Numbers</div>
                 <div class="button-group" id="Numbers">
                     <div class="flex-row four" style="margin-bottom: 4px;">
@@ -450,13 +411,13 @@
                         <button class="button" style="border-top-right-radius: 0px; border-bottom-right-radius: 0px;margin: 0px;" onclick="select('n', this, '6'); select('receiver', this, '')"">6</button>
                         <button class=" button" style="border-top-left-radius: 0px; border-bottom-left-radius: 0px;margin: 0px; margin-left: -2px;" onclick="select('n', this, '6'); select('receiver', this, '+1')">6+1</button>
                     </div>
-                    <button class="button four active" onclick="select('n', this, '7'); select('receiver', this, '')" >7</button>
+                    <button class="button four" onclick="select('n', this, '7'); select('receiver', this, '')" >7</button>
                 </div>
             </div>
             <!-- ---------- -->
             <!--    SETUP   -->
             <!-- ---------- -->
-            <div class="button-panel">
+            <div class="button-panel" style="flex:2; max-width: 220px;">
                 <div class="button-title">Setup</div>
                 <div class="button-group">
                     <button class="button four" onclick="select('setup', this, 'A')">Auckland</button>
@@ -468,18 +429,18 @@
             <!-- ---------- -->
             <!--   TARGET  -->
             <!-- ---------- -->
-            <div class="button-panel">
+            <div class="button-panel" style="flex:1; max-width: 150px;">
                 <div class="button-title">Target</div>
                 <div class="target-button-group">
-                    <button class="button three" style="line-height: 81%; padding-bottom: 10px;" onclick="select('call', this, '1')">1<br><span style="font-weight: lighter; font-size: small;">back</span></button>
-                    <button class="button three" style="line-height: 81%; padding-bottom: 10px;" onclick="select('call', this, '2')">2<br><span style="font-weight: lighter; font-size: small;">front</span></button>
-                    <button class="button three" style="line-height: 81%; padding-bottom: 10px;" onclick="select('call', this, '3')">3<br><span style="font-weight: lighter; font-size: small;">middle</span></button>
+                    <button class="button three" style="padding-bottom: 10px;" onclick="select('call', this, '1')">1<br><span style="font-size: small;">back</span></button>
+                    <button class="button three" style="padding-bottom: 10px;" onclick="select('call', this, '2')">2<br><span style="font-size: small;">front</span></button>
+                    <button class="button three" style="padding-bottom: 10px;" onclick="select('call', this, '3')">3<br><span style="font-size: small;">middle</span></button>
                 </div>
             </div>
             <!-- ---------- -->
             <!--    PLAY    -->
             <!-- ---------- -->
-            <div class="button-panel">
+            <div class="button-panel" style="flex:2; max-width: 220px;">
                 <div class="button-title">Play</div>
                 <div class="play-button-group">
                     <button class="button four" style="padding: 6.5px;" id="Hot" onclick="select('play', this, 'Hot')">Hot</button>
@@ -493,7 +454,7 @@
         <!-- ----------------- -->
         <!--  Receiver button  -->
         <!-- ----------------- -->
-        <label for="receiver" style="color: hsl(225, 100%, 20%); background-color: white; text-align: left; margin: -4px 2px; padding: 10px 10px 5px 10px; margin-bottom: 20px; border: 2px solid hsl(225, 100%, 20%); width: max-content; border-radius: 0 0 10px 10px; border-top:none;">
+        <label for="receiver" style="color: hsl(225, 100%, 20%); background-color:white; text-align: left; margin: -3px 12px; padding: 10px 10px 5px 10px; border: 2px solid hsl(225, 100%, 20%); width: max-content; border-radius: 0 0 10px 10px; border-top:none;">
             <div class="button-text" style="font-weight: bold;">Receiver?<input type="checkbox" id="receiver_yn" name="receiver_yn" checked /></div>
             <script>
                 // Add event listener to the checkbox
@@ -506,12 +467,61 @@
                 });
             </script>
         </label>
+        
+        <hr>
+        
+        <div class="container">
+            <div id="diagram-title" style="display: flex; justify-content: space-between; align-items: center; margin: -10px 10px -40px 10px; padding: 0px;">
+                <div class="column">
+                    <h2>Step-by-step diagrams</h2>
+                </div>
+                <div class="column" style="text-align:right; font-style: italic;">View all 3 stages of the lineout to see how a specific call is run.
+                    <br>Or view one stage and see how it changes for different calls.</div>
+            </div>
+                
+            <div class="flex-row" style="align-self: flex-end; padding-right: 10px;">
+                <button class="tablinks" id="setup-panel" onclick="openTab(event, 'setup')">
+                    Setup<br><span style="font-weight: normal; font-size: small;">Lineout forms</span>
+                </button>
+                <button class="tablinks" id="throw-panel" onclick="openTab(event, 'throw')">
+                    Throw<br><span style="font-weight: normal; font-size: small">Lineout begins</span>
+                </button>
+                <button class="tablinks" id="play-panel" onclick="openTab(event, 'play')">
+                    Play<br><span style="font-weight: normal; font-size: small">Lineout ends</span>
+                </button>
+            </div>
+            
+            <!-- ---------- -->
+            <!--    SETUP   -->
+            <!-- ---------- -->
+            <div class="chart-container" id="setup" style="display: block; margin: 0px 10px;">
+                <div class="chart" id="setup-chart"></div>
+                <div class="chart-text" id="setup-text"></div>
+            </div>
+            <!-- ---------- -->
+            <!--    THROW   -->
+            <!-- ---------- -->
+            <div class="chart-container" id="throw" style="margin: 0px 10px;">
+                <div class="chart" id="throw-chart"></div>
+                <div class="chart-text" id="throw-text"></div>
+            </div>
+            <!-- ---------- -->
+            <!--    PLAY    --> 
+            <!-- ---------- -->
+            <div class="chart-container" id="play" style="margin: 0px 10px;">
+                <div class="chart" id="play-chart"></div>
+                <div class="chart-text" id="play-text"></div>
+            </div>
+        </div>
+
         <!-- ------------------- -->
         <!--  Call summary text  -->
         <!-- ------------------- -->
-        <div class="flex-row" id="call-summary">
+        <div class="flex-row" id="call-summary" style="margin: 10px;">
             <div style="margin-left: 20px;">
-                <span style="font-size: x-large; font-style: italic; font-weight: bold; color: hsl(225, 100%, 20%); width: 100%;">What the
+                <span
+                    style="font-size: x-large; font-style: italic; font-weight: bold; color: hsl(225, 100%, 20%); width: 100%;">What
+                    the
                     forwards say...</span>
                 <div class="speech" style="margin: 10px;">
                     <div id="fullCallText"></div>
@@ -531,58 +541,26 @@
                 <div class="backs-text" id="backsText"></div>
             </div>
         </div>
-        <hr>
-        <h2 id="diagram-title" style="display: none;">Step-by-step diagrams</h2>
-        <div class="container">
-            <div class="flex-column">
-                <button class="tablinks active" onclick="openTab(event, 'setup')">
-                    Setup<br><span style="font-weight: normal; font-size: medium">Lineout forms</span>
-                </button>
-                <button class="tablinks" id="throw-panel" onclick="openTab(event, 'throw')">
-                    Throw<br><span style="font-weight: normal; font-size: medium">Lineout begins</span>
-                </button>
-                <button class="tablinks" id="play-panel" onclick="openTab(event, 'play')">
-                    Play<br><span style="font-weight: normal; font-size: medium">Lineout ends</span>
-                </button>
-            </div>
-            <!-- ---------- -->
-            <!--    SETUP   -->
-            <!-- ---------- -->
-            <div class="chart-container" id="setup" style="display: inline-block; justify-content: space-around;">
-                    <div class="chart-text" id="setup-text"></div>
-                    <div class="chart" id="setup-chart"></div>
-                
-            </div>
-            <!-- ---------- -->
-            <!--    THROW   -->
-            <!-- ---------- -->
-            <div class="chart-container" id="throw">
-                <div class="chart-and-text">
-                    <div class="chart-text" id="throw-text"></div>
-                    <div class="chart" id="throw-chart"></div>
-                </div>
-            </div>
-            <!-- ---------- -->
-            <!--    PLAY    --> 
-            <!-- ---------- -->
-            <div class="chart-container" id="play">
-                <div class="chart-and-text">
-                    <div class="chart-text" id="play-text"></div>
-                    <div class="chart" id="play-chart"></div>
-                </div>  
-            </div>
-        </div>
+
     </div>
     <script>
         var n = 7;
-        var setup = null;
-        var call = null;
+        var setup = "C";
+        var call = "1";
         var receiver = '';
         var receiver_yn = true;
-        var play = null;
+        var play = "Hot";
+
+        // Simulate clicks on loading
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('button[onclick*="select(\'n\', this, \'7\')"]').click();
+            document.querySelector('button[onclick*="select(\'setup\', this, \'C\')"]').click();
+            document.querySelector('button[onclick*="select(\'call\', this, \'1\')"]').click();
+            document.querySelector('button[id="Hot"]').click();
+            document.querySelector('button[id="setup-panel"]').click();
+        });
 
         function select(type, element, value) {
-            console.log
             // Remove active class from all buttons 
             var buttons = document.querySelectorAll('.button[onclick^="select(\'' + type + '\', this"]');
             for (var i = 0; i < buttons.length; i++) {
@@ -595,6 +573,12 @@
             // Update the corresponding variable
             if (type === "n") {
                 n = value;
+                if (value > 4 && !document.querySelector('.button[onclick^="select(\'setup\', this"].active')) {
+                    setup = "C";
+                    document.querySelector('.button[onclick^="select(\'setup\', this"][onclick*="'+setup+'"]').classList.add("active");
+                    call = play === "Hot" ? "1" : "3";
+                    document.querySelector('.button[onclick^="select(\'call\', this"][onclick*="'+call+'"]').classList.add("active");
+                }
             } else if (type === "setup") {
                 setup = value;
             } else if (type === "call") {
@@ -607,6 +591,8 @@
                 play = value;
             }
 
+            var receiver_suffix = receiver_yn ? receiver : 'no9';
+
             //////////////////
             //   RECEIVER   //
             //////////////////
@@ -615,12 +601,12 @@
             var sixPlusOneButton = document.querySelector(".button[onclick=\"select('n', this, '6'); select('receiver', this, '+1')\"]");
             // With receiver...
             if (receiver_yn) {
-                // fourPlusOneButton.disabled = false;
+                fourPlusOneButton.disabled = false;
                 fivePlusOneButton.disabled = false;
                 sixPlusOneButton.disabled = false;
             } else {
             // ...without receiver...
-                // fourPlusOneButton.disabled = true;
+                fourPlusOneButton.disabled = true;
                 fivePlusOneButton.disabled = true;
                 sixPlusOneButton.disabled = true;
                 if (n < 7) {
@@ -632,20 +618,21 @@
                 } 
             }
 
-
             ////////////////////////////
             // SETUP TEXT DESCRIPTION //
             ////////////////////////////
-            if (setup === "A") {
-                text =
-                    "<p><b>Auckland</b> has no walk-in pod to initiate the lineout, and no obvious target. The first movement is the dummy jumper (D) attempting to commit the defensive front pod.</p>";
-            } else if (setup === "C") {
-                text =
-                    "<p><b>Canterbury</b> has a pod of 3 walking in, showing the defence a potential quick option to the middle. As the pod reaches the line, it splits rapidly to join pods at the front and back. </p>";
-            } else if (setup === "H") {
-                text = "<p><b>Highlanders</b> gives nothing away to the defence, everyone but the pillars walking in evenly spaced. The key to this setup is arriving together, at speed, once the hooker is ready .</p>";
-            } else if (setup === "W") {
-                text = "<p><b>Waikato</b> leaves multiple gaps in the line for potential jumpers to walk into, without any pre-formed pods, making it easy to adjust positions and change the picture for the defence.</p>";
+            if (n > 4) {
+                if (setup === "A") {
+                    text = "<p><b>Auckland</b> has no walk-in pod to initiate the lineout, and no obvious target. The first movement is the dummy jumper (D) attempting to commit the defensive front pod.</p>";
+                } else if (setup === "C") {
+                    text = "<p><b>Canterbury</b> has a pod of 3 walking in, showing the defence a potential quick option to the middle. As the pod reaches the line, it splits rapidly to join pods at the front and back. </p>";
+                } else if (setup === "H") {
+                    text = "<p><b>Highlanders</b> gives nothing away to the defence, everyone but the pillars walking in evenly spaced. The key to this setup is arriving together, at speed, once the hooker is ready .</p>";
+                } else if (setup === "W") {
+                    text = "<p><b>Waikato</b> leaves multiple gaps in the line for potential jumpers to walk into, without any pre-formed pods, making it easy to adjust positions and change the picture for the defence.</p>";
+                }
+            } else {
+                text = "<p>We set up ready to jump at the back, unless the defence is there to compete.<br>For more info on how to run a 4-man lineout, see the <a href='https://docs.google.com/presentation/d/e/2PACX-1vTFXNZF6oYUyOiHx9ZiSAMTBOGWwpjlxMexXD80f-OeBBY7aykFov2h7hDP01OfNErygiVNbmIn3wRK/pub?start=false&loop=true&delayms=60000&slide=id.g1252df79561_0_84'>Playbook</a></p>";
             }
             document.getElementById("setup-text").innerHTML = text;
 
@@ -653,41 +640,45 @@
             // THROW TEXT DESCRIPTION //
             ////////////////////////////
             var text = ""
-            if (setup === "A") {
-                if (call === "1") {
-                    if (n > 5) {
-                        var fpod = n - 3;
-                        text = "<p>As the front " + fpod + " players distract the defence with a dummy front jump, the back 3 turn to lift the back jumper after the ball is thrown but before the defence can react.</p>"
-                    } else {
-                        text = "<p>The front " + fpod + " players distract the defence with a dummy front jump, before the dummy jumper (D) has to rejoin the line to be a front lifter for a pod at the back.</p>"
+            if (n > 4) {
+                if (setup === "A") {
+                    if (call === "1") {
+                        if (n > 5) {
+                            var fpod = n - 3;
+                            text = "<p>As the front " + fpod + " players distract the defence with a dummy front jump, the back 3 turn to lift the back jumper after the ball is thrown but before the defence can react.</p>"
+                        } else {
+                            text = "<p>The front " + fpod + " players distract the defence with a dummy front jump, before the dummy jumper (D) has to rejoin the line to be a front lifter for a pod at the back.</p>"
+                        }
+                    } else if (call === "2") {
+                        text = "<p>As the dummy jumper (D) steps out of the line, the man behind him is already in a quarter squat position as a back lifter. He steps forward into the same spot to jump for the ball.</p>";
+                    } else if (call === "3") {
+                        text = "<p>As the dummy jumper (D) steps out of the line, the man behind him steps forward into the same spot to dummy jump for the ball and keep attention at the front.</p>";
                     }
-                } else if (call === "2") {
-                    text = "<p>As the dummy jumper (D) steps out of the line, the man behind him is already in a quarter squat position as a back lifter. He steps forward into the same spot to jump for the ball.</p>";
-                } else if (call === "3") {
-                    text = "<p>As the dummy jumper (D) steps out of the line, the man behind him steps forward into the same spot to dummy jump for the ball and keep attention at the front.</p>";
-                }
-            } else if (setup === "C") {
-                if (call === "1") {
-                    text = "<p>As the walk-in pod hits the line, one player runs to the front as a decoy, and " + (n === 5 ? "two players run" : "one player runs") + " to a back pod.</p>"
-                } else if (call === "2") {
-                    text = "<p>As the walk-in pod hits the line, " + (n === 5 ? "two players run" : "one player runs") + " to the front pod, and one player runs to the back as a decoy.</p>"
-                } else if (call === "3") {
-                    if (n === '5') {
-                        text = "<p>After splitting to the front and back, there is a <em>dummy</em> jump at the front, the back lifter becomes the jumper in the middle</p>";
-                    } else if (n === '6') {
-                        text = "<p>After dummy jumps at both C1 and C2, the 3 players who <em>weren't</em> in the walk-in pod form a pod in the middle (C1 and C3 use the same jumper)</p>.";
+                } else if (setup === "C") {
+                    if (call === "1") {
+                        text = "<p>As the walk-in pod hits the line, one player runs to the front as a decoy, and " + (n === 5 ? "two players run" : "one player runs") + " to a back pod.</p>"
+                    } else if (call === "2") {
+                        text = "<p>As the walk-in pod hits the line, " + (n === 5 ? "two players run" : "one player runs") + " to the front pod, and one player runs to the back as a decoy.</p>"
+                    } else if (call === "3") {
+                        if (n === '5') {
+                            text = "<p>After splitting to the front and back, there is a <em>dummy</em> jump at the front, the back lifter becomes the jumper in the middle</p>";
+                        } else if (n === '6') {
+                            text = "<p>After dummy jumps at both C1 and C2, the 3 players who <em>weren't</em> in the walk-in pod form a pod in the middle (C1 and C3 use the same jumper)</p>.";
+                        } else {
+                            text = "<p>After dummy jumps at both C1 and C2, the two nearest players already facing the middle jumper come forward to lift in the middle.</p>";
+                        }
+                    }
+                } else if (setup === "H") {
+                    text ="<p>This is the simplest setup, as it involves the least movement and the fewest people (only the jumper and the lifters either side of him).</p>"
+                } else if(setup === "W") {
+                    if (n != '6'){
+                        text = "<p>" + n + "-man Waikato is very similar to Highlanders, except the movement is focused on the jumpers, with the lifters already in place, showing the defence a different picture.</p>";
                     } else {
-                        text = "<p>After dummy jumps at both C1 and C2, the two nearest players already facing the middle jumper come forward to lift in the middle.</p>";
+                        text = "<p>The 6-man variant of Waikato can create the impression of a walk-in pod of 3 together, or spaced out to suit the call.</p>";
                     }
                 }
-            } else if (setup === "H") {
-                text ="<p>This is the simplest setup, as it involves the least movement and the fewest people (only the jumper and the lifters either side of him).</p>"
-            } else if(setup === "W") {
-                if (n != '6'){
-                    text = "<p>" + n + "-man Waikato is very similar to Highlanders, except the movement is focused on the jumpers, with the lifters already in place, showing the defence a different picture.</p>";
-                } else {
-                    text = "<p>The 6-man variant of Waikato can create the impression of a walk-in pod of 3 together, or spaced out to suit the call.</p>";
-                }
+            } else {
+                text = "<p>Ideally we want hot ball at the back, but cold ball has to be in the front or middle, closer to the hooker.<br>For more info on how to run a 4-man lineout, see the <a href='https://docs.google.com/presentation/d/e/2PACX-1vTFXNZF6oYUyOiHx9ZiSAMTBOGWwpjlxMexXD80f-OeBBY7aykFov2h7hDP01OfNErygiVNbmIn3wRK/pub?start=false&loop=true&delayms=60000&slide=id.g1252df79561_0_84'>Playbook</a></p>";
             }
             document.getElementById("throw-text").innerHTML = text;
 
@@ -695,41 +686,53 @@
             // PLAY TEXT DESCRIPTION //
             ///////////////////////////
             var text = ""
-            if (play === "Hot") {
-                text = "<p>This is the default play off the top of the lineout to the scrum half. The half backs really don't want front ball at the lineout ("+ setup + call +") because it puts more pressure on longer passes.</p>";
-            } else if (play === "Crusaders") {
-                text = "<p><b>Crusaders</b> is a play that initiates a maul, but leaves forward options on one or both sides to carry into the space vacated by defenders joining the maul.</p>";
-            } else if (play === "Flyby") {
-                text = "<p><b>Flyby</b> is a play that initiates a maul, but while the maul is being formed, a player peels around the corner into the space vacated by defenders joining the maul.</p>";
-            } else if (play === "Cold") {
-                text = "<p>With or without a scrum half, any lineout can form a maul. The nearest forward to the jumping pod will be first over the ball to initiate the maul, before others join to form a long, narrow formation.</p>";
+            if (n > 4){
+                if (play === "Hot") {
+                    text = "<p>This is the default play off the top of the lineout to the scrum half. The half backs really don't want front ball at the lineout ("+ setup + call +") because it puts more pressure on longer passes.</p>";
+                } else if (play === "Crusaders") {
+                    text = "<p><b>Crusaders</b> is a play that initiates a maul, but leaves forward options on one or both sides to carry into the space vacated by defenders joining the maul.</p>";
+                } else if (play === "Flyby") {
+                    text = "<p><b>Flyby</b> is a play that initiates a maul, but while the maul is being formed, a player peels around the corner into the space vacated by defenders joining the maul.</p>";
+                } else if (play === "Cold") {
+                    text = "<p>With or without a scrum half, any lineout can form a maul. The nearest forward to the jumping pod will be first over the ball to initiate the maul, before others join to form a long, narrow formation.</p>";
+                }
+            } else {
+                if (play === "Hot") {
+                    text = "<p>At the back, the ball can be fed to a pod of forwards or to the 10 for a strike move.</p>";
+                } else if (play === "Cold") {
+                    text = "<p>Teams generally don't expect a 4-man maul, so breaking the gain line provides a good setup for <b>England</b>, or to launch a backs move while the defence is resetting.</p>";
+                }
             }
             document.getElementById("play-text").innerHTML = text;
 
             ///////////////////////////
             //      LOAD CHARTS      //
             ///////////////////////////
-            var url_root = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json/angle";
+            var url_root = "https://raw.githubusercontent.com/samnlindsay/RugbyResults/master/json";
 
+            var default_play = (receiver === "" ? "Hot" : "Cold");
+            var throw_play = (play === null ? default_play : (play === 'Hot' ? 'Hot' : 'Cold'));
+            if (n > 4) {
+                var spec1 = url_root + "/setup_" + n + receiver_suffix + "_" + setup + ".json";            
+                var spec2 = url_root + "/throw_" + n + receiver_suffix + "_" + setup + call + "_" + throw_play + ".json";
+                var spec3 = url_root + "/play_" + n + receiver_suffix + "_" + setup + call + '_' + play + ".json";
+            } else {
+                var spec1 = url_root + "/setup_" + n + receiver_suffix + ".json";
+                var spec2 = url_root + "/throw_" + n + receiver_suffix + ".json";
+                var spec3 = url_root + "/play_" + n + receiver_suffix + ".json";
+            }
+            
             if (n !== null && setup !== null) {
                 document.getElementsByClassName("container")[0].style.display = "flex";
-                document.getElementById("diagram-title").style.display = "block";
+                document.getElementById("diagram-title").style.display = "flex";
 
-                var spec1 = url_root + "/setup_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + ".json";
                 vegaEmbed("#setup-chart", spec1, { actions: false }).catch(console.error);
 
                 if (call !== null){
-                    spec2 = url_root + "/throw_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call;
-                
+                    vegaEmbed("#throw-chart", spec2, { actions: false }).catch(console.error);
                     if (play !== null) {
-                        spec2 += (play === "Hot" ? "_Hot" : "_Cold") + ".json";
-                        vegaEmbed("#throw-chart", spec2, { actions: false }).catch(console.error);
-                        var spec3 = url_root + "/play_" + n + (receiver_yn ? receiver : 'no9') + "_" + setup + call + '_' + play + ".json";
                         vegaEmbed("#play-chart", spec3, { actions: false }).catch(console.error);
-                    
                     } else {
-                        spec2 += (receiver === "9" ? "_Hot" : "_Cold") + ".json";
-                        vegaEmbed("#throw-chart", spec2, { actions: false }).catch(console.error);
                         document.getElementById("play-text").innerHTML = "";
                         document.getElementById("play-chart").innerHTML = "";
                     }
@@ -738,17 +741,9 @@
                     document.getElementById("throw-chart").innerHTML = "";
                 }
             } else {
-                // Clear the content
                 document.getElementById("setup-text").innerHTML = "";
                 document.getElementById("setup-chart").innerHTML = "";
-                
-                document.getElementById("throw-text").innerHTML = "";
-                document.getElementById("throw-chart").innerHTML = "";
-
-                document.getElementById("play-text").innerHTML = "";
-                document.getElementById("play-chart").innerHTML = "";
             }
-
 
             ///////////////////////
             // CALL TEXT SUMMARY //
@@ -757,7 +752,7 @@
                 var numbers = n + (receiver === '+1' ? receiver : '-man');
                 var fullcall = setup + call + (play === null ? '' : (' ' + play));
             
-                document.getElementById("fullCallText").innerHTML = '\"' + numbers + ' ' + fullcall + '\"';
+                document.getElementById("fullCallText").innerHTML = '\"' + numbers + ' ' + (n>4 ? fullcall : play) + '\"';
 
                 var backsText = '<ul style="list-style - position: inside;">';
 
@@ -788,15 +783,61 @@
 
                 document.getElementById("call-summary").style.display = "flex";
             }
+
+            if (n === '4') {
+                document.querySelectorAll(".button[onclick^=\"select('setup', this\"]").forEach(button => {button.disabled = true;});
+                document.querySelectorAll(".button[onclick^=\"select('call', this\"]").forEach(button => {button.disabled = true;});
+                // Remove active class from Setup buttons
+                var buttons = document.querySelectorAll('.button[onclick^="select(\'setup\', this"]');
+                for (var i = 0; i < buttons.length; i++) {
+                    buttons[i].classList.remove("active");
+                }
+                // Remove active class from Call buttons
+                var buttons = document.querySelectorAll('.button[onclick^="select(\'call\', this"]');
+                for (var i = 0; i < buttons.length; i++) {
+                    buttons[i].classList.remove("active");
+                }
+
+                if (receiver === '+1') {
+                    document.querySelectorAll(".button[onclick^=\"select('play', this\"]").forEach(button => { button.disabled = false; });
+                    document.querySelector(".button[onclick=\"select('play', this, 'Cold')\"]").click();
+                    document.querySelector(".button[onclick=\"select('play', this, 'Hot')\"]").disabled = true;
+                } else {
+                    document.querySelectorAll(".button[onclick^=\"select('play', this\"]").forEach(button => { button.disabled = false; });
+                    document.querySelector(".button[onclick=\"select('play', this, 'Hot')\"]").click();
+                    document.querySelector(".button[onclick=\"select('play', this, 'Cold')\"]").disabled = true;
+                }
+                document.querySelector(".button[onclick=\"select('play', this, 'Flyby')\"]").disabled = true;
+                document.querySelector(".button[onclick=\"select('play', this, 'Crusaders')\"]").disabled = true;
+                
+            } else {
+                document.querySelectorAll(".button[onclick^=\"select('setup', this\"]").forEach(button => { button.disabled = false; });
+                document.querySelectorAll(".button[onclick^=\"select('call', this\"]").forEach(button => { button.disabled = false; });
+                document.querySelectorAll(".button[onclick^=\"select('play', this\"]").forEach(button => { button.disabled = false; });
+
+                // // If no setup buttons are active, click Canterbury
+                // if (!document.querySelector(".button[onclick^=\"select('setup', this\"]").classList.contains("active")) {
+                //     document.querySelector(".button[onclick=\"select('setup', this, 'C')\"]").click();
+                // }
+
+                // // If no call buttons are active, click 1
+                // if (!document.querySelector(".button[onclick^=\"select('call', this\"]").classList.contains("active")) {
+                //     if (play === "Hot") {
+                //         document.querySelector(".button[onclick=\"select('call', this, '1')\"]").click();
+                //     } else {
+                //         document.querySelector(".button[onclick=\"select('call', this, '3')\"]").click();
+                //     }
+                // }
+            }
         }
 
-        ////////////////////////////////////
-        // TEMPORARY - BUTTONS TO DISABLE //
-        ////////////////////////////////////
+        // ////////////////////////////////////
+        // // TEMPORARY - BUTTONS TO DISABLE //
+        // ////////////////////////////////////
 
-        // Disable 4/4+1 buttons
-        document.querySelector(".button[onclick=\"select('n', this, '4'); select('receiver', this, '+1')\"]").disabled = true;
-        document.querySelector(".button[onclick=\"select('n', this, '4'); select('receiver', this, '')\"]").disabled = true;
+        // // Disable 4/4+1 buttons
+        // document.querySelector(".button[onclick=\"select('n', this, '4'); select('receiver', this, '+1')\"]").disabled = true;
+        // document.querySelector(".button[onclick=\"select('n', this, '4'); select('receiver', this, '')\"]").disabled = true;
 
         function openTab(evt, tabName) {
             var i, tabcontent, tablinks;
@@ -811,29 +852,6 @@
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";
         }
-
-        // Add event listeners after the DOM has loaded
-        document.addEventListener('DOMContentLoaded', function () {
-            // Get the buttons
-            var targetButtons = document.querySelectorAll('.target-button-group button');
-            var playButtons = document.querySelectorAll('.play-button-group button');
-            var throwButton = document.querySelector('#throw-panel');
-            var playButton = document.querySelector('#play-panel');
-
-            // Add event listeners to the Target buttons
-            targetButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    throwButton.click();
-                });
-            });
-
-            // Add event listeners to the Play buttons
-            playButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    playButton.click();
-                });
-            });
-        });
 
     </script>
     

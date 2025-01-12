@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5.17.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"opacity": 0.7, "axis": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 14, "titleFontSize": 18}, "header": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 18, "titleFontSize": 20, "labelFontWeight": "bold", "orient": "left"}, "legend": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 14, "titleFontSize": 12, "titlePadding": 5, "fillColor": "white", "strokeColor": "black", "padding": 10, "titleFontWeight": "lighter", "titleFontStyle": "italic", "titleColor": "gray"}, "title": {"font": "Helvetica Neue, Helvetica, Arial, sans-serif", "fontSize": 24, "fontWeight": "bold", "anchor": "middle", "align": "center", "titlePadding": 20, "subtitlePadding": 10, "subtitleFontWeight": "lighter", "subtitleFontSize": 12, "subtitleColor": "gray", "subtitleFontStyle": "italic"}, "axisX": {"labelAngle": 0}, "facet": {"title": null, "header": {"title": null}, "font": "Helvetica Neue, Helvetica, Arial, sans-serif", "align": {"row": "each", "column": "all"}}, "resolve": {"scale": {"y": "independent", "facet": "independent"}}, "background": "aliceblue"}, "data": {"name": "data-d452bd6ef319fff0b8de4f945a64938e"}, "mark": {"type": "bar"}, "encoding": {"color": {"field": "key", "legend": {"orient": "bottom"}, "scale": {"domain": ["YC", "RC"], "range": ["#e6c719", "red"]}, "title": null, "type": "nominal"}, "x": {"axis": {"format": "d", "values": [0, 1, 2, 3, 4, 5]}, "field": "value", "title": "Total cards", "type": "quantitative"}, "y": {"field": "Player", "sort": {"field": "Cards", "order": "descending"}, "title": null, "type": "nominal"}}, "title": {"text": "1st & 2nd XV Cards", "subtitle": ["According to Pitchero data", "11 games"]}, "transform": [{"fold": ["YC", "RC"]}], "width": 400, "$schema": "https://vega.github.io/schema/vega-lite/v5.17.0.json", "datasets": {"data-d452bd6ef319fff0b8de4f945a64938e": [{"Player": "R Thomas", "A": 12, "YC": 1, "RC": 1, "Cards": 2}, {"Player": "C Leggat", "A": 9, "YC": 2, "RC": 0, "Cards": 2}, {"Player": "B Tottman", "A": 12, "YC": 2, "RC": 0, "Cards": 2}, {"Player": "G Collins", "A": 12, "YC": 1, "RC": 0, "Cards": 1}, {"Player": "D maynard", "A": 1, "YC": 1, "RC": 0, "Cards": 1}, {"Player": "A Boczek", "A": 1, "YC": 1, "RC": 0, "Cards": 1}, {"Player": "B Green", "A": 9, "YC": 1, "RC": 0, "Cards": 1}, {"Player": "D Hulst", "A": 6, "YC": 1, "RC": 0, "Cards": 1}, {"Player": "R Morlen", "A": 5, "YC": 1, "RC": 0, "Cards": 1}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>
