@@ -43,7 +43,7 @@ def alt_theme():
             },
             "title": {
                 "font": title_font,
-                "fontSize": 40,
+                "fontSize": 48,
                 "fontWeight": "bold",
                 "anchor": "start",
                 "align": "center",
@@ -76,6 +76,16 @@ def alt_theme():
 alt.themes.register("my_custom_theme", alt_theme)
 alt.themes.enable("my_custom_theme")
 
+game_type_scale = alt.Scale(
+    domain=["League", "Cup", "Friendly"], 
+    range=["#202947", "#981515", "#146f14"]                
+)
+
+squad_scale = alt.Scale(
+    domain=["1st", "2nd"],
+    range=["#202947", "#146f14"]
+)
+
 
 def plot_starts_by_position(squad=1, season="2024/25", fb_only=False):
 
@@ -89,7 +99,14 @@ def plot_starts_by_position(squad=1, season="2024/25", fb_only=False):
     if fb_only:
         facet=alt.Facet("PositionType:N", sort=["Forwards", "Backs"], columns=2, title=None)
     else:
-        facet=alt.Facet("Position:N", columns=2, sort=["Prop", "Scrum Half", "Hooker", "Fly Half", "Second Row", "Centre", "Back Row", "Back Three"], title=None, align="each")
+        facet=alt.Facet(
+            "Position:N", 
+            columns=2, 
+            sort=["Prop", "Scrum Half", "Hooker", "Fly Half", "Second Row", "Centre", "Back Row", "Back Three"], 
+            title=None, 
+            align="each",
+            spacing=5
+        )
 
     # altair bar chart of starts by position
     chart = alt.Chart(df).mark_bar().encode(
@@ -103,7 +120,9 @@ def plot_starts_by_position(squad=1, season="2024/25", fb_only=False):
             scale=alt.Scale(
                 domain=["League", "Cup", "Friendly"], 
                 range=["#202947", "#981515", "#146f14"]                
-            ), legend=alt.Legend(title=None)
+            ), 
+            legend=alt.Legend(
+                title="Click to filter", titleOrient="left", orient="bottom", direction="horizontal")
         ),
         order=alt.Order('GameType:N', sort='descending')
     ).transform_filter(
@@ -115,33 +134,14 @@ def plot_starts_by_position(squad=1, season="2024/25", fb_only=False):
         x="shared"
     ).properties(
         width=200, 
-        height=alt.Step(12),
+        height=alt.Step(14),
         title=alt.Title(text=title, subtitle="Not including bench appearances.")
     ).add_params(legend)
 
     return chart
 
-def plot_games_by_season(games):
-    chart = alt.Chart(games).mark_bar().encode(
-        x=alt.X('Season:N', title='Season', axis=alt.Axis(labelAngle=-45)),
-        y=alt.Y('count():Q', title='Games Played'),
-        color=alt.Color(
-            "GameType:N",
-            scale=alt.Scale(
-                domain=["League", "Cup", "Friendly"], 
-                range=["#202947", "#981515", "#146f14"]
-            )
-        ),
-        order=alt.Order('GameType:N', sort='descending')
-    ).properties(
-        title=alt.Title('1st Team Games by Season'),
-        width=alt.Step(50),
-        height=300,
-    )
-    return chart
-
 # Plot the number of games played by each player in the 2024/25 season
-def plot_games_by_player(squad, season="2024/25", min_games=5):
+def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
 
     if squad == 1:
         p = players(1)
@@ -150,39 +150,18 @@ def plot_games_by_player(squad, season="2024/25", min_games=5):
     else:
         p = pd.concat([players(1), players(2)])
 
-    if squad == 0:
-        c = alt.Color(
-            "Squad:N",
-            scale=alt.Scale(
-                domain=["1st", "2nd"], 
-                range=["#202947", "#146f14"]                
-            ),
-            legend=alt.Legend(
-                title="Click to filter", 
-                orient="none",
-                legendX=300,
-                legendY=250
-            )
+    c = alt.Color(
+        f"{'Squad' if squad==0 else 'GameType'}:N",
+        scale=squad_scale if squad == 0 else game_type_scale,
+        legend=alt.Legend(
+            title="Click to filter", orient="bottom", direction="horizontal", titleOrient="left"
         )
-        o = alt.Order('Squad', sort='descending')
+    )
+    o = alt.Order('Squad' if squad==0 else 'GameType', sort='descending')
 
-    else:
-        c = alt.Color(
-            "GameType:N",
-            scale=alt.Scale(
-                domain=["League", "Cup", "Friendly"], 
-                range=["#202947", "#981515", "#146f14"]                
-            ),
-            legend=alt.Legend(
-                title="Click to filter", 
-                # orient="none",
-                # direction="horizontal",
-                # legendX=0,
-                # legendY=-150
-                orient="bottom-right"
-            )
-        )
-        o = alt.Order('GameType', sort='descending')
+    g = ["Player"]
+    if not(agg):
+        g.append("Season")
 
     # legend selection filter
     legend = alt.selection_point(fields=["GameType" if squad != 0 else "Squad"], bind="legend", on="click")
@@ -202,24 +181,19 @@ def plot_games_by_player(squad, season="2024/25", min_games=5):
             ), 
             legend=None
         ),
-        tooltip=["Player", "GameType", "PositionType", "count()"]
+        tooltip=g + [alt.Tooltip("count()", title="Games"), "GameType" if squad != 0 else "Squad"],
     ).properties(
         title=alt.Title(
-            text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} appearances",
-            subtitle=f"Minimum {min_games} appearances. Lighter shaded bars represent bench appearances.",
+            text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances",
+            subtitle=f"Minimum {min_games} appearances. Lighter shaded bars represent bench Appearances.",
             subtitleFontStyle="italic",
         ),
-        width=400,
+        width=400 if (agg or season) else 250,
         height=alt.Step(15)
     ).transform_filter(
         legend
     ).add_params(
         legend
-    ).transform_joinaggregate(
-        TotalGames="count()",
-        groupby=["Player"]
-    ).transform_filter(
-        f"datum.TotalGames >= {min_games}"
     )
 
     if season:
@@ -228,60 +202,18 @@ def plot_games_by_player(squad, season="2024/25", min_games=5):
         )
     else:
         chart = chart.configure_title(anchor="middle")
-    
-    return chart
 
-def squads_by_season(squad=1, min_games=5, add_rule=False):
-
-    p = players(squad)
-
-    if squad == 1:
-        t = "1st"
-    elif squad == 2:
-        t = "2nd"
-    else:
-        t = "1st & 2nd"
-
-    p["Game"] = p["Opposition"] + " (" + p["Home/Away"] + ") - " + p["Competition"]
+    if not(agg) and season is None:
+        chart = chart.encode(
+            column=alt.Column("Season:N", title=None)
+        ).resolve_scale(y="independent")
     
-    c_counts = p[p["GameType"].isin(["League", "Cup"])]\
-        .groupby(["Season"]).agg({"Game": "nunique", "Player": "nunique"})\
-        .reset_index().set_index("Season")\
-        .to_dict()
-    
-    
-    # League counts
-    l_counts = p[p["GameType"] == "League"]\
-        .groupby(["Season"]).agg({"Game": "nunique", "Player": "nunique"})\
-        .reset_index().set_index("Season")\
-        .to_dict()
-    
-    
-    t_counts = p.groupby(["Season"]).agg({"Game": "nunique", "Player": "nunique"})\
-        .reset_index().set_index("Season")\
-        .to_dict()
-
-    charts = []
-    for season in ["2021/22", "2022/23", "2023/24", "2024/25"]:
-
-        chart = plot_games_by_player(squad=squad, season=season, min_games=min_games).properties(
-            width=250,
-            title=alt.Title(text=season, subtitle=[
-                f"{t_counts['Game'][season]} games total ({c_counts['Game'][season]} in league/cup)",
-                f"{t_counts['Player'][season]} players used ({c_counts['Player'][season]} in league/cup)",
-                ]
-            )
+    chart = chart.transform_joinaggregate(
+            TotalGames="count()",
+            groupby=g
+        ).transform_filter(
+            f"datum.TotalGames >= {min_games}"
         )
-        
-        if add_rule:
-            chart = chart + alt.Chart(pd.DataFrame({"x": [c_counts['Game'][season]]})).mark_rule(color="#981515").encode(x="x")
-        
-        charts.append(chart)
-
-    for c in charts[:-1]:
-        c.encoding.color.legend = None
-
-    chart = alt.hconcat(*charts).properties(title=alt.Title(text=f"{t} Team Appearances", fontSize=48, anchor="middle")).resolve_legend(color="independent")
 
     return chart
 
@@ -720,7 +652,7 @@ def points_scorers_chart(squad=1, season="2024/25"):
     chart = alt.Chart(scorers).mark_bar().transform_calculate(
         label="if(datum.T>0, datum.T + 'T ', '') + if(datum.Con>0, datum.Con + 'C ', '') + if(datum.PK>0, datum.PK + 'P ', '')"
     ).encode(
-        x=alt.X("sum(Points):Q", axis=alt.Axis(orient="top"),  title=None),
+        x=alt.X("sum(Points):Q", axis=alt.Axis(orient="top", title="Points")),
         y=alt.Y(
             "Player:N", 
             sort=alt.EncodingSortField(field="sortfield", order="descending"), 
@@ -730,7 +662,8 @@ def points_scorers_chart(squad=1, season="2024/25"):
             "Type:N", 
             legend=alt.Legend(
                 title="Click to filter",
-                orient="top", 
+                titleOrient="left",
+                orient="bottom",
             ), 
             scale=alt.Scale(domain=['Tries', 'Pens', 'Cons'], range=["#202947", "#981515", "#146f14"]                )
         ),
@@ -741,7 +674,7 @@ def points_scorers_chart(squad=1, season="2024/25"):
             alt.Tooltip("A:Q", title="Games"),
         ],
         text=alt.Text("label:N"),
-        row=alt.Row("Squad:N", header=alt.Header(title=None) if squad == 0 else None),
+        row=alt.Row("Squad:N", spacing=5, header=alt.Header(title=None) if squad == 0 else None),
         column=alt.Column("Season:O", spacing=5, header=alt.Header(title=None, labelFontSize=24) if season is None else None),
     ).transform_joinaggregate(
         sortfield="sum(Points)",    

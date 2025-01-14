@@ -17,11 +17,14 @@
 
 <body>
     <div class="container">
-        <img src="https://img-res.pitchero.com/?url=images.pitchero.com%2Fclub_logos%2F4860%2Fq8XL0Ot4QSqgy8nOKnCb_Logo.png&bg=null&h=180&w=180&t=square&q=null"
+        <img src="https://img-res.pitchero.com/?url=images.pitchero.com%2Fclub_logos%2F4860%2Fq8XL0Ot4QSqgy8nOKnCb_Logo.png&bg=null&h=250&w=250&t=square&q=null"
             alt="Team Logo" />
-        <h1>Club Stats</h1>
-        <p>Squad stats (1st and 2nd XV) including results, player appearances, captains, point scorers and cards.</p>
-        <h3>By Season</h3>
+
+        <hr>
+
+        <h1>Club / Player Stats</h1>
+        <h2>Season Summary</h2>
+        <p>Various stats summarising the playing squads and results per season.</p>
         <div class="group">
             <a href="Charts/2021-22/index.html" class="button"
                 onclick="showIframe(event, 'Charts/2021-22/index.html')">2021/22</a>
@@ -32,19 +35,25 @@
             <a href="Charts/2024-25/index.html" class="button"
                 onclick="showIframe(event, 'Charts/2024-25/index.html')">2024/25</a>
         </div>
-        <h3>Stats over time</h3>
+        <p><br></p>
+        <p>Specific stats compared across each season</p>
         <div class="group">
+            <a href="Charts/by-season/appearances.html" class="button"
+                onclick="showIframe(event, 'Charts/by-season/appearances.html')">Appearances</a>
             <a href="Charts/by-season/captains.html" class="button"
                 onclick="showIframe(event, 'Charts/by-season/captains.html')">Captains</a>
-            <a href="Charts/by-season/results.html" class="button" onclick="showIframe(event, 'Charts/by-season/points.html')">Point
+            <a href="Charts/by-season/points.html" class="button" onclick="showIframe(event, 'Charts/by-season/points.html')">Point
                 Scorers</a>
             <a href="Charts/by-season/cards.html" class="button"
                 onclick="showIframe(event, 'Charts/by-season/cards.html')">Cards</a>
         </div>
 
-        <h1>1st XV Lineout Stats</h1>
+        <hr>
+
+        <h1>Video Analysis</h1>
+        <p>Playing stats based on games where video is available</p>
+        <h3>1st XV Lineouts</h3>
         <p>Breakdown of lineouts in all games on video, by hooker, jumper, call etc.</p>
-        <h3>By Season</h3>
         <div class="group">
             <a href="Charts/2021-22/1s-lineouts.html" class="button"
                 onclick="showIframe(event, 'Charts/2021-22/1s-lineouts.html')">2021/22</a>
@@ -55,7 +64,7 @@
             <a href="Charts/2024-25/1s-lineouts.html" class="button"
                 onclick="showIframe(event, 'Charts/2024-25/1s-lineouts.html')">2024/25</a>
         </div>
-        <h3>Stats over time</h3>
+        <h4>Trends</h4>
         <div class="group">
             <a href="Charts/by-season/1s-numbers.html" class="button"
                 onclick="showIframe(event, 'Charts/by-season/1s-numbers.html')">Numbers</a>
