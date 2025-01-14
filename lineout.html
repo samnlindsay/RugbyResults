@@ -327,7 +327,7 @@
             /* display: none; */
         }
 
-        .tablinks {
+        .row-button {
             font-size: x-large;
             font-weight: bold;
             cursor: pointer;
@@ -343,12 +343,12 @@
             justify-content: right;
             line-height: 80%;
         }
-        .tablinks:hover {
+        .row-button:hover {
             /* border: 4px solid hsl(225, 100%, 20%); */
             box-shadow: 0 0 5px hsl(225, 100%, 20%);
             color: hsl(225, 100%, 20%);
         }
-        .tablinks.active {
+        .row-button.active {
             color: white;
             background-color: hsl(225, 100%, 40%);
 
@@ -480,13 +480,13 @@
             </div>
                 
             <div class="flex-row" style="align-self: flex-end; padding-right: 10px;">
-                <button class="tablinks" id="setup-panel" onclick="openTab(event, 'setup')">
+                <button class="row-button" id="setup-panel" onclick="openTab(event, 'setup')">
                     Setup<br><span style="font-weight: normal; font-size: small;">Lineout forms</span>
                 </button>
-                <button class="tablinks" id="throw-panel" onclick="openTab(event, 'throw')">
+                <button class="row-button" id="throw-panel" onclick="openTab(event, 'throw')">
                     Throw<br><span style="font-weight: normal; font-size: small">Lineout begins</span>
                 </button>
-                <button class="tablinks" id="play-panel" onclick="openTab(event, 'play')">
+                <button class="row-button" id="play-panel" onclick="openTab(event, 'play')">
                     Play<br><span style="font-weight: normal; font-size: small">Lineout ends</span>
                 </button>
             </div>
@@ -840,14 +840,14 @@
         // document.querySelector(".button[onclick=\"select('n', this, '4'); select('receiver', this, '')\"]").disabled = true;
 
         function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
+            var i, tabcontent, row-button;
             tabcontent = document.getElementsByClassName("chart-container");
             for (i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].style.display = "none";
             }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            row-button = document.getElementsByClassName("row-button");
+            for (i = 0; i < row-button.length; i++) {
+                row-button[i].className = row-button[i].className.replace(" active", "");
             }
             document.getElementById(tabName).style.display = "block";
             evt.currentTarget.className += " active";

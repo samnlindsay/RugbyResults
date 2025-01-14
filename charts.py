@@ -6,27 +6,32 @@ from data_prep import *
 # Set the default configuration for altair
 def alt_theme():
 
-    font="Helvetica Neue, Helvetica, Arial, sans-serif"
+    title_font="PT Sans Narrow, Helvetica Neue, Helvetica, Arial, sans-serif"
+    font="Lato, sans-serif"
     
     return {
         "config": {
-            "opacity": 0.7,
             "axis": {
-                "font": font,
-                "labelFontSize": 14,
-                "titleFontSize": 18
+                "labelFont": font,
+                "titleFont": title_font,
+                "labelFontSize": 13,
+                "titleFontSize": 24,
+                "gridColor":"#202947",
+                "gridOpacity": 0.2
             },
             "header": {
-                "font": font,
-                "labelFontSize": 18,
-                "titleFontSize": 20,
+                "labelFont": title_font,
+                "titleFont": title_font,
+                "labelFontSize": 24,
+                "titleFontSize": 28,
                 "labelFontWeight": "bold",
                 "orient": "left"
             },
             "legend": {
-                "font": font,
+                "labelFont": font,
+                "titleFont": title_font,
                 "labelFontSize": 14,
-                "titleFontSize": 12,
+                "titleFontSize": 16,
                 "titlePadding": 5,
                 "fillColor": "white",
                 "strokeColor": "black", 
@@ -34,12 +39,13 @@ def alt_theme():
                 "titleFontWeight": "lighter",
                 "titleFontStyle": "italic",
                 "titleColor": "gray",
+                "offset": 10,
             },
             "title": {
-                "font": font,
-                "fontSize": 24,
+                "font": title_font,
+                "fontSize": 40,
                 "fontWeight": "bold",
-                "anchor": "middle",
+                "anchor": "start",
                 "align": "center",
                 "titlePadding": 20,
                 "subtitlePadding": 10,
@@ -47,6 +53,7 @@ def alt_theme():
                 "subtitleFontSize": 12,
                 "subtitleColor": "gray",
                 "subtitleFontStyle": "italic",
+                "offset": 15,
             },
             "axisX": {
                 "labelAngle": 0
@@ -54,7 +61,6 @@ def alt_theme():
             "facet": {
                 "title": None,
                 "header": {"title": None},
-                "font": font,
                 "align": {"row": "each", "column": "all"},  
             },
             "resolve": {
@@ -63,7 +69,7 @@ def alt_theme():
                     "facet": "independent"
                 }
             },
-            "background": "aliceblue"
+            "background": "#20294710"
         }
     }
 
@@ -96,7 +102,7 @@ def plot_starts_by_position(squad=1, season="2024/25", fb_only=False):
              "GameType:N",
             scale=alt.Scale(
                 domain=["League", "Cup", "Friendly"], 
-                range=["darkblue", "lightblue", "green"]                
+                range=["#202947", "#981515", "#146f14"]                
             ), legend=alt.Legend(title=None)
         ),
         order=alt.Order('GameType:N', sort='descending')
@@ -109,8 +115,8 @@ def plot_starts_by_position(squad=1, season="2024/25", fb_only=False):
         x="shared"
     ).properties(
         width=200, 
-        height=alt.Step(18),
-        title=title
+        height=alt.Step(12),
+        title=alt.Title(text=title, subtitle="Not including bench appearances.")
     ).add_params(legend)
 
     return chart
@@ -123,7 +129,7 @@ def plot_games_by_season(games):
             "GameType:N",
             scale=alt.Scale(
                 domain=["League", "Cup", "Friendly"], 
-                range=["darkblue", "lightblue", "green"]                
+                range=["#202947", "#981515", "#146f14"]
             )
         ),
         order=alt.Order('GameType:N', sort='descending')
@@ -149,7 +155,7 @@ def plot_games_by_player(squad, season="2024/25", min_games=5):
             "Squad:N",
             scale=alt.Scale(
                 domain=["1st", "2nd"], 
-                range=["darkblue", "green"]                
+                range=["#202947", "#146f14"]                
             ),
             legend=alt.Legend(
                 title="Click to filter", 
@@ -165,7 +171,7 @@ def plot_games_by_player(squad, season="2024/25", min_games=5):
             "GameType:N",
             scale=alt.Scale(
                 domain=["League", "Cup", "Friendly"], 
-                range=["darkblue", "lightblue", "green"]                
+                range=["#202947", "#981515", "#146f14"]                
             ),
             legend=alt.Legend(
                 title="Click to filter", 
@@ -199,15 +205,12 @@ def plot_games_by_player(squad, season="2024/25", min_games=5):
         tooltip=["Player", "GameType", "PositionType", "count()"]
     ).properties(
         title=alt.Title(
-            text=f"{'1st' if squad==1 else ('2nd' if squad==2 else '1st & 2nd')} XV appearances",
-            subtitle=f"Min. {min_games} appearances. Lighter shaded bars represent bench appearances.",
+            text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} appearances",
+            subtitle=f"Minimum {min_games} appearances. Lighter shaded bars represent bench appearances.",
             subtitleFontStyle="italic",
-
         ),
         width=400,
-        height=alt.Step(20)
-    ).transform_filter(
-        alt.FieldEqualPredicate(field="Season", equal=season)   
+        height=alt.Step(15)
     ).transform_filter(
         legend
     ).add_params(
@@ -218,6 +221,13 @@ def plot_games_by_player(squad, season="2024/25", min_games=5):
     ).transform_filter(
         f"datum.TotalGames >= {min_games}"
     )
+
+    if season:
+        chart = chart.transform_filter(
+            alt.datum.Season == season
+        )
+    else:
+        chart = chart.configure_title(anchor="middle")
     
     return chart
 
@@ -264,14 +274,14 @@ def squads_by_season(squad=1, min_games=5, add_rule=False):
         )
         
         if add_rule:
-            chart = chart + alt.Chart(pd.DataFrame({"x": [c_counts['Game'][season]]})).mark_rule(color="red").encode(x="x")
+            chart = chart + alt.Chart(pd.DataFrame({"x": [c_counts['Game'][season]]})).mark_rule(color="#981515").encode(x="x")
         
         charts.append(chart)
 
     for c in charts[:-1]:
         c.encoding.color.legend = None
 
-    chart = alt.hconcat(*charts).properties(title=alt.Title(text=f"{t} Team Appearances", fontSize=40)).resolve_legend(color="independent")
+    chart = alt.hconcat(*charts).properties(title=alt.Title(text=f"{t} Team Appearances", fontSize=48, anchor="middle")).resolve_legend(color="independent")
 
     return chart
 
@@ -500,11 +510,11 @@ n_scale = {
 }
 
 calls4 = ["Yes", "No", "Snap"]
-cols4 = ["darkgreen", "red", "red"]
+cols4 = ["#146f14", "#981515", "#981515"]
 calls7 = ["A*", "C*", "A1", "H1", "C1", "W1", "A2", "H2", "C2", "W2", "A3", "H3", "C3", "W3"]
-cols7 = 2*["orange"] + 4*["darkgreen"] + 4*["red"] + 4*["orange"]
+cols7 = 2*["orange"] + 4*["#146f14"] + 4*["#981515"] + 4*["orange"]
 calls = ["Matlow", "Red", "Orange", "Plus", "Even +", "RD", "Even", "Odd", "Odd +", "Green +", "", "Green"]
-cols = 5*["red"] + 6*["orange"] + ["darkgreen"]
+cols = 5*["#981515"] + 6*["orange"] + ["#146f14"]
 
 call_scale = {
     "domain": calls4 + calls7 + calls,
@@ -520,7 +530,7 @@ setups = {"A": "Auckland", "C": "Canterbury", "H": "Highlanders", "W": "Waikato"
 area_order = ["Front", "Middle", "Back"]
 area_scale = {
     "domain": area_order, 
-    "range": ['red', 'orange', 'darkgreen']
+    "range": ['#981515', 'orange', '#146f14']
 }
 
 
@@ -550,6 +560,8 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
     with open("lineout-template.json") as f:
         chart = json.load(f)
 
+    if season is None:
+        chart["spec"]["title"] = f"Lineout Stats by {type}"
     chart["spec"]["layer"][0]["layer"][0]["params"][0]["name"] = f"select{type}"
     chart["spec"]["layer"][0]["layer"][0]["params"][0]["select"]["fields"] = [type]
     chart["spec"]["encoding"]["opacity"]["condition"]["param"] = f"select{type}"
@@ -594,7 +606,7 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["spec"]["encoding"]["tooltip"].append({"field": "sortcol"})
     
     if type == "Dummy":
-        chart["spec"]["encoding"]["color"]["scale"] = {"range": ["red", "green", "black"]}
+        chart["spec"]["encoding"]["color"]["scale"] = {"range": ["#981515", "#146f14", "black"]}
         chart["spec"]["encoding"]["x"]["title"] = None
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "Success", "order": "descending"}
         chart["spec"]["encoding"]["x"]["axis"] = {
@@ -673,11 +685,13 @@ def lineout_chart(squad=1, season=None):
 
 def points_scorers(squad=1, season="2024/25"):
 
-    scorers = pitchero_stats(squad, season).sort_values("Points", ascending=False)
+    if squad == 0:
+        s1 = pitchero_stats(1, season)
+        s2 = pitchero_stats(2, season)
+        scorers = pd.concat([s1, s2])
+    else:
+        scorers = pitchero_stats(squad, season).sort_values("Points", ascending=False)
     scorers = scorers[scorers["Points"] > 0]
-    scorers["sortfield"] = scorers["Points"] + scorers["PPG"]
-    scorers = scorers.sort_values(["sortfield", "Player"], ascending=False).reset_index()
-    scorers["sortfield"] = scorers.index
     
     scorers['Tries'] = scorers['T'].astype(int)*5
     scorers['Cons'] = scorers['Con'].astype(int)*2
@@ -687,7 +701,11 @@ def points_scorers(squad=1, season="2024/25"):
 
 def points_scorers_chart(squad=1, season="2024/25"):
 
-    scorers = points_scorers(squad, season)
+    if season:
+        scorers = points_scorers(squad, season)
+    else:
+        scorers = pd.concat(points_scorers(squad, s) for s in ["2021/22", "2022/23", "2023/24", "2024/25"])
+
     scorers = scorers.drop("Points", axis=1)
     scorers = scorers.melt(
         id_vars=[c for c in scorers.columns if c not in ["Tries", "Pens", "Cons"]], 
@@ -705,88 +723,82 @@ def points_scorers_chart(squad=1, season="2024/25"):
         x=alt.X("sum(Points):Q", axis=alt.Axis(orient="top"),  title=None),
         y=alt.Y(
             "Player:N", 
-            sort=alt.EncodingSortField(field="sortfield"), 
+            sort=alt.EncodingSortField(field="sortfield", order="descending"), 
             title=None
         ),
         color=alt.Color(
             "Type:N", 
             legend=alt.Legend(
                 title="Click to filter",
-                orient="none", 
-                legendX=400, 
-                legendY=100,
+                orient="top", 
             ), 
-            scale=alt.Scale(domain=['Tries', 'Pens', 'Cons'])
+            scale=alt.Scale(domain=['Tries', 'Pens', 'Cons'], range=["#202947", "#981515", "#146f14"]                )
         ),
         order=alt.Order("Type:N", sort="descending"),
         tooltip=[
-            alt.Tooltip("Player", title=" "), 
+            alt.Tooltip("Player:N", title=" "), 
             alt.Tooltip("label", title="  "),
-            alt.Tooltip("A", title="Games"),
+            alt.Tooltip("A:Q", title="Games"),
         ],
         text=alt.Text("label:N"),
+        row=alt.Row("Squad:N", header=alt.Header(title=None) if squad == 0 else None),
+        column=alt.Column("Season:O", spacing=5, header=alt.Header(title=None, labelFontSize=24) if season is None else None),
+    ).transform_joinaggregate(
+        sortfield="sum(Points)",    
+        groupby=["Player", "Type", "Season", "Squad"],
     ).transform_filter(
         selection
     ).properties(
         title=alt.Title(
-            text=("1st" if squad==1 else "2nd") + " XV Points Scorers", 
-            offset=10, 
-            anchor="middle",
+            text=("1st XV " if squad==1 else "2nd XV " if squad==2 else "") + "Points Scorers",
             subtitle="According to Pitchero data"
         ),
-        width=500
+        width=400 if season else 200
     ).add_params(
         selection
+    ).resolve_scale(
+        x="shared",
+        y="independent"
     )
 
     return chart
 
 def card_chart(squad=0, season="2024/25"):
 
-    s1 = pitchero_stats(1, season)
-    s1["Cards"] = s1["YC"] + s1["RC"]
-    s1 = (s1[s1["Cards"] > 0])[["Player","A","YC","RC", "Cards"]]
-
-    s2 = pitchero_stats(2, season)
-    s2["Cards"] = s2["YC"] + s2["RC"]
-    s2 = (s2[s2["Cards"] > 0])[["Player","A","YC","RC", "Cards"]]
-
-    if squad == 0:
-        s = pd.concat([s1, s2]).sort_values(["Cards", "RC"], ascending=[False, False])    
+    # if season is None, get all seasons
+    if season is None:
+        s1 = pd.concat(pitchero_stats(1, s) for s in ["2021/22", "2022/23", "2023/24", "2024/25"])
+        s2 = pd.concat(pitchero_stats(2, s) for s in ["2021/22", "2022/23", "2023/24", "2024/25"])
     else:
-        s = s1 if squad == 1 else s2
+        s1 = pitchero_stats(1, season)
+        s2 = pitchero_stats(2, season)
 
-    title = f"{'1st' if squad==1 else ('2nd' if squad==2 else '1st & 2nd')} XV Cards"
+    s = s1 if squad == 1 else (s2 if squad == 2 else pd.concat([s1, s2]))
+    s["Cards"] = s["YC"] + s["RC"]
+    s = (s[s["Cards"] > 0])[["Player","A","YC","RC", "Cards", "Season", "Squad"]]
+        
+    s = s.sort_values(["Season", "Cards", "RC"], ascending=[True, False, True])
 
-    chart = alt.Chart(s).mark_bar().encode(
-        y=alt.Y("Player", title=None, sort=alt.EncodingSortField(field="Cards", order="descending")),
+    title = f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Cards"
+
+    chart = alt.Chart(s).mark_bar(stroke="black", strokeOpacity=0.2).encode(
+        y=alt.Y("Player:N", title=None, sort=alt.EncodingSortField(field="Cards", order="descending")),
         x=alt.X("value:Q", title="Total cards", axis=alt.Axis(values=[0,1,2,3,4,5], format="d")),        
         color=alt.Color(
             "key:N", 
             title=None, 
-            legend=alt.Legend(orient="bottom")).scale(domain=["YC", "RC"], range=["#e6c719", "red"])
+            legend=alt.Legend(orient="bottom")
+        ).scale(domain=["YC", "RC"], range=["#e6c719", "#981515"]),
+        tooltip=["Player:N", alt.Tooltip("A:Q", title="Appearances"), "YC:Q", "RC:Q", "Squad:N"],
+        column=alt.Column("Season:O", spacing=5, header=alt.Header(title=None, labelFontSize=24) if season is None else None),
     ).transform_fold(
         ["YC", "RC"]
-    ).properties(title=alt.Title(text=title, subtitle=["According to Pitchero data", f"{len(results(squad, season))} games"]), width=400)    
-
-    return chart
-
-def cards_by_season(squad=1):
-    charts = []
-    for season in ["2021/22", "2022/23", "2023/24", "2024/25"]:
-
-        chart = card_chart(squad=squad, season=season).properties(
-            width=150,
-            title=alt.Title(text=season, subtitle=f"{len(results(squad, season))} games")
-        )
-        charts.append(chart)
-
-    for c in charts[:-1]:
-        c.encoding.color.legend = None
-
-    title = f"{'1st' if squad==1 else '2nd' if squad==2 else '1st & 2nd'} XV Cards by Season"
-
-    chart = alt.hconcat(*charts).properties(title=alt.Title(text=title, subtitle="According to Pitchero data", fontSize=40)).resolve_legend(color="independent")
+    ).resolve_scale(
+        y="independent"
+    ).properties(
+        title=alt.Title(text=title, subtitle=f"According to Pitchero data" + f" ({len (results(squad, season))} games)" if season else ""), 
+        width=200 if season else 120
+    )    
 
     return chart
 
@@ -803,7 +815,8 @@ def captains_chart(season="2024/25"):
 
     captains = pd.concat(captains.values())    
         
-    captains = captains[captains["Season"]==season]
+    if season:
+        captains = captains[captains["Season"]==season]
     captains = captains[captains["GameType"]!="Friendly"]
 
 
@@ -815,36 +828,19 @@ def captains_chart(season="2024/25"):
             "Role:N",
             scale=alt.Scale(
                 domain=["Captain", "VC"], 
-                range=["darkblue", "lightblue"]                
+                range=["#202947", "#7d96e8"]                
             ),
-            legend=alt.Legend(title=None, orient="none", legendX=300, legendY=100)
+            legend=alt.Legend(title=None, direction="horizontal", orient="bottom")
         ), 
         row=alt.Row("Team:N", title=None, header=alt.Header(title=None, orient="left")),
+        column=alt.Column("Season:O", header=alt.Header(title=None, labelFontSize=24)),
     ).properties(
-        title=alt.Title("1st & 2nd XV Captains", subtitle="League & Cup Captains and Vice-Captains"),
-        width=400,
+        title=alt.Title("1st & 2nd XV Captains", subtitle=["League & Cup Captains and Vice-Captains", "(Friendly games excluded)"]),
+        width=400 if season else 250,
     ).resolve_scale(
         x="shared",
         y="independent"
     )
-
-    return chart
-
-def captains_by_season():
-    charts = []
-    for season in ["2023/24", "2024/25"]:
-        chart = captains_chart(season).properties(
-            width=400,
-            title=alt.Title(text=season)
-        )
-        charts.append(chart)
-
-    for c in charts[:-1]:
-        c.encoding.color.legend = None
-
-    title = f"1st XV Captains by Season"
-
-    chart = alt.hconcat(*charts).properties(title=alt.Title(text=title, subtitle="League & Cup Captains and Vice-Captains", fontSize=40)).resolve_legend(color="independent")
 
     return chart
 
@@ -874,7 +870,7 @@ def results_chart(squad=1, season=None):
         x2='PA:Q',
         color=alt.Color(
             'Result:N', 
-            scale=alt.Scale(domain=['W', 'L'], range=['darkgreen', 'red']), 
+            scale=alt.Scale(domain=['W', 'L'], range=['#146f14', '#981515']), 
             legend=alt.Legend(offset=20, title=["Click to","highlight"])
         ),
         opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
@@ -897,4 +893,11 @@ def results_chart(squad=1, season=None):
 
     return (bar + loser + winner).add_params(
         selection
-    ).properties(title=alt.Title(text=("1st" if squad==1 else "2nd") + " XV Results", offset=20), width=400)
+    ).properties(
+        title=alt.Title(
+            text=("1st" if squad==1 else "2nd") + " XV Results", 
+            subtitle=["Bars show the scores of the losing team on the left and winning team on the right.", "Larger bars indicate larger winning margins."],
+            offset=20
+        ), 
+        width=400
+    )

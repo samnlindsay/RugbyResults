@@ -2,109 +2,37 @@
 <html>
     <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900">
-        <style>
-            body,
-            html {
-                margin: 0;
-                padding: 0;
-                height: 100%;
-                overflow: hidden;
-                font-family: 'Lato', sans-serif;
-            }
-
-            .top-section {
-                background-color: #f1f1f1;
-                padding: 10px;
-                z-index: 1;
-            }
-
-            .scrollable-content {
-                /* overflow-y: auto; */
-                height: 100%;
-            }
-
-            .tabcontent {
-                display: none;
-                height: 100%;
-            }
-
-            .active {
-                display: block;
-            }
-
-            .tablinks1 {
-                display: inline-block;
-                padding: 10px 15px;
-                margin-bottom: 3px;
-                background-color: #48b;
-                border: 2px solid #111;
-                cursor: pointer;
-                color: #fff;
-                font-size: 16px;
-                font-weight: bold;
-                border-radius: 6px;
-            }
-
-            .tablinks2 {
-                display: inline-block;
-                padding: 10px 15px;
-                margin-bottom: 3px;
-                background-color: #fff;
-                border: 2px solid #111;
-                cursor: pointer;
-                font-size: 16px;
-                font-weight: bold;
-                border-radius: 6px;
-            }
-
-            .tablinks1:hover {
-                background-color: #ddd;
-                color: #111;
-            }
-
-            .tablinks2:hover {
-                background-color: #ddd;
-                color: #111;
-            }
-
-            iframe {
-                width: 100%;
-                height: 100%;
-            }
-        </style>
+        <link rel="stylesheet" href="../../styles.css">
     </head>
 
     <body>
-        <div class="flex-column" style="display: flex; flex-direction: column; height: 100%;">
+        <div class="flex-column">
         <div class="top-section">
-            <h1 style="text-align: left; margin-left: 50px; margin-bottom: 15px; margin-top: 5px;">East Grinstead RFC Stats 2021/22</h1>
+            <div class="content-title">Season Summary 2021/22</div>
             
             <div>
-                <h2 style="display: inline-block; text-align: left; width: 100px; margin-left: 10px; margin-bottom: 0px; margin-top: 5px;">1st XV</h3>
-                <button class="tablinks1 bold" onclick="openTab(event, '1s-results')">Results</button>
-                <button class="tablinks1 bold" onclick="openTab(event, '1s-appearances')">Appearances</button>
-                <button class="tablinks1 bold" onclick="openTab(event, '1s-position')">Starts (by position)</button>
-                <button class="tablinks1 bold" onclick="openTab(event, '1s-points')">Scorers</button>
-                <button class="tablinks1 bold" onclick="openTab(event, '1s-lineout')">Lineouts</button>
-                <!-- <button class="tablinks1 bold" onclick="openTab(event, '1s-lineup')">Team of the Season</button> -->
+                <div class="row-title">1st XV</div>
+                <button class="row-button t1 bold" onclick="openTab(event, '1s-results')">Results</button>
+                <button class="row-button t1 bold" onclick="openTab(event, '1s-appearances')">Appearances</button>
+                <button class="row-button t1 bold" onclick="openTab(event, '1s-position')">Starts (by position)</button>
+                <button class="row-button t1 bold" onclick="openTab(event, '1s-points')">Scorers</button>
+                <!-- <button class="row-button t1 bold" onclick="openTab(event, '1s-lineup')">Team of the Season</button> -->
             </div>
             
             <div>
-                <h2 style="display: inline-block; text-align: left; width: 100px; margin-left: 10px; margin-bottom: 0px; margin-top: 5px;">2nd XV</h3>
-                <!-- <button class="tablinks2 bold" onclick="openTab(event, '2s-lineup')">Team of the Season</button> -->
-                <button class="tablinks2 bold" onclick="openTab(event, '2s-results')">Results</button>
-                <button class="tablinks2 bold" onclick="openTab(event, '2s-appearances')">Appearances</button>
-                <button class="tablinks2 bold" onclick="openTab(event, '2s-position')">Starts (by position)</button>
-                <button class="tablinks2 bold" onclick="openTab(event, '2s-points')">Scorers</button>
-                <!-- <button class="tablinks2 bold" onclick="openTab(event, '2s-lineout')">Lineouts</button> -->
+                <div class="row-title">2nd XV</div>
+                <!-- <button class="row-button t2 bold" onclick="openTab(event, '2s-lineup')">Team of the Season</button> -->
+                <button class="row-button t2 bold" onclick="openTab(event, '2s-results')">Results</button>
+                <button class="row-button t2 bold" onclick="openTab(event, '2s-appearances')">Appearances</button>
+                <button class="row-button t2 bold" onclick="openTab(event, '2s-position')">Starts (by position)</button>
+                <button class="row-button t2 bold" onclick="openTab(event, '2s-points')">Scorers</button>
+                <!-- <button class="row-button t2 bold" onclick="openTab(event, '2s-lineout')">Lineouts</button> -->
             </div>
             
-            <div>
-                <h2 style="display: inline-block; text-align: left; width: 100px; margin-left: 10px; margin-bottom: 0px; margin-top: 15px;">Squad</h3>
-                <button class="tablinks1 bold" style="background-color: #222" onclick="openTab(event, 'captains')">Captains</button>
-                <button class="tablinks1 bold" style="background-color: #222" onclick="openTab(event, 'appearances')">Appearances</button>
-                <button class="tablinks1 bold" style="background-color: #222" onclick="openTab(event, 'cards')">Cards</button>
-            
+            <div style="padding-top:10px">
+                <div class="row-title">Squad</div>
+                <button class="row-button bold" onclick="openTab(event, 'cards')">Cards</button>
+                <button class="row-button bold" onclick="openTab(event, 'appearances')">Appearances</button>
             </div>
             
         </div>
@@ -112,63 +40,63 @@
         <div class="scrollable-content">
             <!-- TEAM OF THE SEASON -->
             <div id="1s-lineup" class="tabcontent">
-                <iframe src="./1s-lineup.html"></iframe>
+                <iframe class="chart-iframe" src="./1s-lineup.html"></iframe>
             </div>
             <div id="2s-lineup" class="tabcontent">
-                <iframe src="./2s-lineup.html"></iframe>
+                <iframe class="chart-iframe" src="./2s-lineup.html"></iframe>
             </div>
             
             <!-- Players (by position) -->
             <div id="1s-position" class="tabcontent">
-                <iframe src="./1s-squad-position.html"></iframe>
+                <iframe class="chart-iframe" src="./1s-squad-position.html"></iframe>
             </div>
             <div id="2s-position" class="tabcontent">
-                <iframe src="./2s-squad-position.html"></iframe>
+                <iframe class="chart-iframe" src="./2s-squad-position.html"></iframe>
             </div>
 
             <!-- RESULTS -->
             <div id="1s-results" class="tabcontent">
-                <iframe src="./1s-results.html"></iframe>
+                <iframe class="chart-iframe" src="./1s-results.html"></iframe>
             </div>
             <div id="2s-results" class="tabcontent">
-                <iframe src="./2s-results.html"></iframe>
+                <iframe class="chart-iframe" src="./2s-results.html"></iframe>
             </div>
 
             <!-- POINTS -->
             <div id="1s-points" class="tabcontent">
-                <iframe src="./1s-points.html"></iframe>
+                <iframe class="chart-iframe" src="./1s-points.html"></iframe>
             </div>
             <div id="2s-points" class="tabcontent">
-                <iframe src="./2s-points.html"></iframe>
+                <iframe class="chart-iframe" src="./2s-points.html"></iframe>
             </div>
 
             <!-- LINEOUTS -->
             <div id="1s-lineout" class="tabcontent">
-                <iframe src="./1s-lineouts.html"></iframe>
+                <iframe class="chart-iframe" src="./1s-lineouts.html"></iframe>
             </div>
             <div id="2s-lineout" class="tabcontent">
-                <iframe src="./2s-lineouts.html"></iframe>
+                <iframe class="chart-iframe" src="./2s-lineouts.html"></iframe>
             </div>
 
             <!-- CAPTAINS -->
             <div id="captains" class="tabcontent">
-                <iframe src="./captains.html"></iframe>
+                <iframe class="chart-iframe" src="./captains.html"></iframe>
             </div>
 
             <!-- APPEARANCES -->
             <div id="1s-appearances" class="tabcontent">
-                <iframe src="./1s-appearances.html"></iframe>
+                <iframe class="chart-iframe" src="./1s-appearances.html"></iframe>
             </div>
             <div id="2s-appearances" class="tabcontent">
-                <iframe src="./2s-appearances.html"></iframe>
+                <iframe class="chart-iframe" src="./2s-appearances.html"></iframe>
             </div>
             <div id="appearances" class="tabcontent">
-                <iframe src="./appearances.html"></iframe>
+                <iframe class="chart-iframe" src="./appearances.html"></iframe>
             </div>
 
             <!-- CARDS -->
             <div id="cards" class="tabcontent">
-                <iframe src="./cards.html"></iframe>
+                <iframe class="chart-iframe" src="./cards.html"></iframe>
             </div>
         </div>
         </div>

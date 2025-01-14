@@ -43,7 +43,6 @@ sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1pcO8iEpZuds9
 
 my_sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1keX2eGbyiBejpfMPMbL7aXYLy7IDJZDBXQqiKVQavz0/edit#gid=390656160").worksheets()
 
-###
 
 def results(squad=1, season=None):
 
@@ -264,5 +263,7 @@ def pitchero_stats(squad=1, season=None):
 
     df["Points"] = df["T"]*5 + df["Con"]*2 + df["DG"]*3 + df["PK"]*3 
     df["PPG"] = df["Points"] / df["A"]
+    df["Season"] = season
+    df["Squad"] = "1st" if squad == 1 else "2nd"
 
     return df
