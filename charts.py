@@ -233,7 +233,6 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
             tooltip=[
                 "Player:N",
                 "Squad:N",
-                alt.Tooltip("positionType:N", title="Start/Bench"),
                 alt.Tooltip("count()", title="Games"), 
                 alt.Tooltip("TotalGames:Q", title="Total Games")
             ],
@@ -242,7 +241,7 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
         ).add_params(
             legend
         ).transform_joinaggregate(
-            TotalGames="count()", groupby=["Player", "Squad"]
+            TotalGames="count()", groupby=["Player"]
         ).transform_filter(
             f"datum.TotalGames >= {2*min_games}"
         ).properties(
@@ -930,7 +929,7 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout"):
     df["Team"] = df["Outcome"].apply(lambda x: "EG" if x in ["EG_won", "EG_lost"] else "Opposition")
 
     turnover_filter = alt.selection_point(fields=["Turnover"], bind="legend")
-    team_filter = alt.selection_multi(fields=["Team"], bind="legend")
+    team_filter = alt.selection_point(fields=["Team"], bind="legend")
 
     color_scale = alt.Scale(domain=["EG", "Opposition"], range=["#202946", "#981515"])
     opacity_scale = alt.Scale(domain=[True, False], range=[1, 0.5])
@@ -986,3 +985,21 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout"):
         .resolve_scale(y="shared", yOffset="independent", color="independent", opacity="independent")
         .properties(title=alt.Title(text=season, anchor="middle", fontSize=36))
     )
+
+def set_piece_h2h_charts(squad=1, event="lineout"):
+    seasons = ["2021/22", "2022/23", "2023/24", "2024/25"]
+    chart = (
+        alt.hconcat(*[set_piece_h2h_chart(squad,s,event) for s in seasons])
+        .resolve_scale(color="independent", opacity="independent", y="independent")
+        .configure(background="white")
+        .properties(
+            title=alt.Title(
+                text=f"{event.capitalize()} Head-to-Head", 
+                subtitle=[
+                    f"Number of {event}s and turnovers for both teams in each game",
+                    f"Click the legends to view only turnovers, or to view only one team's {event}s"
+                ]
+            )
+        )
+    )
+    return chart
