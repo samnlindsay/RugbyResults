@@ -123,7 +123,7 @@ lineout_chart_dict = {
       }
 }
   ],
-  "background": "#6c6",
+  "background": "#e5e4e7",
   "data": {
     "values": None
   },

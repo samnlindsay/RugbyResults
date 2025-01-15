@@ -60,7 +60,7 @@ def alt_theme():
             },
             "facet": {
                 "title": None,
-                "header": {"title": None},
+                "header": None,
                 "align": {"row": "each", "column": "all"},  
             },
             "resolve": {
@@ -150,6 +150,7 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
     else:
         p = pd.concat([players(1), players(2)])
 
+
     c = alt.Color(
         f"{'Squad' if squad==0 else 'GameType'}:N",
         scale=squad_scale if squad == 0 else game_type_scale,
@@ -159,17 +160,13 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
     )
     o = alt.Order('Squad' if squad==0 else 'GameType', sort='descending')
 
-    g = ["Player"]
-    if not(agg):
-        g.append("Season")
-
     # legend selection filter
     legend = alt.selection_point(fields=["GameType" if squad != 0 else "Squad"], bind="legend", on="click")
     
     chart = alt.Chart(p).mark_bar(strokeWidth=2).encode(
         x=alt.X(
             "count()",
-            axis=alt.Axis(title="Appearances", orient="bottom")),
+            axis=alt.Axis(title="Appearances", orient="top")),
         y=alt.Y("Player", sort="-x", title=None),
         color=c,
         order=o,
@@ -181,49 +178,92 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
             ), 
             legend=None
         ),
-        tooltip=g + [alt.Tooltip("count()", title="Games"), "GameType" if squad != 0 else "Squad"],
-    ).properties(
-        title=alt.Title(
-            text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances",
-            subtitle=f"Minimum {min_games} appearances. Lighter shaded bars represent bench Appearances.",
-            subtitleFontStyle="italic",
-        ),
-        width=400 if (agg or season) else 250,
-        height=alt.Step(15)
+        column=alt.Column("Season:N", title=None, header=alt.Header(title=None, labelFontSize=36)),
+        tooltip=[
+            "Player:N", 
+            "Season:N",
+            "GameType:N" if squad != 0 else "Squad:N",
+            alt.Tooltip("PositionType:N", title="Start/Bench"),
+            alt.Tooltip("count()", title="Games"), 
+            alt.Tooltip("TotalGames:Q", title="Total Games")
+        ],
     ).transform_filter(
         legend
     ).add_params(
         legend
+    ).transform_joinaggregate(
+        TotalGames="count()", groupby=["Player", "Season"]
+    ).resolve_scale(
+        y="independent"
+    ).transform_filter(
+        f"datum.TotalGames >= {min_games}"
+    ).properties(
+        title=alt.Title(
+            text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances" + (" per Season" if season is None else season),
+            subtitle=f"Minimum {min_games} appearances in a given season. Lighter shaded bars represent bench appearances.",
+            subtitleFontStyle="italic"
+        ),
+        width=400 if season else 250,
+        height=alt.Step(15)
     )
-
-    if season:
+    
+    if season is not None:
         chart = chart.transform_filter(
             alt.datum.Season == season
+        ).properties(
+            width=400,
+            height=alt.Step(15)
         )
-    else:
-        chart = chart.configure_title(anchor="middle")
-
-    if not(agg) and season is None:
-        chart = chart.encode(
-            column=alt.Column("Season:N", title=None)
-        ).resolve_scale(y="independent")
-    
-    chart = chart.transform_joinaggregate(
-            TotalGames="count()",
-            groupby=g
+        return chart
+    elif agg:
+        agg_chart = alt.Chart(p).mark_bar().encode(
+            x=alt.X("count()", axis=alt.Axis(title="Appearances", orient="top")),
+            y=alt.Y("Player:N", title=None, sort="-x"),
+            color=c,
+            order=o,
+            opacity=alt.Opacity(
+                "PositionType:N",
+                scale=alt.Scale(
+                    domain=["Start", "Bench"],
+                    range=[1.0, 0.6]
+                ),
+                legend=None
+            ),
+            tooltip=[
+                "Player:N",
+                "Squad:N",
+                alt.Tooltip("positionType:N", title="Start/Bench"),
+                alt.Tooltip("count()", title="Games"), 
+                alt.Tooltip("TotalGames:Q", title="Total Games")
+            ],
         ).transform_filter(
-            f"datum.TotalGames >= {min_games}"
+            legend
+        ).add_params(
+            legend
+        ).transform_joinaggregate(
+            TotalGames="count()", groupby=["Player", "Squad"]
+        ).transform_filter(
+            f"datum.TotalGames >= {2*min_games}"
+        ).properties(
+            width=500,
+            height=alt.Step(15),
+            title=alt.Title(
+                text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances since 2021",
+                subtitle=f"Minimum {2*min_games} appearances total). Lighter shaded bars represent bench appearances.",
+                subtitleFontStyle="italic",
+            ),
         )
-
+        return alt.vconcat(chart, agg_chart)
+    
     return chart
 
 import json
 
 def most_common_players(df, by="Position"):
-    mcp = df.groupby(["Player", by]).size().reset_index(name="Count")\
-        .sort_values("Count", ascending=False)\
+    mcp = df.groupby(["Player", by]).size().reset_index(name=f"Count{by}")\
+        .sort_values(f"Count{by}", ascending=False)\
         .groupby(by).head(4).reset_index(drop=True)\
-        .sort_values([by, "Count"], ascending=[True,False]).reset_index(drop=True)
+        .sort_values([by, f"Count{by}"], ascending=[True,False]).reset_index(drop=True)
     
     if by == "Position":
         return mcp  
@@ -237,11 +277,11 @@ def most_common_players(df, by="Position"):
 # 3 for back row/back three
 def top_by_position(x):
     if x["Position"].iloc[0] in ["Hooker", "Scrum Half", "Fly Half"]:
-        return x.nlargest(1, "Count", "all")
+        return x.nlargest(1, "CountPosition", "first")
     elif x["Position"].iloc[0] in ["Prop", "Second Row", "Centre"]:
-        return x.nlargest(2, "Count", "all")
+        return x.nlargest(2, "CountPosition", "first")
     else:
-        return x.nlargest(3, "Count", "all")
+        return x.nlargest(3, "CountPosition", "first")
 
 def team_of_the_season(squad=1, season="2024/25", bench_forwards=2, bench_backs=1):
 
@@ -253,10 +293,10 @@ def team_of_the_season(squad=1, season="2024/25", bench_forwards=2, bench_backs=
 
     #### STARTERS ####
     starters = mcp.groupby("Position").apply(top_by_position)\
-        .reset_index(drop=True).rename(columns={"Count": "CountPosition"})
+        .reset_index(drop=True)
 
     starters = starters.merge(mcn, on=["Player","Position"], how="left")
-    starters.sort_values(["CountPosition", "Count"], ascending=[False,False])
+    starters = starters.sort_values(["CountPosition", "CountNumber"], ascending=[False,False])
 
     # If a Player appears only once, delete all other rows with their Number
     unique = starters.groupby("Player").filter(lambda x: len(x) == 1)
@@ -268,15 +308,14 @@ def team_of_the_season(squad=1, season="2024/25", bench_forwards=2, bench_backs=
 
     starters = pd.concat([unique, starters[~starters["Player"].isin(unique["Player"])]])
     if len(starters) > len(set(starters["Player"])):
-        starters.sort_values(["CountPosition", "Count"], ascending=[False,False])
+        starters.sort_values(["CountPosition", "CountNumber"], ascending=[False,False])
         for p in set(starters["Player"]):
             # Keep only the row with the highest Count for each Player
             # Delete other rows for that player from starters
-            p_row = starters[starters["Player"] == p].nlargest(1, "Count")
+            p_row = starters[starters["Player"] == p].nlargest(1, "CountPosition")
             starters = pd.concat([p_row, starters[(starters["Player"] != p) & (starters["Number"] != p_row["Number"].iloc[0])]])
 
-        starters = starters[["Number", "Position", "Player", "CountPosition"]].sort_values("Number")
-    starters.rename(columns={"CountPosition": "Count_p"}, inplace=True)
+        starters = starters[["Number", "Position", "Player", "CountPosition", "CountNumber"]].sort_values("Number")
 
     #### BENCH ####
     apps = players_agg(squad)
@@ -299,7 +338,7 @@ def team_of_the_season(squad=1, season="2024/25", bench_forwards=2, bench_backs=
     # bench.rename(columns={"TotalStarts": "Count_p", "TotalGames":"Count"}, inplace=True)
 
     # Count per Player
-    apps = df.groupby("Player").size().reset_index(name="Count")
+    apps = apps.groupby("Player").agg({"TotalGames":"sum", "TotalStarts":"sum"}).reset_index()
     coords = pd.DataFrame([
             {"Position": "Prop", "n": 1, "x": 10, "y": 95},
             {"Position": "Hooker", "n": 2, "x": 25, "y": 95},
@@ -337,7 +376,7 @@ def team_of_the_season_chart(squad=1, season="2024/25", **kwargs):
     
     top = team_of_the_season(squad, season, **kwargs)
 
-    top_count = top["Count"].sum() 
+    top_count = top["TotalStarts"].sum() 
     p = players(squad)
     season_count = len(p[(p["Season"]==season) & (p["Number"]<=15)])
 
@@ -493,7 +532,7 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart = json.load(f)
 
     if season is None:
-        chart["spec"]["title"] = f"Lineout Stats by {type}"
+        chart["title"] = f"Lineout Stats by {type}"
     chart["spec"]["layer"][0]["layer"][0]["params"][0]["name"] = f"select{type}"
     chart["spec"]["layer"][0]["layer"][0]["params"][0]["select"]["fields"] = [type]
     chart["spec"]["encoding"]["opacity"]["condition"]["param"] = f"select{type}"
@@ -608,8 +647,8 @@ def lineout_chart(squad=1, season=None):
     chart = alt.vconcat(top, bottom).resolve_scale(color='independent')
 
     chart["title"] = {
-        "text": f"{'1st' if squad==1 else '2nd'} XV Lineouts - {season} season",
-        "subtitle": ["Distribution of lineouts (bar), and success rate (line).", "Click to highlight and filter."]  
+        "text": f"{'1st' if squad==1 else '2nd'} XV Lineouts {season}",
+        "subtitle": ["Distribution   of lineouts (bar), and success rate (line).", "Click to highlight and filter."]  
     }
     
 
@@ -716,7 +755,7 @@ def card_chart(squad=0, season="2024/25"):
 
     chart = alt.Chart(s).mark_bar(stroke="black", strokeOpacity=0.2).encode(
         y=alt.Y("Player:N", title=None, sort=alt.EncodingSortField(field="Cards", order="descending")),
-        x=alt.X("value:Q", title="Total cards", axis=alt.Axis(values=[0,1,2,3,4,5], format="d")),        
+        x=alt.X("value:Q", title="Cards", axis=alt.Axis(values=[0,1,2,3,4,5], format="d")),        
         color=alt.Color(
             "key:N", 
             title=None, 
@@ -799,7 +838,7 @@ def results_chart(squad=1, season=None):
                 labelExpr="split(datum.value,'-__-')[1]"
                 )
         ),
-        x=alt.X('PF:Q', title="Points", axis=alt.Axis(orient='bottom', offset=5)),
+        x=alt.X('PF:Q', title="Points", axis=alt.Axis(orient='top', offset=5)),
         x2='PA:Q',
         color=alt.Color(
             'Result:N', 
@@ -812,14 +851,14 @@ def results_chart(squad=1, season=None):
 
     loser = alt.Chart(df).mark_text(align='right', dx=-2, dy=0, color='black').encode(
         y=alt.Y('GameID:N', sort=None),
-        x=alt.X('loser:Q', title=None, axis=alt.Axis(orient='top', offset=5)),
+        x=alt.X('loser:Q', title=None, axis=alt.Axis(orient='bottom', offset=5)),
         text='loser:N',
         opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
     )
 
     winner = alt.Chart(df).mark_text(align='left', dx=2, dy=0, color='black').encode(
         y=alt.Y('GameID:N', sort=None),
-        x=alt.X('winner:Q', title=None, axis=alt.Axis(orient='top', offset=5)),
+        x=alt.X('winner:Q', title=None, axis=alt.Axis(orient='bottom', offset=5)),
         text='winner:N',
         opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
     )

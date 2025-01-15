@@ -13,17 +13,14 @@
         "text": [
             ""
         ],
-        "font": "Helvetica Neue, Helvetica, Arial, sans-serif",
-        "fontSize": 36,
         "fontWeight": "bold",
         "subtitle": [
             "Most appearances in each position (darker colour = more appearances)",
             "These players makes up XXX% of all starting XVs over the season"
         ],
-        "subtitleFontSize": 14,
-        "color": "#139",
-        "anchor": "middle",
-        "align": "center",
+        "subtitleColor": "black",
+        "subtitleFontSize": 16,
+        "color": "black",
         "offset": 20
     },
     "layer": [
@@ -31,7 +28,7 @@
             "mark": {
                 "type": "rect",
                 "align": "center",
-                "color": "mediumseagreen",
+                "color": "#202946",
                 "opacity": 0.1,
                 "fontSize": 32,
                 "fontWeight": "bolder",
@@ -48,10 +45,11 @@
                 "y": 55,
                 "align": "center",
                 "baseline": "middle",
-                "fontSize": 28,
+                "font": "PT Sans Narrow",
+                "fontSize": 36,
                 "fontWeight": "bold",
                 "text": "Replacements",
-                "color": "#139"
+                "color": "black"
             },
             "transform": [
                 {
@@ -73,7 +71,7 @@
                     },
                     "encoding": {
                         "color": {
-                            "field": "Count",
+                            "field": "TotalGames",
                             "type": "quantitative",
                             "title": "Total 1st XV appearances",
                             "scale": {
@@ -90,7 +88,7 @@
                         "filled": false,
                         "opacity": 1,
                         "size": 3000,
-                        "color": "darkblue",
+                        "color": "black",
                         "strokeWidth": 3
                     }
                 }
@@ -150,7 +148,7 @@
             "mark": {
                 "type": "text",
                 "align": "center",
-                "color": "#000",
+                "color": "black",
                 "fontSize": 15,
                 "fontWeight": "bold",
                 "yOffset": 40
@@ -184,7 +182,7 @@
             "mark": {
                 "type": "text",
                 "align": "center",
-                "color": "#000",
+                "color": "black",
                 "fontSize": 11,
                 "opacity": 0.7,
                 "yOffset": 56
@@ -218,7 +216,7 @@
             "mark": {
                 "type": "text",
                 "align": "center",
-                "color": "#000",
+                "color": "black",
                 "fontSize": 10,
                 "opacity": 0.7,
                 "yOffset": 69
@@ -252,7 +250,7 @@
             "mark": {
                 "type": "text",
                 "align": "left",
-                "color": "#000",
+                "color": "white",
                 "fontWeight": "bold",
                 "fontSize": 16,
                 "xOffset": 40,
@@ -287,7 +285,7 @@
             "mark": {
                 "type": "text",
                 "align": "left",
-                "color": "#000",
+                "color": "white",
                 "opacity": 0.7,
                 "fontSize": 11,
                 "xOffset": 40,
@@ -321,15 +319,15 @@
     ],
     "transform": [
         {
-            "calculate": "datum.Count_p + ' starts (' + datum.Position_x + ')'",
+            "calculate": "datum.CountPosition + ' starts (' + datum.Position_x + ')'",
             "as": "label_starts"
         },
         {
-            "calculate": "datum.Count + ' games total'",
+            "calculate": "datum.TotalGames + ' games total'",
             "as": "label_total"
         },
         {
-            "calculate": "datum.Count + ' games (' + datum.Count_p + ' starts)'",
+            "calculate": "datum.TotalGames + ' games (' + datum.TotalStarts + ' starts)'",
             "as": "label_bench"
         }
     ],
