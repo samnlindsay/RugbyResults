@@ -184,7 +184,6 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
             "Player:N", 
             "Season:N",
             "GameType:N" if squad != 0 else "Squad:N",
-            alt.Tooltip("PositionType:N", title="Start/Bench"),
             alt.Tooltip("count()", title="Games"), 
             alt.Tooltip("TotalGames:Q", title="Total Games")
         ],
@@ -248,7 +247,7 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
             width=500,
             height=alt.Step(15),
             title=alt.Title(
-                text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances since 2021",
+                text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances (since 2021)",
                 subtitle=f"Minimum {2*min_games} appearances total). Lighter shaded bars represent bench appearances.",
                 subtitleFontStyle="italic",
             ),
@@ -596,7 +595,7 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
     if type == "Movement":
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["spec"]["encoding"]["color"]["scale"] = {"range": ["#981515", "#146f14", "black"]}
-        chart["spec"]["encoding"]["x"]["sort"] = {"field": "Success", "order": "descending"}
+        chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
         chart["spec"]["encoding"]["x"]["axis"] = {
             "ticks": False,
