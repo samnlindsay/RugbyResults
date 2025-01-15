@@ -212,13 +212,13 @@ def lineouts(squad, season=None):
     df["Crusaders"] = df.apply(lambda x: True if x["Crusaders"] == "x" else False, axis=1)
     df["Transfer"] = df.apply(lambda x: True if x["Transfer"] == "x" else False, axis=1)
     df["Flyby"] = df.apply(lambda x: None if x["Flyby"] == "" else int(x["Flyby"]), axis=1)
-    df["Dummy"] = df.apply(lambda x: dummy_movement(x["Call"]), axis=1)
+    df["Movement"] = df.apply(lambda x: dummy_movement(x["Call"]), axis=1)
 
     df["CallType"] = df["Call"].apply(call_type)
     df["Setup"] = df["Call"].apply(lambda x: (x[0] if x[0] in ["A", "C", "H", "W"] else None) if len(x) > 0 else None)
 
-    df = df[['Squad', 'Season', 'Opposition', 'Numbers', 'Call', 'CallType', 'Setup', 'Dummy', 'Area', 'Drive', 'Crusaders', 'Transfer', 'Flyby', 'Hooker', 'Jumper', 'Won']]
-
+    df = df[['Squad', 'Season', 'Opposition', 'Numbers', 'Call', 'CallType', 'Setup', 'Movement', 'Area', 'Drive', 'Crusaders', 'Transfer', 'Flyby', 'Hooker', 'Jumper', 'Won']]
+    
     return df
 
 

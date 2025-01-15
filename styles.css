@@ -13,6 +13,9 @@
     --padding-inc: 0.75rem;
 }
 
+hr {
+    margin: 30px;
+}
 
 h1, h2, h3, h4 {
     font-family: 'PT Sans Narrow', sans-serif;
@@ -56,11 +59,11 @@ body {
 
 .container {
     text-align: center;
-    width: 50%;
-    max-width: 500px;
+    width: 100%;
+    max-width: 600px;
 }
 
-.button {
+.button{
     color: var(--dark-color);
     background-color: var(--light-color);
     display: block;
@@ -69,27 +72,47 @@ body {
     flex: 1;
     text-align: center;
     text-decoration: none;
-    border: black 1px solid;
+    border: black 2px solid;
     border-radius: 5px;
     transition: background-color 0.3s;
-}
-
-.button:hover {
-    background-color: var(--dark-color);
-    color: white;
 }
 
 .group {
     display: flex;
     flex-direction: row;
+    ;
     width: 100%;
     padding: 0 5px;
     justify-content: space-between;
+    gap: 3px;
 }
 
 /* button in group */
 .group .button {
-    font-size: 1rem;
+    font-size: 1.1rem;
+}
+
+.trend {
+    color: var(--light-color);
+    background-color: var(--dark-color);
+    flex: 1.5;
+    border: white 2px solid;
+}
+
+.button:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border: white 2px solid;
+    font-weight: bold;
+}
+
+.video {
+    border: 2px black solid; 
+    background-color: #fff2; 
+    border-radius: 10px;
+    padding-right: 15px;
+    padding-left: 5px;
+    padding-bottom: 10px;
 }
 
 p {

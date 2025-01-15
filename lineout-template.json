@@ -3,6 +3,7 @@
         "field": "Season",
         "header": null
     },
+    "title": {},
     "spec": {
         "layer": [
             {
@@ -46,6 +47,12 @@
                             "format": ".0%",
                             "orient": "left",
                             "tickCount": 10
+                        },
+                        "scale": {
+                            "domain": [
+                                0,
+                                1
+                            ]
                         },
                         "field": "Proportion",
                         "type": "quantitative"
@@ -91,6 +98,12 @@
                             "format": ".0%",
                             "orient": "right",
                             "tickCount": 10
+                        },
+                        "scale": {
+                            "domain": [
+                                0,
+                                1
+                            ]
                         },
                         "field": "Success",
                         "type": "quantitative"

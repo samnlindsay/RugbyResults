@@ -17,7 +17,7 @@ def alt_theme():
                 "labelFontSize": 13,
                 "titleFontSize": 24,
                 "gridColor":"#202947",
-                "gridOpacity": 0.2
+                "gridOpacity": 0.2,
             },
             "header": {
                 "labelFont": title_font,
@@ -25,7 +25,7 @@ def alt_theme():
                 "labelFontSize": 24,
                 "titleFontSize": 28,
                 "labelFontWeight": "bold",
-                "orient": "left"
+                "orient": "left",
             },
             "legend": {
                 "labelFont": font,
@@ -51,9 +51,10 @@ def alt_theme():
                 "subtitlePadding": 10,
                 "subtitleFontWeight": "lighter",
                 "subtitleFontSize": 12,
-                "subtitleColor": "gray",
+                "subtitleColor": "",
                 "subtitleFontStyle": "italic",
                 "offset": 15,
+                "color": "black",
             },
             "axisX": {
                 "labelAngle": 0
@@ -532,7 +533,24 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart = json.load(f)
 
     if season is None:
-        chart["title"] = f"Lineout Stats by {type}"
+        chart["title"]["text"] = f"Lineout Stats by {type}"
+
+        subtitle = {
+            "Area": "Area of the lineout targeted",
+            "Numbers": "Number of players in the lineout (not including the hooker and receiver)",
+            "Jumper": [f"Minimum {min} lineouts", "NOTE: Jumper success is dependent on other factors, such as the throw and lift."],
+            "Hooker": [f"Minimum {min} lineouts", "NOTE: Hooker success is dependent on other factors, such as the jumper and lifting pod winning the ball."],
+            "Call": [f"Minimum {min} lineouts", "Colour denotes calls to the front (red), middle (orange), or back (green)."],
+            "Setup": "Lineout setups introduced in the 2023/24 season - Auckland, Canterbury, Highlanders, Waikato.",
+            "Movement": [
+                "Type of movements:", 
+                "    - 'Jump' - the jumper is lifted where he stands",
+                "    - 'Move' - moves to the jumping position after entering the lineout",
+                "    - 'Dummy' - there is a dummy jump first"
+            ]
+        }
+        chart["title"]["subtitle"] = subtitle[type]
+
     chart["spec"]["layer"][0]["layer"][0]["params"][0]["name"] = f"select{type}"
     chart["spec"]["layer"][0]["layer"][0]["params"][0]["select"]["fields"] = [type]
     chart["spec"]["encoding"]["opacity"]["condition"]["param"] = f"select{type}"
@@ -550,6 +568,7 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["spec"]["encoding"]["color"]["sort"] = "descending"
         chart["spec"]["encoding"]["x"]["sort"] = area_order
         chart["spec"]["encoding"]["x"]["title"] = f"Target {type}"
+
 
     if type == "Numbers":
         chart["spec"]["encoding"]["color"]["scale"] = n_scale
@@ -576,9 +595,8 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["transform"].append({"filter": "datum.Setup != null"})
         chart["spec"]["encoding"]["tooltip"].append({"field": "sortcol"})
     
-    if type == "Dummy":
+    if type == "Movement":
         chart["spec"]["encoding"]["color"]["scale"] = {"range": ["#981515", "#146f14", "black"]}
-        chart["spec"]["encoding"]["x"]["title"] = None
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "Success", "order": "descending"}
         chart["spec"]["encoding"]["x"]["axis"] = {
             "ticks": False,
@@ -611,15 +629,15 @@ def lineout_chart(squad=1, season=None):
 
     types = ["Numbers", "Area", "Hooker", "Jumper", "Setup"]
 
-    dummy_chart = count_success_chart("Dummy", squad, season)
-    dummy_chart["transform"] = [{"filter": {"param": f"select{f}"}} for f in types] + dummy_chart["transform"]
-    # dummy_chart["layer"][0]["encoding"]["y"]["axis"]["labels"] = False
-    # dummy_chart["layer"][0]["encoding"]["y"]["title"] = None
-    dummy_chart["layer"][1]["encoding"]["y"]["axis"]["labels"] = False
-    dummy_chart["layer"][1]["encoding"]["y"]["title"] = None
+    movement_chart = count_success_chart("Movement", squad, season)
+    movement_chart["transform"] = [{"filter": {"param": f"select{f}"}} for f in types] + movement_chart["transform"]
+    # movement_chart["layer"][0]["encoding"]["y"]["axis"]["labels"] = False
+    # movement_chart["layer"][0]["encoding"]["y"]["title"] = None
+    movement_chart["layer"][1]["encoding"]["y"]["axis"]["labels"] = False
+    movement_chart["layer"][1]["encoding"]["y"]["title"] = None
 
     call_chart = count_success_chart("Call", squad, season)
-    call_chart["transform"] = [{"filter": {"param": f"select{f}"}} for f in types + ["Dummy"]] + call_chart["transform"]
+    call_chart["transform"] = [{"filter": {"param": f"select{f}"}} for f in types + ["Movement"]] + call_chart["transform"]
     call_chart["spec"]["layer"][0]["encoding"]["y"]["axis"]["labels"] = False
     call_chart["spec"]["layer"][0]["encoding"]["y"]["title"] = None
     
@@ -628,7 +646,7 @@ def lineout_chart(squad=1, season=None):
         min = 3 if t in ["Hooker", "Jumper"] else 1
         chart = count_success_chart(t, squad, season, as_dict=True, min=min)
 
-        filters = [{"filter": {"param": f"select{f}"}} for f in types + ["Dummy"] if f != t]
+        filters = [{"filter": {"param": f"select{f}"}} for f in types + ["Movement"] if f != t]
         chart["transform"] = filters + chart["transform"]
 
         if i < len(types) - 1:
@@ -641,14 +659,17 @@ def lineout_chart(squad=1, season=None):
         
         charts.append(alt.Chart.from_dict(chart))
 
-    bottom = alt.hconcat(dummy_chart, call_chart).resolve_scale(color='independent', y="shared")
+    bottom = alt.hconcat(movement_chart, call_chart).resolve_scale(color='independent', y="shared")
     top = alt.hconcat(*charts).resolve_scale(color='independent', y="shared")
 
     chart = alt.vconcat(top, bottom).resolve_scale(color='independent')
 
     chart["title"] = {
         "text": f"{'1st' if squad==1 else '2nd'} XV Lineouts {season}",
-        "subtitle": ["Distribution   of lineouts (bar), and success rate (line).", "Click to highlight and filter."]  
+        "subtitle": [
+            "Distribution of lineouts (bar), and success rate (line). Click to highlight and filter.",
+            "Success is defined as retaining possession when the lineout ends, and does not distinguish between an unsuccessful throw, a knock-on, or a penalty."
+        ]  
     }
     
 
