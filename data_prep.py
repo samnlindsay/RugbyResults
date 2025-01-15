@@ -218,7 +218,7 @@ def lineouts(squad, season=None):
     df["Setup"] = df["Call"].apply(lambda x: (x[0] if x[0] in ["A", "C", "H", "W"] else None) if len(x) > 0 else None)
 
     df = df[['Squad', 'Season', 'Opposition', 'Numbers', 'Call', 'CallType', 'Setup', 'Movement', 'Area', 'Drive', 'Crusaders', 'Transfer', 'Flyby', 'Hooker', 'Jumper', 'Won']]
-    
+
     return df
 
 
@@ -265,5 +265,53 @@ def pitchero_stats(squad=1, season=None):
     df["PPG"] = df["Points"] / df["A"]
     df["Season"] = season
     df["Squad"] = "1st" if squad == 1 else "2nd"
+
+    return df
+
+########################
+### SET PIECE SUMMARY
+########################
+
+def set_piece_results():
+
+    columns=[
+        "Season",
+        "Date",
+        "Opposition",
+        "Home/Away",
+        "PF",
+        "PA",
+        "PD",
+        "EG_l_won",
+        "EG_l_total",
+        "EG_l_%",
+        "Opp_l_won",
+        "Opp_l_total",
+        "Opp_l_%",
+        "l_total",
+        "l_gain",
+        "EG_s_won",
+        "EG_s_total",
+        "EG_s_%",
+        "Opp_s_won",
+        "Opp_s_total",
+        "Opp_s_%",
+        "s_total",
+        "s_gain",
+    ]
+
+    df1 = pd.DataFrame(sheet[5].batch_get(['B10:X'])[0], columns=columns).replace("", pd.NA).dropna(subset=["Season"])
+    df2 = pd.DataFrame(sheet[8].batch_get(['B10:X'])[0], columns=columns).replace("", pd.NA).dropna(subset=["Season"])
+
+    df1["Squad"] = 1
+    df2["Squad"] = 2
+
+    df = pd.concat([df1, df2])
+
+    # Convert columns to numeric where possible
+    for c in df.columns:
+        if c in ["Season", "Date", "Opposition", "Home/Away"]:
+            continue
+        df[c] = pd.to_numeric(df[c], errors="coerce")
 
     return df

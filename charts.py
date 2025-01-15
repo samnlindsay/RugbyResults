@@ -586,7 +586,6 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["transform"][0]["groupby"].append("CallType")
         chart["transform"][2]["groupby"].append("CallType")
         chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
-        chart["spec"]["encoding"]["tooltip"].append({"field": "sortcol"})
 
     if type == "Setup":
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
@@ -596,8 +595,10 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["spec"]["encoding"]["tooltip"].append({"field": "sortcol"})
     
     if type == "Movement":
+        chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["spec"]["encoding"]["color"]["scale"] = {"range": ["#981515", "#146f14", "black"]}
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "Success", "order": "descending"}
+        chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
         chart["spec"]["encoding"]["x"]["axis"] = {
             "ticks": False,
             "labelExpr": "datum.label == 'D' ? 'Dummy' : (datum.label == 'M' ? 'Move' : 'Jump')",
@@ -893,4 +894,95 @@ def results_chart(squad=1, season=None):
             offset=20
         ), 
         width=400
+    )
+
+
+
+def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout"):
+
+    df = set_piece_results()
+    prefix = "l_" if event == "lineout" else "s_"
+    df = df[["Squad", "Season", "Date", "Opposition", "Home/Away"]+[c for c in df.columns if prefix in c or "EG" in c]]
+    df = df[df["Squad"] == squad]
+    df = df[df["Season"] == season]
+
+
+    df["EG_lost"] = df[f"EG_{prefix}total"] - df[f"EG_{prefix}won"]
+    df["Opp_lost"] = df[f"Opp_{prefix}total"] - df[f"Opp_{prefix}won"]
+    df = df.rename(columns={
+        f"EG_{prefix}won": "EG_won",
+        f"Opp_{prefix}won": "Opp_won",
+    })
+
+    # Drop columns containing prefix
+    df = df.drop(columns=[c for c in df.columns if "l_" in c or "s_" in c])
+
+    # Create ID column from Opposition and Home/Away (appending "(1)" or "(2)" if there are multiple games with the same Opposition and Home/Away)
+    df["GameID"] = df["Opposition"] + " (" + df["Home/Away"] + ") "
+    df["GameID"] = df["GameID"] + df.groupby(["GameID", "Season"]).cumcount().replace(0, "").astype(str)
+
+    df = df.melt(
+        id_vars=["Season", "GameID", "Opposition", "Home/Away", "Date"], 
+        var_name="Outcome", 
+        value_name="Count"
+    )
+    df["Turnover"] = df["Outcome"].str.contains("lost")
+    df["Team"] = df["Outcome"].apply(lambda x: "EG" if x in ["EG_won", "EG_lost"] else "Opposition")
+
+    turnover_filter = alt.selection_point(fields=["Turnover"], bind="legend")
+    team_filter = alt.selection_multi(fields=["Team"], bind="legend")
+
+    color_scale = alt.Scale(domain=["EG", "Opposition"], range=["#202946", "#981515"])
+    opacity_scale = alt.Scale(domain=[True, False], range=[1, 0.5])
+
+    base = (
+        alt.Chart(df).encode(
+            y=alt.Y("GameID:N", axis=None),
+            yOffset="Team:N",
+            color=alt.Color("Team:N", scale=color_scale, legend=None),
+            opacity=alt.Opacity("Turnover:N", scale=opacity_scale, legend=None),
+            tooltip=[
+                alt.Tooltip("Opposition:N", title="Opposition"),
+                alt.Tooltip("Date:T", title="Date"),
+                alt.Tooltip("Team:N", title="Attacking team"),
+                alt.Tooltip("Count:Q", title="EG wins"),
+            ]
+        )
+        .add_params(turnover_filter, team_filter)
+        .transform_filter(turnover_filter)
+        .transform_filter(team_filter)
+    )
+
+    eg = (
+        base.mark_bar(stroke="#202946")
+        .encode(
+            x=alt.X(
+                "Count:Q",
+                axis=alt.Axis(title="EG wins", orient="top", titleColor="#202946"),
+                scale=alt.Scale(domain=[0, df["Count"].max()]),
+            ),
+            color=alt.Color("Team:N", scale=color_scale, legend=alt.Legend(orient="bottom", title="Attacking team")),
+        )
+        .transform_filter({"field":"Outcome", "oneOf":["Opp_lost", "EG_won"]})
+        .properties(height=alt.Step(12))
+    )
+
+    opp = (
+        base.mark_bar(stroke="#981515")
+        .encode(
+            x=alt.X(
+                "Count:Q",
+                scale=alt.Scale(domain=[0, df["Count"].max()], reverse=True),
+                axis=alt.Axis(title="Opposition wins", orient="top", titleColor="#981515")
+            ),
+            y=alt.Y("GameID:N", title=None, axis=alt.Axis(orient="left")),
+            opacity=alt.Opacity("Turnover:N", scale=opacity_scale, legend=alt.Legend(labelExpr="datum.value ? 'Turnover' : 'Retained'", title="Result", orient="bottom")),
+        )
+        .transform_filter({"field":"Outcome", "oneOf":["Opp_won", "EG_lost"]})
+        .properties(height=alt.Step(12))
+    )
+    return (
+        alt.hconcat(opp, eg, spacing=0)
+        .resolve_scale(y="shared", yOffset="independent", color="independent", opacity="independent")
+        .properties(title=alt.Title(text=season, anchor="middle", fontSize=36))
     )

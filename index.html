@@ -48,35 +48,57 @@
         </div>
 
         <hr>
-        
+
         <div class="video">
             <h1>Video Analysis</h1>
             <p>Playing stats based on games where video is available</p>
-            <h2>1st XV Lineouts</h2>
+
             <div class="group">
-                <a href="Charts/2021-22/1s-lineouts.html" class="button"
-                    onclick="showIframe(event, 'Charts/2021-22/1s-lineouts.html')">2021/22</a>
-                <a href="Charts/2022-23/1s-lineouts.html" class="button"
-                    onclick="showIframe(event, 'Charts/2022-23/1s-lineouts.html')">2022/23</a>
-                <a href="Charts/2023-24/1s-lineouts.html" class="button"
-                    onclick="showIframe(event, 'Charts/2023-24/1s-lineouts.html')">2023/24</a>
-                <a href="Charts/2024-25/1s-lineouts.html" class="button"
-                    onclick="showIframe(event, 'Charts/2024-25/1s-lineouts.html')">2024/25</a>
-                <a href="Charts/by-season/1s-lineouts.html" class="button trend"
-                    onclick="showIframe(event, 'Charts/by-season/1s-lineouts.html')">Trends</a>
-            </div>
-            <h2>2nd XV Lineouts</h2>
-            <div class="group">
-                <a href="Charts/2021-22/1s-lineouts.html" class="button"
-                    onclick="showIframe(event, 'Charts/2021-22/1s-lineouts.html')">2021/22</a>
-                <a href="Charts/2022-23/1s-lineouts.html" class="button"
-                    onclick="showIframe(event, 'Charts/2022-23/1s-lineouts.html')">2022/23</a>
-                <a href="Charts/2023-24/1s-lineouts.html" class="button"
-                    onclick="showIframe(event, 'Charts/2023-24/1s-lineouts.html')">2023/24</a>
-                <a href="Charts/2024-25/1s-lineouts.html" class="button"
-                    onclick="showIframe(event, 'Charts/2024-25/1s-lineouts.html')">2024/25</a>
-                <a href="Charts/by-season/1s-lineouts.html" class="button trend"
-                    onclick="showIframe(event, 'Charts/by-season/1s-lineouts.html')">Trends</a>
+                <div class="column first">
+                    <h2 style="color: var(--primary-color)">1st XV</h2>
+                    <h3 style="color: var(--primary-color)">Head-to-Head Results</h3>
+                    <div class="group">
+                    <a href="Charts/by-season/1s-scrum-h2h.html" class="button trend"
+                        onclick="showIframe(event, 'Charts/by-season/1s-scrum-h2h.html')">Scrum</a>
+                        <a href="Charts/by-season/1s-lineout-h2h.html" class="button trend"
+                        onclick="showIframe(event, 'Charts/by-season/1s-lineout-h2h.html')">Lineout</a>
+                    
+                        </div>  
+                    <h3 style="color: var(--primary-color)">Lineout Stats</h3>
+                        <a href="Charts/2021-22/1s-lineouts.html" class="button"
+                            onclick="showIframe(event, 'Charts/2021-22/1s-lineouts.html')">2021/22</a>
+                        <a href="Charts/2022-23/1s-lineouts.html" class="button"
+                            onclick="showIframe(event, 'Charts/2022-23/1s-lineouts.html')">2022/23</a>
+                        <a href="Charts/2023-24/1s-lineouts.html" class="button"
+                            onclick="showIframe(event, 'Charts/2023-24/1s-lineouts.html')">2023/24</a>
+                        <a href="Charts/2024-25/1s-lineouts.html" class="button"
+                            onclick="showIframe(event, 'Charts/2024-25/1s-lineouts.html')">2024/25</a>
+        
+                    <a href="Charts/by-season/1s-lineouts.html" class="button trend"
+                        onclick="showIframe(event, 'Charts/by-season/1s-lineouts.html')">Trends</a>
+                </div>
+                <div class="column second">
+                    <h2>2nd XV</h2>
+                    <h3>Head-to-Head Results</h3>
+                    <div class="group">
+                    <a href="Charts/by-season/2s-scrum-h2h.html" class="button trend"
+                        onclick="showIframe(event, 'Charts/by-season/2s-scrum-h2h.html')">Scrum</a>
+                        <a href="Charts/by-season/2s-lineout-h2h.html" class="button trend"
+                        onclick="showIframe(event, 'Charts/by-season/2s-lineout-h2h.html')">Lineout</a>
+                    </div>
+                    <h3>Lineout Stats</h3>
+                        <span class="button disabled"">2021/22</span>
+                                    <a href=" Charts/2022-23/2s-lineouts.html" class="button"
+                            onclick="showIframe(event, 'Charts/2022-23/2s-lineouts.html')">2022/23</a>
+                            <a href="Charts/2023-24/2s-lineouts.html" class="button"
+                                onclick="showIframe(event, 'Charts/2023-24/2s-lineouts.html')">2023/24</a>
+                            <a href="Charts/2024-25/2s-lineouts.html" class="button"
+                                onclick="showIframe(event, 'Charts/2024-25/2s-lineouts.html')">2024/25</a>
+        
+                    <a href="Charts/by-season/2s-lineouts.html" class="button trend"
+                        onclick="showIframe(event, 'Charts/by-season/2s-lineouts.html')">Trends</a>
+                </div>
+
             </div>
         </div>
     </div>

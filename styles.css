@@ -29,12 +29,13 @@ h1 {
 }
 
 h2 {
-    font-size: 2rem;
+    font-size: 2.2rem;
     margin-top: 0.5rem;
+    font-weight: bold;
 }
 
 h3 {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     margin-top: 0.5rem;
     margin-bottom: 0.25rem;
 }
@@ -80,11 +81,29 @@ body {
 .group {
     display: flex;
     flex-direction: row;
-    ;
-    width: 100%;
-    padding: 0 5px;
+    padding: 0;
     justify-content: space-between;
     gap: 3px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    padding: 0 5px;
+    gap: 3px;
+    border: #111 2px solid;
+    border-radius: 10px;
+}
+.first,
+.second {
+    border: 4px black solid;
+}
+.first {
+    background-color: var(--light-color);
+}
+.second {
+    background-color: var(--dark-color);
 }
 
 /* button in group */
@@ -97,6 +116,12 @@ body {
     background-color: var(--dark-color);
     flex: 1.5;
     border: white 2px solid;
+    margin-bottom: 5px;
+}
+
+/* Child of .first with .trend */
+.first .trend {
+    border: var(--primary-color) 2px solid;
 }
 
 .button:hover {
@@ -104,6 +129,18 @@ body {
     color: white;
     border: white 2px solid;
     font-weight: bold;
+}
+.first .trend:hover {
+    border: var(--primary-color) 2px solid;
+}
+
+.disabled, .disabled:hover {
+    cursor: not-allowed;
+    opacity: 0.4;
+    border: none;
+    font-weight: normal;
+    color: var(--dark-color);
+    background-color: var(--light-color);
 }
 
 .video {
