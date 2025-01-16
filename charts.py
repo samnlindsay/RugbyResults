@@ -179,7 +179,7 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
             ), 
             legend=None
         ),
-        column=alt.Column("Season:N", title=None, header=alt.Header(title=None, labelFontSize=36)),
+        column=alt.Column("Season:N", title=None, header=alt.Header(title=None, labelFontSize=36) if season is None else None),
         tooltip=[
             "Player:N", 
             "Season:N",
@@ -199,7 +199,7 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
         f"datum.TotalGames >= {min_games}"
     ).properties(
         title=alt.Title(
-            text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances" + (" per Season" if season is None else season),
+            text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances" + (" per Season" if season is None else ""),
             subtitle=f"Minimum {min_games} appearances in a given season. Lighter shaded bars represent bench appearances.",
             subtitleFontStyle="italic"
         ),
