@@ -527,6 +527,10 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
     # df = counts(type, squad, season)
     df = lineouts(squad, season)
 
+    # Number each distinct Jumper alphabetically (Aaron = 0, etc.)
+    df["JumperID"] = df["Jumper"].astype("category").cat.codes
+    df["HookerID"] = df["Hooker"].astype("category").cat.codes
+
     with open("lineout-template.json") as f:
         chart = json.load(f)
 
@@ -572,15 +576,20 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["spec"]["encoding"]["color"]["scale"] = n_scale
 
     if type in ["Jumper", "Hooker"]:
+        if type=="Jumper":
+            chart["spec"]["width"]["step"] = 40
         chart["spec"]["encoding"]["color"]["scale"] = {"scheme": "tableau20"}
         chart["spec"]["encoding"]["color"]["sort"] = {"field": "Total", "order": "descending"}
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
-        chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
+        chart["transform"][0]["groupby"].append(f"{type}ID")
+        chart["transform"][2]["groupby"].append(f"{type}ID")
+        chart["transform"].append({"calculate": f"datum.Total + datum.Success + 0.01*datum.{type}ID", "as": "sortcol"})
 
     if type == "Call":
+        chart["spec"]["width"]["step"] = 30
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["spec"]["encoding"]["x"]["title"] = None
-        chart["spec"]["encoding"]["color"]["scale"] = call_scale
+        # chart["spec"]["encoding"]["color"]["scale"] = call_scale
         chart["transform"][0]["groupby"].append("CallType")
         chart["transform"][2]["groupby"].append("CallType")
         chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
@@ -895,6 +904,14 @@ def results_chart(squad=1, season=None):
     )
 
 
+seasons = ["2021/22", "2022/23", "2023/24", "2024/25"]
+
+turnover_filter = alt.selection_point(fields=["Turnover"], bind="legend")
+put_in_filter = alt.selection_point(fields=["Team"], bind="legend")
+team_filter = alt.selection_point(encodings=["y"])
+
+color_scale = alt.Scale(domain=["EG", "Opposition"], range=["#202946", "#981515"])
+opacity_scale = alt.Scale(domain=[True, False], range=[1, 0.5])
 
 def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout"):
 
@@ -927,18 +944,29 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout"):
     df["Turnover"] = df["Outcome"].str.contains("lost")
     df["Team"] = df["Outcome"].apply(lambda x: "EG" if x in ["EG_won", "EG_lost"] else "Opposition")
 
-    turnover_filter = alt.selection_point(fields=["Turnover"], bind="legend")
-    team_filter = alt.selection_point(fields=["Team"], bind="legend")
-
-    color_scale = alt.Scale(domain=["EG", "Opposition"], range=["#202946", "#981515"])
-    opacity_scale = alt.Scale(domain=[True, False], range=[1, 0.5])
-
     base = (
         alt.Chart(df).encode(
             y=alt.Y("GameID:N", axis=None),
             yOffset="Team:N",
-            color=alt.Color("Team:N", scale=color_scale, legend=None),
-            opacity=alt.Opacity("Turnover:N", scale=opacity_scale, legend=None),
+            color=alt.Color(
+                "Team:N", 
+                scale=color_scale, 
+                legend=alt.Legend(
+                    title="Attacking team",
+                    orient="bottom", 
+                    direction="horizontal",
+                )
+            ),
+            opacity=alt.Opacity(
+                "Turnover:N", 
+                scale=opacity_scale, 
+                legend=alt.Legend(
+                    labelExpr="datum.value ? 'Turnover' : 'Retained'", 
+                    title="Result", 
+                    orient="bottom", 
+                    direction="horizontal",
+                )
+            ),
             tooltip=[
                 alt.Tooltip("Opposition:N", title="Opposition"),
                 alt.Tooltip("Date:T", title="Date"),
@@ -946,9 +974,11 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout"):
                 alt.Tooltip("Count:Q", title="EG wins"),
             ]
         )
-        .add_params(turnover_filter, team_filter)
+        .add_params(turnover_filter, put_in_filter, team_filter)
         .transform_filter(turnover_filter)
+        .transform_filter(put_in_filter)
         .transform_filter(team_filter)
+        .properties(height=alt.Step(12), width=120)
     )
 
     eg = (
@@ -958,11 +988,9 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout"):
                 "Count:Q",
                 axis=alt.Axis(title="EG wins", orient="top", titleColor="#202946"),
                 scale=alt.Scale(domain=[0, df["Count"].max()]),
-            ),
-            color=alt.Color("Team:N", scale=color_scale, legend=alt.Legend(orient="bottom", title="Attacking team")),
+            )
         )
         .transform_filter({"field":"Outcome", "oneOf":["Opp_lost", "EG_won"]})
-        .properties(height=alt.Step(12))
     )
 
     opp = (
@@ -974,29 +1002,29 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout"):
                 axis=alt.Axis(title="Opposition wins", orient="top", titleColor="#981515")
             ),
             y=alt.Y("GameID:N", title=None, axis=alt.Axis(orient="left")),
-            opacity=alt.Opacity("Turnover:N", scale=opacity_scale, legend=alt.Legend(labelExpr="datum.value ? 'Turnover' : 'Retained'", title="Result", orient="bottom")),
         )
         .transform_filter({"field":"Outcome", "oneOf":["Opp_won", "EG_lost"]})
-        .properties(height=alt.Step(12))
     )
     return (
         alt.hconcat(opp, eg, spacing=0)
-        .resolve_scale(y="shared", yOffset="independent", color="independent", opacity="independent")
+        .resolve_scale(y="shared", yOffset="independent")
         .properties(title=alt.Title(text=season, anchor="middle", fontSize=36))
     )
 
 def set_piece_h2h_charts(squad=1, event="lineout"):
-    seasons = ["2021/22", "2022/23", "2023/24", "2024/25"]
+
+    charts = [set_piece_h2h_chart(squad,s,event) for s in seasons]
+
     chart = (
-        alt.hconcat(*[set_piece_h2h_chart(squad,s,event) for s in seasons])
-        .resolve_scale(color="independent", opacity="independent", y="independent")
-        .configure(background="white")
+        alt.hconcat(*charts)
+        .resolve_scale(color="shared", opacity="shared", y="independent")
         .properties(
             title=alt.Title(
                 text=f"{event.capitalize()} Head-to-Head", 
                 subtitle=[
                     f"Number of {event}s and turnovers for both teams in each game",
-                    f"Click the legends to view only turnovers, or to view only one team's {event}s"
+                    f"Click the legends to view only turnovers, or to view only one team's {event}s.",
+                    "Click the bar charts to select all games against that specific opposition."
                 ]
             )
         )
