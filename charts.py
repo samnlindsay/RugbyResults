@@ -589,7 +589,7 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["spec"]["width"]["step"] = 30
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["spec"]["encoding"]["x"]["title"] = None
-        # chart["spec"]["encoding"]["color"]["scale"] = call_scale
+        chart["spec"]["encoding"]["color"]["scale"] = call_scale
         chart["transform"][0]["groupby"].append("CallType")
         chart["transform"][2]["groupby"].append("CallType")
         chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
