@@ -527,10 +527,6 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
     # df = counts(type, squad, season)
     df = lineouts(squad, season)
 
-    # Number each distinct Jumper alphabetically (Aaron = 0, etc.)
-    df["JumperID"] = df["Jumper"].astype("category").cat.codes
-    df["HookerID"] = df["Hooker"].astype("category").cat.codes
-
     with open("lineout-template.json") as f:
         chart = json.load(f)
 
@@ -565,6 +561,17 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
     chart["transform"][2]["groupby"].append(type)
     chart["transform"].append({"filter": f"datum.Total >= {min}"})
 
+
+    # Unique IDs for Jumper/Hooker/Setup/Movement/Call
+    df["JumperID"] = df["Jumper"].astype("category").cat.codes
+    df["HookerID"] = df["Hooker"].astype("category").cat.codes
+    df["Setup"] = df["Setup"].astype("category").cat.codes
+    df["Movement"] = df["Movement"].astype("category").cat.codes
+    df["Call"] = df["Call"].astype("category").cat.codes
+    if type in ["Jumper", "Hooker", "Setup", "Movement"]:
+        chart["transform"].append({"calculate": f"datum.Total + datum.Success + 0.01*datum.{type}ID", "as": "sortcol"})
+        
+
     if type == "Area":
         chart["spec"]["encoding"]["color"]["scale"] = area_scale
         chart["spec"]["encoding"]["color"]["sort"] = "descending"
@@ -583,7 +590,6 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["transform"][0]["groupby"].append(f"{type}ID")
         chart["transform"][2]["groupby"].append(f"{type}ID")
-        chart["transform"].append({"calculate": f"datum.Total + datum.Success + 0.01*datum.{type}ID", "as": "sortcol"})
 
     if type == "Call":
         chart["spec"]["width"]["step"] = 30
@@ -592,12 +598,10 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["spec"]["encoding"]["color"]["scale"] = call_scale
         chart["transform"][0]["groupby"].append("CallType")
         chart["transform"][2]["groupby"].append("CallType")
-        chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
 
     if type == "Setup":
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["spec"]["encoding"]["color"]["scale"] = setup_scale
-        chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
         chart["transform"].append({"filter": "datum.Setup != null"})
         chart["spec"]["encoding"]["tooltip"].append({"field": "sortcol"})
     
@@ -605,7 +609,6 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["spec"]["encoding"]["color"]["scale"] = {"range": ["#981515", "#146f14", "black"]}
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
-        chart["transform"].append({"calculate": "datum.Total + datum.Success", "as": "sortcol"})
         chart["spec"]["encoding"]["x"]["axis"] = {
             "ticks": False,
             "labelExpr": "datum.label == 'D' ? 'Dummy' : (datum.label == 'M' ? 'Move' : 'Jump')",
