@@ -565,11 +565,13 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
     # Unique IDs for Jumper/Hooker/Setup/Movement/Call
     df["JumperID"] = df["Jumper"].astype("category").cat.codes
     df["HookerID"] = df["Hooker"].astype("category").cat.codes
-    df["Setup"] = df["Setup"].astype("category").cat.codes
-    df["Movement"] = df["Movement"].astype("category").cat.codes
-    df["Call"] = df["Call"].astype("category").cat.codes
-    if type in ["Jumper", "Hooker", "Setup", "Movement"]:
+    df["SetupID"] = df["Setup"].astype("category").cat.codes
+    df["MovementID"] = df["Movement"].astype("category").cat.codes
+    df["CallID"] = df["Call"].astype("category").cat.codes
+    if type in ["Jumper", "Hooker", "Setup", "Movement", "Call"]:
         chart["transform"].append({"calculate": f"datum.Total + datum.Success + 0.01*datum.{type}ID", "as": "sortcol"})
+        chart["transform"][0]["groupby"].append(f"{type}ID")
+        chart["transform"][2]["groupby"].append(f"{type}ID")
         
 
     if type == "Area":
@@ -588,11 +590,9 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
         chart["spec"]["encoding"]["color"]["scale"] = {"scheme": "tableau20"}
         chart["spec"]["encoding"]["color"]["sort"] = {"field": "Total", "order": "descending"}
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
-        chart["transform"][0]["groupby"].append(f"{type}ID")
-        chart["transform"][2]["groupby"].append(f"{type}ID")
 
     if type == "Call":
-        chart["spec"]["width"]["step"] = 30
+        chart["spec"]["width"]["step"] = 30 if season is None else 40
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["spec"]["encoding"]["x"]["title"] = None
         chart["spec"]["encoding"]["color"]["scale"] = call_scale
@@ -602,13 +602,12 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
     if type == "Setup":
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
         chart["spec"]["encoding"]["color"]["scale"] = setup_scale
+        chart["spec"]["encoding"]["color"]["legend"] = None if season else {"title": "Setup", "orient": "right", "labelExpr": "datum.label == 'A' ? 'Auckland' : (datum.label == 'C' ? 'Canterbury' : (datum.label == 'H' ? 'Highlanders' : 'Waikato'))"}
         chart["transform"].append({"filter": "datum.Setup != null"})
-        chart["spec"]["encoding"]["tooltip"].append({"field": "sortcol"})
     
     if type == "Movement":
         chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
-        chart["spec"]["encoding"]["color"]["scale"] = {"range": ["#981515", "#146f14", "black"]}
-        chart["spec"]["encoding"]["x"]["sort"] = {"field": "sortcol", "order": "descending"}
+        chart["spec"]["encoding"]["color"]["scale"] = {"range": ["#981515", "#146f14", "black"]}            
         chart["spec"]["encoding"]["x"]["axis"] = {
             "ticks": False,
             "labelExpr": "datum.label == 'D' ? 'Dummy' : (datum.label == 'M' ? 'Move' : 'Jump')",
