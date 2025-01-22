@@ -2,6 +2,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import pandas as pd
 import duckdb
+import re
 
 # Position dictionary
 d = {
@@ -43,90 +44,52 @@ sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1pcO8iEpZuds9
 
 my_sheet = client.open_by_url("https://docs.google.com/spreadsheets/d/1keX2eGbyiBejpfMPMbL7aXYLy7IDJZDBXQqiKVQavz0/edit#gid=390656160").worksheets()
 
-
-def results(squad=1, season=None):
-
-    results = sheet[4 if squad==1 else 7].batch_get(['B4:E'])[0]
-
-    df = pd.DataFrame(results, columns=results.pop(0)).replace('', pd.NA)
-    df = df.dropna(subset=['Season','Score'])
-    df["Squad"] = "1st" if squad == 1 else "2nd"
-    if season:
-        df = df[df["Season"] == season]
-
-    df["Home/Away"] = df["Opposition"].apply(lambda x: "Home" if x.strip().split(" ")[-1] == "(H)" else "Away")
-    df["GameID"] = df["Competition"] + "-__-" + df["Opposition"]
-    df["GameType"] = df["Opposition"]
-    df["Opposition"] = df["Opposition"].apply(lambda x: x.replace(" (H)", "").replace(" (A)", ""))
-    df["PF"] = df.apply(lambda x: int(x["Score"].split(" - ")[0 if x["Home/Away"] == "Home" else 1]), axis=1)
-    df["PA"] = df.apply(lambda x: int(x["Score"].split(" - ")[1 if x["Home/Away"] == "Home" else 0]), axis=1)
-    df["Result"] = df.apply(lambda x: "W" if x["PF"] > x["PA"] else ("L" if x["PF"] < x["PA"] else "D"), axis=1)
-
-    return df
-
 #####################################################
 ### TEAM SHEETS - 4th and 7th sheets in the workbook
 #####################################################
-def team_sheets(squad=1):
+def team_sheets():
 
-    if squad == 1:
-        team = sheet[4].batch_get(['B4:AG'])[0]
-        team = pd.DataFrame(team, columns=team.pop(0)).replace('', pd.NA)
-        team["Squad"]="1st"
-    elif squad == 2:    
-        team = sheet[7].batch_get(['B4:AK'])[0]
-        team = pd.DataFrame(team, columns=team.pop(0)).replace('', pd.NA)
-        team["Squad"]="2nd"
-    elif squad == 0:
-        team1 = sheet[4].batch_get(['B4:AG'])[0]
-        team1 = pd.DataFrame(team1, columns=team1.pop(0)).replace('', pd.NA)
-        team1.drop("", axis=1, inplace=True)
-        team1["Squad"]="1st"
-        
-        team2 = sheet[7].batch_get(['B4:AK'])[0]
-        team2 = pd.DataFrame(team2, columns=team2.pop(0)).replace('', pd.NA)
-        team2["Squad"]="2nd"
-        
-        team = pd.concat([team1, team2])
+    t1, t2 = [
+        pd.DataFrame(
+            sheet[s].batch_get(['B5:AK'])[0], 
+            columns=["Season", "Competition", "Opposition", "Score", "Captain", "VC1", "VC2", *list(map(str,range(1, 30)))]
+        ).replace('', pd.NA)
+        for s in [4, 7]
+    ]
+    t1["Squad"] = "1st"
+    t2["Squad"] = "2nd"
+    team = pd.concat([t1, t2]).dropna(subset=['Season','Score'])
 
-    # Filter null/empty rows
-    team = team.dropna(subset=['Season','Score'])
-
-    # Add home/away column (=["H","A"]) based on the Opposition column
+    team["GameID"] = team["Opposition"] + team.groupby(["Squad", "Opposition", "Season"]).cumcount().replace(0, "").astype(str)
     team['Home/Away'] = team['Opposition'].apply(lambda x: "H" if "(H)" in x else "A")
     team["Opposition"] = team["Opposition"].apply(lambda x: x.replace("(H)","").replace("(A)",""))
-
     team["GameType"] = team["Competition"].apply(
-        lambda x: "Friendly" if x=="Friendly" else (
-            "League" if (
-                "Cup" not in x and "Plate" not in x and "Vase" not in x and "Sussex" in x
-                ) else "Cup"
-            )
-        )
+        lambda x: "Friendly" if x=="Friendly" else ("Cup" if re.search("Cup|Plate|Vase", x) else "League")
+    )
+    team["PF"] = team.apply(lambda x: int(x["Score"].split("-")[0 if x["Home/Away"] == "H" else 1]), axis=1)
+    team["PA"] = team.apply(lambda x: int(x["Score"].split("-")[1 if x["Home/Away"] == "H" else 0]), axis=1)
 
-    # Add PF and PA columns (based on Home/Away column) - if Home/Away is H, then PF is the first score and PA is the second score, else vice versa
-    team['PF'] = team.apply(lambda x: int(x['Score'].split("-")[0]) if x['Home/Away'] == "H" else int(x['Score'].split("-")[1]), axis=1)
-    team['PA'] = team.apply(lambda x: int(x['Score'].split("-")[1]) if x['Home/Away'] == "H" else int(x['Score'].split("-")[0]), axis=1)
+    team["Result"] = team.apply(lambda x: "W" if x["PF"] > x["PA"] else ("L" if x["PF"] < x["PA"] else "D"), axis=1)
+
+    # All column names to string
+    team.columns = team.columns.astype(str)
 
     return team
-
-# GAMES (1 row per game)
-###########################################
-def games(squad=1):
-    team = team_sheets(squad)
-    cols = ["Squad", "Season", "Competition", "GameType", "Home/Away", "Opposition", "PF", "PA"]
-    return team[cols]
 
 
 # PLAYERS (1 row per player per game)
 ###########################################
-def players(squad=1):
-    players = team_sheets(squad).melt(
-        id_vars=["Squad", "Season", "Competition", "GameType", "Opposition", "Home/Away"], 
-        value_vars=[str(i) for i in range(1, 26)], 
+def players(df=None):
+
+    if df is None:
+        df = team_sheets()
+
+    players = df.melt(
+        id_vars=["Squad", "Season", "Competition", "GameType", "Opposition", "Home/Away", "PF", "PA", "Result", "Captain", "VC1", "VC2"], 
+        value_vars=list(map(str,range(1, 26))), 
         value_name="Player",
         var_name="Number"
-    ).dropna()
+    ).dropna(subset=["Player"])
     players["Number"] = players["Number"].astype("int")
     players["Position"] = players["Number"].map(d).astype("category", )
     # If Position in ("Back Three", "Centre", "Fly Half", "Scrum Half"), then it's a Back, else it's a Forward
@@ -136,8 +99,10 @@ def players(squad=1):
 
 # PLAYERS_AGG (1 row per player per season)
 ###########################################
-def players_agg(squad=1):
-    squad = players(squad)
+def players_agg(df=None):
+    if df is None:
+        df = players()
+    
     players_agg = con.query("""
     SELECT
         Squad,
@@ -162,7 +127,7 @@ def players_agg(squad=1):
         -- Most common Positions
         MODE(Position) AS MostCommonPosition,
         MODE(NULLIF(PositionType,'Bench')) AS MostCommonPositionType
-    FROM squad
+    FROM df
     GROUP BY Squad, Season, Player
     """).to_df()
 
@@ -191,20 +156,13 @@ def dummy_movement(call):
     else:
         return "X"
 
-def lineouts(squad, season=None):
-    if squad == 1:
-        lineouts = sheet[6].batch_get(['A3:S'])[0]
-    elif squad == 2:
-        lineouts = sheet[9].batch_get(['A3:S'])[0]
-
-    df = pd.DataFrame(lineouts, columns=lineouts.pop(0)).replace('', pd.NA)
-
-    df["Squad"] = "1st" if squad == 1 else "2nd"
-    
-    if season:
-        df = df[df["Season"] == season]
-
-    df = df.fillna("")
+def lineouts():
+    l1, l2 = [sheet[s].batch_get(['B3:R'])[0] for s in [6, 9]]
+    l1 = pd.DataFrame(l1, columns=l1.pop(0))
+    l1["Squad"] = "1st"
+    l2 = pd.DataFrame(l2, columns=l2.pop(0))
+    l2["Squad"] = "2nd"
+    df = pd.concat([l1, l2]).replace("", pd.NA).fillna("")
 
     df["Area"] = df.apply(lambda x: "Front" if x["Front"] == "x" else ("Middle" if x["Middle"]=="x" else "Back"), axis=1)
     df["Won"] = df.apply(lambda x: True if x["Won"] == "Y" else False, axis=1)
@@ -229,44 +187,52 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-def pitchero_stats(squad=1, season=None):
+def pitchero_stats():
 
-    url = f"https://www.egrfc.com/teams/14206{8 if squad==1 else 9}/statistics"
+    dfs = []
+    for squad in [1, 2]:
+        for season in ["2021/22", "2022/23", "2023/24", "2024/25"]:
+            url = f"https://www.egrfc.com/teams/14206{8 if squad==1 else 9}/statistics"
+            seasonID = {
+                "2021/22": 79578,
+                "2022/23": 83980,
+                "2023/24": 87941,
+                "2024/25": 91673,
+            }[season]
 
-    if season is not None:
-        seasonID = {
-            "2021/22": 79578,
-            "2022/23": 83980,
-            "2023/24": 87941,
-            "2024/25": 91673,
-        }[season]
+            url += f"?season={seasonID}"
+            
 
-        url += f"?season={seasonID}"
-    
-    page = requests.get(url)
-    soup = BeautifulSoup(page.content, 'html.parser')
+            page = requests.get(url)
+            soup = BeautifulSoup(page.content, 'html.parser')
 
 
-    table = soup.find_all("div", {"class": "no-grid-hide"})[0]
+            table = soup.find_all("div", {"class": "no-grid-hide"})[0]
 
-    headers = [h.text for h in table.find_all("div", {"class": "league-table__header"})]
-    players = [p.text for p in table.find_all("div", "sc-bwzfXH iWTrZm")]
-    data = [int(d.text) for d in table.find_all("div", "sc-ifAKCX") if d.text.isnumeric()]
+            headers = [h.text for h in table.find_all("div", {"class": "league-table__header"})]
+            players = [p.text for p in table.find_all("div", "sc-bwzfXH iWTrZm")]
+            data = [int(d.text) for d in table.find_all("div", "sc-ifAKCX") if d.text.isnumeric()]
 
-    # Split the data into columns
-    data = [data[i:i+len(headers)-1] for i in range(0, len(data), len(headers)-1)]
+            # Split the data into columns
+            data = [data[i:i+len(headers)-1] for i in range(0, len(data), len(headers)-1)]
 
-    df = pd.DataFrame(data, columns=headers[1:], index=players)\
-        .reset_index().rename(columns={"index": "Player"})
+            df = pd.DataFrame(data, columns=headers[1:], index=players)\
+                .reset_index().rename(columns={"index": "Player"})
 
-    df = df[["Player", "A", "T", "Con", "PK", "DG", "YC", "RC"]]
+            df = df[["Player", "A", "T", "Con", "PK", "DG", "YC", "RC"]]
 
-    df["Points"] = df["T"]*5 + df["Con"]*2 + df["DG"]*3 + df["PK"]*3 
-    df["PPG"] = df["Points"] / df["A"]
-    df["Season"] = season
-    df["Squad"] = "1st" if squad == 1 else "2nd"
+            df["Points"] = df["T"]*5 + df["Con"]*2 + df["DG"]*3 + df["PK"]*3 
+            df["PPG"] = df["Points"] / df["A"]
+            df["Season"] = season
+            df["Squad"] = "1st" if squad == 1 else "2nd"
 
-    return df
+            df['Tries'] = df['T'].astype(int)*5
+            df['Cons'] = df['Con'].astype(int)*2
+            df['Pens'] = df['PK'].astype(int)*3
+
+            dfs.append(df)
+
+    return pd.concat(dfs)
 
 ########################
 ### SET PIECE SUMMARY
@@ -303,8 +269,8 @@ def set_piece_results():
     df1 = pd.DataFrame(sheet[5].batch_get(['B10:X'])[0], columns=columns).replace("", pd.NA).dropna(subset=["Season"])
     df2 = pd.DataFrame(sheet[8].batch_get(['B10:X'])[0], columns=columns).replace("", pd.NA).dropna(subset=["Season"])
 
-    df1["Squad"] = 1
-    df2["Squad"] = 2
+    df1["Squad"] = "1st"
+    df2["Squad"] = "2nd"
 
     df = pd.concat([df1, df2])
 

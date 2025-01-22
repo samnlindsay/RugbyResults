@@ -2,6 +2,7 @@
 import altair as alt
 import pandas as pd
 from data_prep import *
+from copy import deepcopy
 
 # Set the default configuration for altair
 def alt_theme():
@@ -87,15 +88,23 @@ squad_scale = alt.Scale(
     range=["#202947", "#146f14"]
 )
 
+def plot_starts_by_position(squad=1, season="2024/25", fb_only=False, df=None, min=0):
 
-def plot_starts_by_position(squad=1, season="2024/25", fb_only=False):
-
-    df = players(squad)
+    # Filter by squad/season/starts only
+    if df is None:
+        df = players()
+    if squad == 1:
+        df = df[df["Squad"] == "1st"]
+    elif squad == 2:
+        df = df[df["Squad"] == "2nd"]
+    if season:
+        df = df[df["Season"] == season]
+    df = df[df["Number"] <= 15]
 
     # legend selection filter
     legend = alt.selection_point(fields=["GameType"], bind="legend", on="click")
 
-    title = f"{'1st' if squad==1 else '2nd'} XV Starts (by position)"
+    title = f"{'1st XV' if squad==1 else '2nd XV' if squad == 2 else 'Total'} Starts (by position)"
 
     if fb_only:
         facet=alt.Facet("PositionType:N", sort=["Forwards", "Backs"], columns=2, title=None)
@@ -114,22 +123,20 @@ def plot_starts_by_position(squad=1, season="2024/25", fb_only=False):
         x=alt.X('count()', axis=alt.Axis(title="Starts", orient="bottom")),
         y=alt.Y('Player:N', sort='-x', title=None),
         facet=facet,
-        tooltip=["Player", "Position", "count()"],
-        # Map game type to color ordered by league, cup, friendly
+        tooltip=[
+            "Player", 
+            "Position", 
+            alt.Tooltip("count()"), 
+            'GameType:N' if squad else "Squad:N"
+        ],
         color=alt.Color(
-             "GameType:N",
-            scale=alt.Scale(
-                domain=["League", "Cup", "Friendly"], 
-                range=["#202947", "#981515", "#146f14"]                
-            ), 
+            f"{'Squad' if squad==0 else 'GameType'}:N",
+            scale=squad_scale if squad == 0 else game_type_scale,
             legend=alt.Legend(
-                title="Click to filter", titleOrient="left", orient="bottom", direction="horizontal")
+                title="Click to filter", orient="bottom", direction="horizontal", titleOrient="left"
+            )
         ),
-        order=alt.Order('GameType:N', sort='descending')
-    ).transform_filter(
-        (alt.datum.Season == season) & (alt.datum.Number <= 15)
-    ).transform_filter(
-        legend
+        order=alt.Order('GameType:N' if squad else "Squad:N", sort='descending')
     ).resolve_scale(
         y="independent",
         x="shared"
@@ -137,20 +144,30 @@ def plot_starts_by_position(squad=1, season="2024/25", fb_only=False):
         width=200, 
         height=alt.Step(14),
         title=alt.Title(text=title, subtitle="Not including bench appearances.")
-    ).add_params(legend)
+    ).add_params(
+        legend
+    ).transform_joinaggregate(
+        TotalGames="count()", groupby=["Player", "PositionType" if fb_only else "Position"]
+    ).transform_filter(
+        f"datum.TotalGames >= {min}"
+    ).transform_filter(
+        legend
+    )
 
     return chart
 
 # Plot the number of games played by each player in the 2024/25 season
-def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
+def plot_games_by_player(squad=1, season="2024/25", min=5, agg=False, df=None):
 
+    # Filter by squad/season/starts only
+    if df is None:
+        df = players()
     if squad == 1:
-        p = players(1)
+        df = df[df["Squad"] == "1st"]
     elif squad == 2:
-        p = players(2)
-    else:
-        p = pd.concat([players(1), players(2)])
-
+        df = df[df["Squad"] == "2nd"]
+    if season:
+        df = df[df["Season"] == season]
 
     c = alt.Color(
         f"{'Squad' if squad==0 else 'GameType'}:N",
@@ -164,7 +181,7 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
     # legend selection filter
     legend = alt.selection_point(fields=["GameType" if squad != 0 else "Squad"], bind="legend", on="click")
     
-    chart = alt.Chart(p).mark_bar(strokeWidth=2).encode(
+    chart = alt.Chart(df).mark_bar(strokeWidth=2).encode(
         x=alt.X(
             "count()",
             axis=alt.Axis(title="Appearances", orient="top")),
@@ -196,11 +213,11 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
     ).resolve_scale(
         y="independent"
     ).transform_filter(
-        f"datum.TotalGames >= {min_games}"
+        f"datum.TotalGames >= {min}"
     ).properties(
         title=alt.Title(
             text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances" + (" per Season" if season is None else ""),
-            subtitle=f"Minimum {min_games} appearances in a given season. Lighter shaded bars represent bench appearances.",
+            subtitle=f"Minimum {min} appearances in a given season. Lighter shaded bars represent bench appearances.",
             subtitleFontStyle="italic"
         ),
         width=400 if season else 250,
@@ -216,7 +233,7 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
         )
         return chart
     elif agg:
-        agg_chart = alt.Chart(p).mark_bar().encode(
+        agg_chart = alt.Chart(df).mark_bar().encode(
             x=alt.X("count()", axis=alt.Axis(title="Appearances", orient="top")),
             y=alt.Y("Player:N", title=None, sort="-x"),
             color=c,
@@ -242,13 +259,13 @@ def plot_games_by_player(squad, season="2024/25", min_games=5, agg=False):
         ).transform_joinaggregate(
             TotalGames="count()", groupby=["Player"]
         ).transform_filter(
-            f"datum.TotalGames >= {2*min_games}"
+            f"datum.TotalGames >= {2*min}"
         ).properties(
             width=500,
             height=alt.Step(15),
             title=alt.Title(
                 text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances (since 2021)",
-                subtitle=f"Minimum {2*min_games} appearances total). Lighter shaded bars represent bench appearances.",
+                subtitle=f"Minimum {2*min} appearances total). Lighter shaded bars represent bench appearances.",
                 subtitleFontStyle="italic",
             ),
         )
@@ -505,11 +522,16 @@ area_scale = {
 
 
 
-def counts(type, squad=1, season=None):
+def counts(type, squad=1, season=None, df=None):
     
-    df_init = lineouts(squad, season)
+    if df is None:
+        df = lineouts()
 
-    df = df_init.groupby([type, "Season"]).agg(
+    df = df[df["Squad"] == ("1st" if squad == 1 else "2nd")]
+    if season:
+        df = df[df["Season"] == season]
+
+    df = df.groupby([type, "Season"]).agg(
         Won = pd.NamedAgg(column="Won", aggfunc="sum"),
         Lost = pd.NamedAgg(column="Won", aggfunc="sum"),
         Total = pd.NamedAgg(column="Won", aggfunc="count")
@@ -523,10 +545,15 @@ def counts(type, squad=1, season=None):
 
     return df
 
-def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
-    # df = counts(type, squad, season)
-    df = lineouts(squad, season)
-
+def count_success_chart(type, squad=1, season=None, as_dict=False, min=1, df=None):
+    
+    if df is None:
+        df = lineouts()
+    
+    df = df[df["Squad"] == ("1st" if squad == 1 else "2nd")]
+    if season:
+        df = df[df["Season"] == season]
+    
     with open("lineout-template.json") as f:
         chart = json.load(f)
 
@@ -559,8 +586,6 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
     chart["resolve"]["scale"]["color"] = "shared"
     chart["transform"][0]["groupby"].append(type)
     chart["transform"][2]["groupby"].append(type)
-    chart["transform"].append({"filter": f"datum.Total >= {min}"})
-
 
     # Unique IDs for Jumper/Hooker/Setup/Movement/Call
     df["JumperID"] = df["Jumper"].astype("category").cat.codes
@@ -615,6 +640,12 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
             "labelPadding": 10
         }
 
+
+    chart["transform"].insert(0, deepcopy(chart["transform"][0]))
+    chart["transform"][0]["joinaggregate"][0]["as"] = "TotalOverall"
+    chart["transform"][1]["joinaggregate"][0]["as"] = "Total"
+    chart["transform"].insert(1, {"filter": f"datum.TotalOverall >= {min}"})
+
     if season:
         if type == "Call":
             chart["facet"] = {
@@ -635,29 +666,34 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1):
     else:
         return alt.Chart.from_dict(chart)
 
-def lineout_chart(squad=1, season=None):
+def lineout_chart(squad=1, season=None, df=None):
+
+    if df is None:
+        df = lineouts()
+
+    df = df[df["Squad"] == ("1st" if squad == 1 else "2nd")]
+    if season:
+        df = df[df["Season"] == season]
 
     types = ["Numbers", "Area", "Hooker", "Jumper", "Setup"]
 
-    movement_chart = count_success_chart("Movement", squad, season)
-    movement_chart["transform"] = [{"filter": {"param": f"select{f}"}} for f in types] + movement_chart["transform"]
-    # movement_chart["layer"][0]["encoding"]["y"]["axis"]["labels"] = False
-    # movement_chart["layer"][0]["encoding"]["y"]["title"] = None
+    movement_chart = count_success_chart("Movement", squad, season, df=df)
+    movement_chart["transform"][2:2] = [{"filter": {"param": f"select{f}"}} for f in types]
     movement_chart["layer"][1]["encoding"]["y"]["axis"]["labels"] = False
     movement_chart["layer"][1]["encoding"]["y"]["title"] = None
 
-    call_chart = count_success_chart("Call", squad, season)
-    call_chart["transform"] = [{"filter": {"param": f"select{f}"}} for f in types + ["Movement"]] + call_chart["transform"]
+    call_chart = count_success_chart("Call", squad, season, df=df)
+    call_chart["transform"][2:2] = [{"filter": {"param": f"select{f}"}} for f in types + ["Movement"]]
     call_chart["spec"]["layer"][0]["encoding"]["y"]["axis"]["labels"] = False
     call_chart["spec"]["layer"][0]["encoding"]["y"]["title"] = None
     
     charts = []
     for i,t in enumerate(types):
         min = 3 if t in ["Hooker", "Jumper"] else 1
-        chart = count_success_chart(t, squad, season, as_dict=True, min=min)
+        chart = count_success_chart(t, squad, season, as_dict=True, min=min, df=df)
 
         filters = [{"filter": {"param": f"select{f}"}} for f in types + ["Movement"] if f != t]
-        chart["transform"] = filters + chart["transform"]
+        chart["transform"][2:2] = filters
 
         if i < len(types) - 1:
             chart["layer"][1]["encoding"]["y"]["axis"]["labels"] = False
@@ -682,31 +718,19 @@ def lineout_chart(squad=1, season=None):
         ]  
     }
     
-
     return chart
 
-def points_scorers(squad=1, season="2024/25"):
 
-    if squad == 0:
-        s1 = pitchero_stats(1, season)
-        s2 = pitchero_stats(2, season)
-        scorers = pd.concat([s1, s2])
-    else:
-        scorers = pitchero_stats(squad, season).sort_values("Points", ascending=False)
-    scorers = scorers[scorers["Points"] > 0]
-    
-    scorers['Tries'] = scorers['T'].astype(int)*5
-    scorers['Cons'] = scorers['Con'].astype(int)*2
-    scorers['Pens'] = scorers['PK'].astype(int)*3
+def points_scorers_chart(squad=1, season="2024/25", df=None):
 
-    return scorers
-
-def points_scorers_chart(squad=1, season="2024/25"):
-
+    if df is None:
+        df = pitchero_stats()
+    if squad != 0:
+        df = df[df["Squad"] == ("1st" if squad == 1 else "2nd")]
     if season:
-        scorers = points_scorers(squad, season)
-    else:
-        scorers = pd.concat(points_scorers(squad, s) for s in ["2021/22", "2022/23", "2023/24", "2024/25"])
+        df = df[df["Season"] == season]
+    
+    scorers = df[df["Points"] > 0]
 
     scorers = scorers.drop("Points", axis=1)
     scorers = scorers.melt(
@@ -766,25 +790,23 @@ def points_scorers_chart(squad=1, season="2024/25"):
 
     return chart
 
-def card_chart(squad=0, season="2024/25"):
+def card_chart(squad=0, season="2024/25", df=None):
 
-    # if season is None, get all seasons
-    if season is None:
-        s1 = pd.concat(pitchero_stats(1, s) for s in ["2021/22", "2022/23", "2023/24", "2024/25"])
-        s2 = pd.concat(pitchero_stats(2, s) for s in ["2021/22", "2022/23", "2023/24", "2024/25"])
-    else:
-        s1 = pitchero_stats(1, season)
-        s2 = pitchero_stats(2, season)
+    if df is None:
+        df = pitchero_stats()
+    if squad != 0:
+        df = df[df["Squad"] == ("1st" if squad == 1 else "2nd")]
+    if season:
+        df = df[df["Season"] == season]
 
-    s = s1 if squad == 1 else (s2 if squad == 2 else pd.concat([s1, s2]))
-    s["Cards"] = s["YC"] + s["RC"]
-    s = (s[s["Cards"] > 0])[["Player","A","YC","RC", "Cards", "Season", "Squad"]]
+    df.loc[:, "Cards"] = df["YC"] + df["RC"]
+    df = (df[df["Cards"] > 0])[["Player","A","YC","RC", "Cards", "Season", "Squad"]]
         
-    s = s.sort_values(["Season", "Cards", "RC"], ascending=[True, False, True])
+    df = df.sort_values(["Season", "Cards", "RC"], ascending=[True, False, True])
 
     title = f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Cards"
 
-    chart = alt.Chart(s).mark_bar(stroke="black", strokeOpacity=0.2).encode(
+    chart = alt.Chart(df).mark_bar(stroke="black", strokeOpacity=0.2).encode(
         y=alt.Y("Player:N", title=None, sort=alt.EncodingSortField(field="Cards", order="descending")),
         x=alt.X("value:Q", title="Cards", axis=alt.Axis(values=[0,1,2,3,4,5], format="d")),        
         color=alt.Color(
@@ -799,30 +821,29 @@ def card_chart(squad=0, season="2024/25"):
     ).resolve_scale(
         y="independent"
     ).properties(
-        title=alt.Title(text=title, subtitle=f"According to Pitchero data" + f" ({len (results(squad, season))} games)" if season else ""), 
+        title=alt.Title(text=title, subtitle="According to Pitchero data"), 
         width=200 if season else 120
     )    
 
     return chart
 
-def captains_chart(season="2024/25"): 
-    captains = {}
-    for squad in [1,2]:
-        captains[squad] = team_sheets(squad)[["Season", "Captain", "VC", "GameType"]].melt(
-            id_vars=["Season", "GameType"], 
-            value_vars=["Captain", "VC"],
-            var_name="Role",
-            value_name="Player"
-        ).dropna()
-        captains[squad]["Team"] = "1st XV" if squad==1 else "2nd XV"
+def captains_chart(season="2024/25", df=None):
 
-    captains = pd.concat(captains.values())    
+    if df is None:
+        df = team_sheets()
+    
+    df = df.rename(columns={"VC1":"VC"})
+
+    captains = df[["Squad", "Season", "Captain", "VC", "GameType"]].melt(
+        id_vars=["Squad", "Season", "GameType"], 
+        value_vars=["Captain", "VC"],
+        var_name="Role",
+        value_name="Player"
+    ).dropna()
         
     if season:
         captains = captains[captains["Season"]==season]
     captains = captains[captains["GameType"]!="Friendly"]
-
-
 
     chart = alt.Chart(captains).mark_bar().encode(
         y=alt.X("Player:N", title=None, sort="-x"),
@@ -835,7 +856,7 @@ def captains_chart(season="2024/25"):
             ),
             legend=alt.Legend(title=None, direction="horizontal", orient="bottom")
         ), 
-        row=alt.Row("Team:N", title=None, header=alt.Header(title=None, orient="left")),
+        row=alt.Row("Squad:N", title=None, header=alt.Header(title=None, orient="left")),
         column=alt.Column("Season:O", header=alt.Header(title=None, labelFontSize=24)),
     ).properties(
         title=alt.Title("1st & 2nd XV Captains", subtitle=["League & Cup Captains and Vice-Captains", "(Friendly games excluded)"]),
@@ -847,9 +868,15 @@ def captains_chart(season="2024/25"):
 
     return chart
 
-def results_chart(squad=1, season=None):
-    
-    df = results(squad, season)
+def results_chart(squad=1, season=None, df=None):
+
+    if df is None:
+        df = team_sheets()
+
+    if season is not None:
+        df = df[df["Season"]==season]
+    if squad != 0:
+        df = df[df["Squad"]==("1st" if squad==1 else "2nd")]
 
     df["loser"] = df.apply(lambda x: x["PF"] if x["Result"] == "L" else x["PA"], axis=1)
     df["winner"] = df.apply(lambda x: x["PF"] if x["Result"] == "W" else x["PA"], axis=1)
@@ -866,8 +893,8 @@ def results_chart(squad=1, season=None):
                 grid=False, 
                 ticks=False, 
                 domain=False, 
-                labelExpr="split(datum.value,'-__-')[1]"
-                )
+                # labelExpr="split(datum.value,'-__-')[1]"
+            )
         ),
         x=alt.X('PF:Q', title="Points", axis=alt.Axis(orient='top', offset=5)),
         x2='PA:Q',
@@ -915,9 +942,11 @@ team_filter = alt.selection_point(encodings=["y"])
 color_scale = alt.Scale(domain=["EG", "Opposition"], range=["#202946", "#981515"])
 opacity_scale = alt.Scale(domain=[True, False], range=[1, 0.5])
 
-def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout"):
+def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout", df=None):
 
-    df = set_piece_results()
+    if df is None:
+        df = set_piece_results()
+    
     prefix = "l_" if event == "lineout" else "s_"
     df = df[["Squad", "Season", "Date", "Opposition", "Home/Away"]+[c for c in df.columns if prefix in c or "EG" in c]]
     df = df[df["Squad"] == squad]
@@ -1013,9 +1042,12 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout"):
         .properties(title=alt.Title(text=season, anchor="middle", fontSize=36))
     )
 
-def set_piece_h2h_charts(squad=1, event="lineout"):
+def set_piece_h2h_charts(squad=1, event="lineout", df=None):
 
-    charts = [set_piece_h2h_chart(squad,s,event) for s in seasons]
+    if df is None:
+        df = set_piece_results()
+
+    charts = [set_piece_h2h_chart(squad, s, event, df) for s in seasons]
 
     chart = (
         alt.hconcat(*charts)
