@@ -133,7 +133,7 @@ def plot_starts_by_position(squad=1, season="2024/25", fb_only=False, df=None, m
             f"{'Squad' if squad==0 else 'GameType'}:N",
             scale=squad_scale if squad == 0 else game_type_scale,
             legend=alt.Legend(
-                title="Click to filter", orient="bottom", direction="horizontal", titleOrient="left"
+                title="Squad" if squad==0 else None, orient="bottom", direction="horizontal", titleOrient="left"
             )
         ),
         order=alt.Order('GameType:N' if squad else "Squad:N", sort='descending')
@@ -173,7 +173,7 @@ def plot_games_by_player(squad=1, season="2024/25", min=5, agg=False, df=None):
         f"{'Squad' if squad==0 else 'GameType'}:N",
         scale=squad_scale if squad == 0 else game_type_scale,
         legend=alt.Legend(
-            title="Click to filter", orient="bottom", direction="horizontal", titleOrient="left"
+            title="Squad" if squad==0 else None, orient="bottom", direction="horizontal", titleOrient="left"
         )
     )
     o = alt.Order('Squad' if squad==0 else 'GameType', sort='descending')
@@ -536,7 +536,7 @@ def counts(type, squad=1, season=None, df=None):
         Lost = pd.NamedAgg(column="Won", aggfunc="sum"),
         Total = pd.NamedAgg(column="Won", aggfunc="count")
     ).reset_index()
-    df["Success"] = df["Won"] / df["Total"]
+    df["Success"] = df.loc[:,"Won"] / df["Total"]
     # Add column of sum(total) for each season
     df["SeasonTotal"] = df.groupby("Season")["Total"].transform("sum")
     df['Proportion'] = df['Total'] / df['SeasonTotal']
@@ -588,11 +588,11 @@ def count_success_chart(type, squad=1, season=None, as_dict=False, min=1, df=Non
     chart["transform"][2]["groupby"].append(type)
 
     # Unique IDs for Jumper/Hooker/Setup/Movement/Call
-    df["JumperID"] = df["Jumper"].astype("category").cat.codes
-    df["HookerID"] = df["Hooker"].astype("category").cat.codes
-    df["SetupID"] = df["Setup"].astype("category").cat.codes
-    df["MovementID"] = df["Movement"].astype("category").cat.codes
-    df["CallID"] = df["Call"].astype("category").cat.codes
+    df["JumperID"] = df.loc[:,"Jumper"].astype("category").cat.codes
+    df["HookerID"] = df.loc[:,"Hooker"].astype("category").cat.codes
+    df["SetupID"] = df.loc[:,"Setup"].astype("category").cat.codes
+    df["MovementID"] = df.loc[:,"Movement"].astype("category").cat.codes
+    df["CallID"] = df.loc[:,"Call"].astype("category").cat.codes
     if type in ["Jumper", "Hooker", "Setup", "Movement", "Call"]:
         chart["transform"].append({"calculate": f"datum.Total + datum.Success + 0.01*datum.{type}ID", "as": "sortcol"})
         chart["transform"][0]["groupby"].append(f"{type}ID")
@@ -711,7 +711,7 @@ def lineout_chart(squad=1, season=None, df=None):
     chart = alt.vconcat(top, bottom).resolve_scale(color='independent')
 
     chart["title"] = {
-        "text": f"{'1st' if squad==1 else '2nd'} XV Lineouts {season}",
+        "text": f"{'1st' if squad==1 else '2nd'} XV Lineouts",
         "subtitle": [
             "Distribution of lineouts (bar), and success rate (line). Click to highlight and filter.",
             "Success is defined as retaining possession when the lineout ends, and does not distinguish between an unsuccessful throw, a knock-on, or a penalty."
@@ -799,7 +799,7 @@ def card_chart(squad=0, season="2024/25", df=None):
     if season:
         df = df[df["Season"] == season]
 
-    df.loc[:, "Cards"] = df["YC"] + df["RC"]
+    df.loc[:, "Cards"] = df.loc[:,"YC"] + df.loc[:,"RC"]
     df = (df[df["Cards"] > 0])[["Player","A","YC","RC", "Cards", "Season", "Squad"]]
         
     df = df.sort_values(["Season", "Cards", "RC"], ascending=[True, False, True])
@@ -878,12 +878,11 @@ def results_chart(squad=1, season=None, df=None):
     if squad != 0:
         df = df[df["Squad"]==("1st" if squad==1 else "2nd")]
 
-    df["loser"] = df.apply(lambda x: x["PF"] if x["Result"] == "L" else x["PA"], axis=1)
-    df["winner"] = df.apply(lambda x: x["PF"] if x["Result"] == "W" else x["PA"], axis=1)
+    df.loc[:,"loser"] = df.apply(lambda x: x["PF"] if x["Result"] == "L" else x["PA"], axis=1)
+    df.loc[:,"winner"] = df.apply(lambda x: x["PF"] if x["Result"] == "W" else x["PA"], axis=1)
 
     selection = alt.selection_point(fields=['Result'], bind='legend')
-
-    bar = alt.Chart(df).mark_bar(point=True).encode(
+    base = alt.Chart(df).encode(
         y=alt.Y(
             'GameID:N', 
             sort=None, 
@@ -896,88 +895,89 @@ def results_chart(squad=1, season=None, df=None):
                 # labelExpr="split(datum.value,'-__-')[1]"
             )
         ),
-        x=alt.X('PF:Q', title="Points", axis=alt.Axis(orient='top', offset=5)),
-        x2='PA:Q',
         color=alt.Color(
             'Result:N', 
             scale=alt.Scale(domain=['W', 'L'], range=['#146f14', '#981515']), 
-            legend=alt.Legend(offset=20, title=["Click to","highlight"])
+            legend=alt.Legend(offset=20, orient="bottom", title="Click to highlight", titleOrient="left")
         ),
-        opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
-            
+        opacity=alt.condition(
+            selection, 
+            # alt.condition(team_filter, alt.value(1), alt.value(0.2)), 
+            alt.value(1),
+            alt.value(0.2)
+        )
     )
 
-    loser = alt.Chart(df).mark_text(align='right', dx=-2, dy=0, color='black').encode(
-        y=alt.Y('GameID:N', sort=None),
-        x=alt.X('loser:Q', title=None, axis=alt.Axis(orient='bottom', offset=5)),
+    bar = base.mark_bar(point=True).encode(
+        x=alt.X('PF:Q', title="Points", axis=alt.Axis(orient='bottom', offset=5)),
+        x2='PA:Q'
+    ).properties(height=alt.Step(20), width=400)
+
+    loser = base.mark_text(align='right', dx=-2, dy=0, color='black').encode(
+        x=alt.X('loser:Q', title=None, axis=alt.Axis(orient='top', offset=5)),
         text='loser:N',
-        opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
     )
 
-    winner = alt.Chart(df).mark_text(align='left', dx=2, dy=0, color='black').encode(
-        y=alt.Y('GameID:N', sort=None),
-        x=alt.X('winner:Q', title=None, axis=alt.Axis(orient='bottom', offset=5)),
+    winner = base.mark_text(align='left', dx=2, dy=0, color='black').encode(
+        x=alt.X('winner:Q', title=None, axis=alt.Axis(orient='top', offset=5)),
         text='winner:N',
-        opacity=alt.condition(selection, alt.value(1), alt.value(0.2))
     )
 
-    return (bar + loser + winner).add_params(
-        selection
-    ).properties(
+    chart = (bar + loser + winner).add_params(selection, team_filter)
+
+    if squad == 0 or season is None:
+        chart = (
+            chart
+            .facet(
+                row=alt.Row(
+                    'Squad:N', 
+                    header=alt.Header(title=None, labelExpr="datum.value + ' XV'", labelFontSize=48),
+                    sort=alt.SortOrder('ascending')
+                ),
+                column=alt.Column(
+                    'Season:N',
+                    header=alt.Header(title=None, labelFontSize=40, labels=season is None),
+                    sort=alt.SortOrder('ascending')
+                )
+            )
+            .resolve_scale(y='independent')
+        )
+    
+    chart = chart.properties(
         title=alt.Title(
-            text=("1st" if squad==1 else "2nd") + " XV Results", 
-            subtitle=["Bars show the scores of the losing team on the left and winning team on the right.", "Larger bars indicate larger winning margins."],
+            text=f"{('1st XV ' if squad==1 else ('2nd XV ' if squad==2 else ''))}Results {season if season is not None else '(since 2021)'}",
+            subtitle=[
+                "Match scores visualised by winning margin. Small bars reflect close games, colour reflects the result.",
+                "Click the legend to highlight wins or losses. Click a bar to highlight results against that team."  
+            ],
             offset=20
-        ), 
-        width=400
+        )
     )
 
+    return chart
 
 seasons = ["2021/22", "2022/23", "2023/24", "2024/25"]
 
 turnover_filter = alt.selection_point(fields=["Turnover"], bind="legend")
 put_in_filter = alt.selection_point(fields=["Team"], bind="legend")
-team_filter = alt.selection_point(encodings=["y"])
+team_filter = alt.selection_point(fields=["Opposition"])
 
 color_scale = alt.Scale(domain=["EG", "Opposition"], range=["#202946", "#981515"])
-opacity_scale = alt.Scale(domain=[True, False], range=[1, 0.5])
+opacity_scale = alt.Scale(domain=["Turnover", "Retained"], range=[1, 0.5])
 
-def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout", df=None):
-
+def set_piece_h2h_chart(squad, season=None, df=None):
+    
     if df is None:
         df = set_piece_results()
-    
-    prefix = "l_" if event == "lineout" else "s_"
-    df = df[["Squad", "Season", "Date", "Opposition", "Home/Away"]+[c for c in df.columns if prefix in c or "EG" in c]]
-    df = df[df["Squad"] == squad]
-    df = df[df["Season"] == season]
 
+    if season is not None:
+        df = df[df["Season"]==season]
 
-    df["EG_lost"] = df[f"EG_{prefix}total"] - df[f"EG_{prefix}won"]
-    df["Opp_lost"] = df[f"Opp_{prefix}total"] - df[f"Opp_{prefix}won"]
-    df = df.rename(columns={
-        f"EG_{prefix}won": "EG_won",
-        f"Opp_{prefix}won": "Opp_won",
-    })
-
-    # Drop columns containing prefix
-    df = df.drop(columns=[c for c in df.columns if "l_" in c or "s_" in c])
-
-    # Create ID column from Opposition and Home/Away (appending "(1)" or "(2)" if there are multiple games with the same Opposition and Home/Away)
-    df["GameID"] = df["Opposition"] + " (" + df["Home/Away"] + ") "
-    df["GameID"] = df["GameID"] + df.groupby(["GameID", "Season"]).cumcount().replace(0, "").astype(str)
-
-    df = df.melt(
-        id_vars=["Season", "GameID", "Opposition", "Home/Away", "Date"], 
-        var_name="Outcome", 
-        value_name="Count"
-    )
-    df["Turnover"] = df["Outcome"].str.contains("lost")
-    df["Team"] = df["Outcome"].apply(lambda x: "EG" if x in ["EG_won", "EG_lost"] else "Opposition")
+    df = df[df["Squad"]==("1st" if squad==1 else "2nd")]
 
     base = (
         alt.Chart(df).encode(
-            y=alt.Y("GameID:N", axis=None),
+            y=alt.Y("GameID:N", axis=None, sort=alt.EncodingSortField(field="Date", order="descending")),
             yOffset="Team:N",
             color=alt.Color(
                 "Team:N", 
@@ -992,7 +992,6 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout", df=None):
                 "Turnover:N", 
                 scale=opacity_scale, 
                 legend=alt.Legend(
-                    labelExpr="datum.value ? 'Turnover' : 'Retained'", 
                     title="Result", 
                     orient="bottom", 
                     direction="horizontal",
@@ -1002,13 +1001,10 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout", df=None):
                 alt.Tooltip("Opposition:N", title="Opposition"),
                 alt.Tooltip("Date:T", title="Date"),
                 alt.Tooltip("Team:N", title="Attacking team"),
-                alt.Tooltip("Count:Q", title="EG wins"),
+                alt.Tooltip("Winner:N"),
+                "Count:Q",
             ]
         )
-        .add_params(turnover_filter, put_in_filter, team_filter)
-        .transform_filter(turnover_filter)
-        .transform_filter(put_in_filter)
-        .transform_filter(team_filter)
         .properties(height=alt.Step(12), width=120)
     )
 
@@ -1021,9 +1017,8 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout", df=None):
                 scale=alt.Scale(domain=[0, df["Count"].max()]),
             )
         )
-        .transform_filter({"field":"Outcome", "oneOf":["Opp_lost", "EG_won"]})
+        .transform_filter("datum.Winner == 'EG'")
     )
-
     opp = (
         base.mark_bar(stroke="#981515")
         .encode(
@@ -1032,35 +1027,756 @@ def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout", df=None):
                 scale=alt.Scale(domain=[0, df["Count"].max()], reverse=True),
                 axis=alt.Axis(title="Opposition wins", orient="top", titleColor="#981515")
             ),
-            y=alt.Y("GameID:N", title=None, axis=alt.Axis(orient="left")),
+            y=alt.Y("GameID:N", title=None, axis=alt.Axis(orient="left"), sort=alt.EncodingSortField(field="Date", order="descending")),
         )
-        .transform_filter({"field":"Outcome", "oneOf":["Opp_won", "EG_lost"]})
+        .transform_filter("datum.Winner == 'Opposition'")
     )
-    return (
-        alt.hconcat(opp, eg, spacing=0)
-        .resolve_scale(y="shared", yOffset="independent")
-        .properties(title=alt.Title(text=season, anchor="middle", fontSize=36))
-    )
-
-def set_piece_h2h_charts(squad=1, event="lineout", df=None):
-
-    if df is None:
-        df = set_piece_results()
-
-    charts = [set_piece_h2h_chart(squad, s, event, df) for s in seasons]
 
     chart = (
-        alt.hconcat(*charts)
-        .resolve_scale(color="shared", opacity="shared", y="independent")
+        alt.hconcat(opp, eg, spacing=0)
+        .resolve_scale(y="shared", yOffset="independent")
+    )
+
+    return chart
+
+def set_piece_h2h_charts(squad, season=None, df=None):
+
+    chart = set_piece_h2h_chart(squad, season, df)
+
+    if season is not None:
+        df = df[df["Season"]==season]
+    seasons = df["Season"].unique()
+
+    scrum_panels = []
+    lineout_panels = []
+    for s in seasons:
+        scrum = chart.transform_filter(f"datum.Season == '{s}' & datum.SetPiece == 'Scrum'")
+        lineout = chart.transform_filter(f"datum.Season == '{s}' & datum.SetPiece == 'Lineout'")
+
+        if len(seasons)>1:
+            title=alt.Title(text=s, anchor="middle", orient="top", fontSize=36)
+            scrum = scrum.properties(title=title)
+            lineout = lineout.properties(title=title)
+
+        scrum_panels.append(scrum)
+        lineout_panels.append(lineout)
+
+    lineout_chart = (
+        alt.hconcat(*lineout_panels)
+        .resolve_scale(x="shared", color="shared", y="independent", opacity="shared", yOffset="shared")
         .properties(
             title=alt.Title(
-                text=f"{event.capitalize()} Head-to-Head", 
-                subtitle=[
-                    f"Number of {event}s and turnovers for both teams in each game",
-                    f"Click the legends to view only turnovers, or to view only one team's {event}s.",
-                    "Click the bar charts to select all games against that specific opposition."
-                ]
+                text="Lineout", 
+                anchor="middle", 
+                orient="left" if season is None else "top", 
+                fontSize=60 if season is None else 36
             )
+        )
+    )
+
+    scrum_chart = (
+        alt.hconcat(*scrum_panels)
+        .resolve_scale(x="shared", color="shared", y="independent", opacity="shared")
+        .properties(
+            title=alt.Title(
+                text="Scrum", 
+                anchor="middle", 
+                orient="left" if season is None else "top", 
+                fontSize=60 if season is None else 36
+            )
+        )
+    )
+
+    if season is not None:
+        lineout_chart.hconcat[0].hconcat[0].encoding.y.axis = None
+        final_chart = alt.hconcat(scrum_chart, lineout_chart, spacing=10).resolve_scale(y="shared")
+    else:
+        final_chart = alt.vconcat(scrum_chart, lineout_chart, spacing=30)
+
+    return (
+        final_chart
+        .add_params(turnover_filter, put_in_filter, team_filter)
+        .transform_filter(turnover_filter)
+        .transform_filter(put_in_filter)
+        .transform_filter(team_filter)
+        .properties(
+            title=alt.Title(
+                text=f"{'1st' if squad==1 else '2nd'} XV Set Piece", 
+                fontSize=60,
+                subtitle=["Numbers of set piece and turnovers for both teams in each game.", "Click the legends to view only turnovers. Click the bar charts to select all games against that specific opposition."]
+            )
+        )
+    )
+
+# def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout", df=None):
+
+
+#     base = (
+#         alt.Chart(df).encode(
+#             y=alt.Y("GameID:N", axis=None),
+#             yOffset="Team:N",
+#             color=alt.Color(
+#                 "Team:N", 
+#                 scale=color_scale, 
+#                 legend=alt.Legend(
+#                     title="Attacking team",
+#                     orient="bottom", 
+#                     direction="horizontal",
+#                 )
+#             ),
+#             opacity=alt.Opacity(
+#                 "Turnover:N", 
+#                 scale=opacity_scale, 
+#                 legend=alt.Legend(
+#                     labelExpr="datum.value ? 'Turnover' : 'Retained'", 
+#                     title="Result", 
+#                     orient="bottom", 
+#                     direction="horizontal",
+#                 )
+#             ),
+#             tooltip=[
+#                 alt.Tooltip("Opposition:N", title="Opposition"),
+#                 alt.Tooltip("Date:T", title="Date"),
+#                 alt.Tooltip("Team:N", title="Attacking team"),
+#                 alt.Tooltip("Count:Q", title="EG wins"),
+#             ]
+#         )
+#         .add_params(turnover_filter, put_in_filter, team_filter)
+#         .transform_filter(turnover_filter)
+#         .transform_filter(put_in_filter)
+#         .transform_filter(team_filter)
+#         .properties(height=alt.Step(12), width=120)
+#     )
+
+#     eg = (
+#         base.mark_bar(stroke="#202946")
+#         .encode(
+#             x=alt.X(
+#                 "Count:Q",
+#                 axis=alt.Axis(title="EG wins", orient="top", titleColor="#202946"),
+#                 scale=alt.Scale(domain=[0, df["Count"].max()]),
+#             )
+#         )
+#         .transform_filter({"field":"Outcome", "oneOf":["Opp_lost", "EG_won"]})
+#     )
+
+#     opp = (
+#         base.mark_bar(stroke="#981515")
+#         .encode(
+#             x=alt.X(
+#                 "Count:Q",
+#                 scale=alt.Scale(domain=[0, df["Count"].max()], reverse=True),
+#                 axis=alt.Axis(title="Opposition wins", orient="top", titleColor="#981515")
+#             ),
+#             y=alt.Y("GameID:N", title=None, axis=alt.Axis(orient="left")),
+#         )
+#         .transform_filter({"field":"Outcome", "oneOf":["Opp_won", "EG_lost"]})
+#     )
+#     return (
+#         alt.hconcat(opp, eg, spacing=0)
+#         .resolve_scale(y="shared", yOffset="independent")
+#         .properties(title=alt.Title(text=season, anchor="middle", fontSize=36))
+#     )
+
+# def set_piece_h2h_charts(squad=1, event="lineout", df=None):
+
+#     if df is None:
+#         df = set_piece_results()
+
+#     charts = [set_piece_h2h_chart(squad, s, event, df) for s in seasons]
+
+#     chart = (
+#         alt.hconcat(*charts)
+#         .resolve_scale(color="shared", opacity="shared", y="independent")
+#         .properties(
+#             title=alt.Title(
+#                 text=f"{event.capitalize()} Head-to-Head", 
+#                 subtitle=[
+#                     f"Number of {event}s and turnovers for both teams in each game",
+#                     f"Click the legends to view only turnovers, or to view only one team's {event}s.",
+#                     "Click the bar charts to select all games against that specific opposition."
+#                 ]
+#             )
+#         )
+#     )
+#     return chart
+
+###########################
+### VIDEO ANALYSIS CHARTS
+###########################
+
+game_selection = alt.selection_multi(fields=["Game"], on="click")
+
+def territory_chart(df):
+    game_order = df.sort_values(by="Date")["Game"].unique().tolist()
+    territory_cols = ["Own 22m (%)", "22m - Half (%)", "Half - 22m (%)", "Opp 22m (%)"]
+    df = df[df["Metric"].isin(territory_cols)]
+    
+    chart = (
+        alt.Chart(df)
+        .add_selection(game_selection)
+        .transform_window(
+            frame=[None, 0],
+            cumulative_value="sum(Value)",
+            groupby=["Date"]
+        )
+        .transform_calculate(
+            text_pos="datum.cumulative_value - datum.Value/2",
+            territory="replace(datum.Metric, ' (%)', '')",
+        )
+        .mark_bar()
+        .encode(
+            y=alt.Y("Game:O", sort=game_order, title=None),
+            x=alt.X("sum(Value):Q", title="Percentage", stack="normalize", axis=None),
+            color=alt.Color(
+                "territory:N", 
+                scale=alt.Scale(
+                    domain=["Own 22m", "22m - Half", "Half - 22m", "Opp 22m"],
+                    range=["#981515", "#da8", "#ad8", "#146f14"]
+                ),
+                legend=alt.Legend(
+                    title="Territory",
+                    titleOrient="left", 
+                    orient="bottom", 
+                    titlePadding=20
+                )
+            ),
+            order=alt.Order("stack_order:O"),
+            opacity=alt.condition(game_selection, alt.value(1), alt.value(0.4)),
+            tooltip=[
+                alt.Tooltip("Game:N"),
+                alt.Tooltip("Date:T"),
+                alt.Tooltip("territory:N", title="Territory"),
+                alt.Tooltip("Value:Q", title="Percentage", format=".0%")
+            ]
+        )
+        .properties(
+            title=alt.Title(
+                text="Territory",
+                subtitle="Ball in play time by area of the pitch.",
+                anchor="middle",
+                fontSize=36
+            ),
+            width=450,
+            height=alt.Step(35)
+        )
+    )
+
+    # Add text overlay to bars showing the percentage 
+    text = (
+        chart
+        .mark_text(align="center", baseline="middle", fontSize=20, fontWeight="bold")
+        .encode(
+            x=alt.X("text_pos:Q", axis=None),
+            text=alt.Text("sum(Value):Q", format=".0%"),
+            color=alt.Color(
+                "territory:N", 
+                scale=alt.Scale(
+                    range=["white", "black", "black", "white"], 
+                    domain=["Own 22m", "22m - Half", "Half - 22m", "Opp 22m"]
+                ),
+                legend=None
+            )
+        )
+    )
+
+    # Add vertical rule on 0.5 to show the 50% mark
+    rule = (
+        alt.Chart(pd.DataFrame({"x": [0.5]}))
+        .mark_rule(color="black", strokeDash=[5,5])
+        .encode(
+            x=alt.X("x:Q", axis=None)
+        )
+    )
+
+    return (chart + text + rule).resolve_scale(color="independent")
+
+def tackle_chart(df, axis=True):
+    game_order = df.sort_values(by="Date")["Game"].unique().tolist()
+    df = df[df["Metric"].isin(["Tackles Made", "Tackles Missed"])]
+    
+    chart = (
+        alt.Chart(df)
+        .add_selection(game_selection)
+        .transform_joinaggregate(
+            total="sum(Value)",
+            groupby=["Date"]
+        )
+        .transform_calculate(
+            percentage="datum.Value/datum.total",
+            opacity="datum.Metric == 'Tackles Made' ? sqrt(datum.percentage) : 1.0",
+            text_pos="datum.Metric == 'Tackles Made' ? datum.percentage/2 : 1 - datum.percentage/2",
+        )
+        .mark_bar()
+        .encode(
+            y=alt.Y("Game:O", sort=game_order, title=None),
+            x=alt.X("Value:Q", stack="normalize", title="Tackle Success (%)"),
+            color=alt.Color(
+                "Metric:N", 
+                scale=alt.Scale(
+                    domain=["Tackles Made", "Tackles Missed"], 
+                    range=["#146f14", "#981515"]
+                ), 
+                legend=alt.Legend(
+                    title="Tackles",
+                    titleOrient="left", 
+                    orient="bottom",
+                    labelExpr="split(datum.label, ' ')[1]",
+                    titlePadding=20
+                )
+            ),
+            opacity=alt.condition(game_selection, alt.value(1), alt.value(0.4)),
+            tooltip=[
+                alt.Tooltip("Game:N"),
+                alt.Tooltip("Date:T"),
+                alt.Tooltip("Value:Q", title="Tackles"),
+                alt.Tooltip("percentage:Q", title="Percentage", format=".0%")
+            ]
+        )
+        .properties(
+            title=alt.Title(
+                text="Tackles", 
+                subtitle="Tackles made and tackles missed", 
+                anchor="middle",
+                fontSize=36
+            ),
+            width=300,
+            height=alt.Step(35)
+        )
+    )
+
+    if not(axis):
+        chart.encoding.y.axis = None
+
+    text = (
+        chart
+        .mark_text(align="center", baseline="middle", fontSize=20, fontWeight="bold", color="white")
+        .encode(
+            x=alt.X("text_pos:Q", axis=None),
+            text=alt.Text("percentage:Q", format=".0%"),
+            color=alt.value("white")
+        )
+    )
+    return (chart + text).resolve_scale(color="independent")
+
+def playmaker_chart(df, axis=True):
+    game_order = df.sort_values(by="Date")["Game"].unique().tolist()
+    df = df[df["Metric"].isin(["Off 9 (%)", "Off 10 (%)", "Off 12 (%)"])]
+
+    chart = (
+        alt.Chart(df)
+        .add_selection(game_selection)
+        .transform_window(
+            frame=[None, 0],
+            cumulative_value="sum(Value)",
+            groupby=["Date"]
+        )
+        .transform_calculate(
+            text_pos="datum.cumulative_value - datum.Value/2",
+            playmaker="toNumber(split(datum.Metric, ' ')[1])"
+        )
+        .mark_bar()
+        .encode(
+            y=alt.Y("Game:O", sort=game_order, title=None),
+            x=alt.X("sum(Value):Q", title="Percentage", stack="normalize", axis=None),
+            color=alt.Color(
+                "playmaker:O", 
+                legend=alt.Legend(title="Playmaker", orient="bottom", titleOrient="left", titlePadding=20),
+                scale=alt.Scale(
+                    range=["#d0b060", "#b06030", "#981515"],
+                )
+            ),
+            order=alt.Order("stack_order:O"),
+            opacity=alt.condition(game_selection, alt.value(1), alt.value(0.4)),
+            tooltip=[
+                alt.Tooltip("Game:N"),
+                alt.Tooltip("Date:T"),
+                alt.Tooltip("playmaker:N", title="Playmaker"),
+                alt.Tooltip("Value:Q", title="Percentage", format=".0%")
+            ]
+        )
+        .properties(
+            title=alt.Title(
+                text="Playmakers",
+                subtitle="Distribution of plays off 9, 10 or 12",
+                anchor="middle",
+                fontSize=36,
+            ),
+            width=350,
+            height=alt.Step(35)
+        )
+    )
+
+    if not(axis):
+        chart.encoding.y.axis = None
+
+    # Add text overlay to bars showing the percentage
+    text = (
+        chart
+        .mark_text(align="center", baseline="middle", fontSize=20, fontWeight="bold")
+        .encode(
+            x=alt.X("text_pos:Q", axis=None),
+            text=alt.Text("sum(Value):Q", format=".0%"),
+            color=alt.Color(
+                "playmaker:O", 
+                scale=alt.Scale(
+                    range=["black", "white", "white"], 
+                    domain=[9, 10, 12]
+                ),
+                legend=None
+            ),
+            opacity=alt.condition(game_selection, alt.value(1), alt.value(0.4))
+        )
+    )
+
+    return (chart + text).resolve_scale(color="independent", x="shared")
+
+def penalties_chart(df, axis=True):
+    game_order = df.sort_values(by="Date")["Game"].unique().tolist()
+    penalty_cols = [
+        "Penalties For", 
+        "Ruck Attack",
+        "Ruck Defence",
+        "Scrum",
+        "Lineout",
+        "Maul",
+        "Offside",
+        "Foul play",
+        "Tackle",
+        "Blocking"
+    ]
+
+    penalties = df[df["Metric"].isin(penalty_cols)]
+    penalties.loc[:,"stack_order"] = penalties.loc[:,"Metric"].apply(lambda x: penalty_cols.index(x))
+
+    penalties.loc[:,"Offence"] = penalties.loc[:,"Metric"].apply(lambda x: "Total" if x == "Penalties For" else x)
+    penalties.loc[:,"Team"] = penalties.loc[:,"Metric"].apply(lambda x: "Won" if x == "Penalties For" else "Conceded")
+
+    # Generate list of 9 discrete colors from "yelloworangered" diverging color scheme
+    colors = [
+        "#146f14", # Penalties For
+        "#611", # Ruck Attack
+        "#981515", # Ruck Defence
+        "#b33", # Scrum
+        "#c63", # Lineout
+        "#d64", # Maul
+        "#e85", # Offside
+        "#fa6", # Foul play
+        "#fc7", # Tackle
+        "#fd9" # Blocking
+    ]
+
+    metric_selection = alt.selection_multi(fields=["Metric"], bind="legend")
+
+    chart = (
+        alt.Chart(penalties)
+        .add_selection(game_selection)
+        .add_selection(metric_selection)
+        .transform_calculate(offset="datum.Metric == 'Penalties For' ? -1 : 1")
+        .transform_window(
+                frame=[None, 0],
+                cumulative_value="sum(Value)",
+                groupby=["Date", "offset", "Team"]
+        )
+        .transform_calculate(text_pos="datum.cumulative_value - datum.Value/2")
+        .mark_bar()
+        .encode(
+            x=alt.X("Value:Q", title=None),
+            y=alt.Y("Game:O", sort=game_order, title=None),
+            color=alt.Color(
+                "Metric:N", 
+                scale=alt.Scale(domain=penalty_cols, range=colors),
+                sort=penalty_cols,
+                legend=alt.Legend(
+                    title=["Penalty", "Offence"], 
+                    titlePadding=10,
+                    titleFontSize=14,
+                    titleOrient="left",
+                    orient="bottom", 
+                    values=penalty_cols[1:], 
+                    labelFontSize=12,
+                    columns=3
+                )
+            ),
+            order=alt.Order("stack_order:Q", sort="ascending"),
+            opacity=alt.condition(game_selection, alt.value(1), alt.value(0.4)),
+            tooltip=[
+                alt.Tooltip("Game:N"),
+                alt.Tooltip("Date:T"),
+                alt.Tooltip("Team:N", title="Penalties"),
+                alt.Tooltip("Offence:N"),
+                alt.Tooltip("Value:Q", title="Count")
+            ]
+        )
+        .properties(
+            width=250,
+            height=alt.Step(35)
+        )
+    )
+
+    if not(axis):
+        chart.encoding.y.axis = None
+
+    # Add text labels to the bars
+    text = (
+        alt.Chart(penalties)
+        .transform_calculate(offset="datum.Metric == 'Penalties For' ? -1 : 1")
+        .transform_window(
+                frame=[None, 0],
+                cumulative_value="sum(Value)",
+                groupby=["Date", "offset"]
+        )
+        .transform_calculate(text_pos="datum.cumulative_value - datum.Value/2")
+        .mark_text(align="center", baseline="middle", fontSize=18)
+        .encode(
+            y=alt.Y("Game:O", sort=game_order, title=None),
+            text=alt.condition(
+                alt.datum.Value > 0,
+                alt.Text("Value:Q", format="d"),
+                alt.value("")
+            ),
+            x=alt.X("text_pos:Q"),
+            color=alt.value("white"),
+            opacity=alt.value(0.8)
+        )
+    )
+
+    return (
+        (chart + text)
+        .transform_filter(metric_selection)
+        .resolve_scale(opacity="independent", y="shared", x="shared")
+        .facet(column=alt.Column("Team:O", header=alt.Header(title=None), sort=["Won", "Conceded"]), spacing=5)
+        .resolve_scale(x="shared", y="shared")
+        .properties(
+            title=alt.Title(
+                text="Penalty Counts",
+                subtitle="Penalty counts by offence (click on legend to filter).",
+                anchor="middle",
+                fontSize=36
+            )
+        )
+    )
+
+
+def efficiency_chart(df, axis=True):
+    game_order = df.sort_values(by="Date")["Game"].unique().tolist()
+    efficiency_cols = [
+        "Opposition Entries", 
+        "Opposition Tries", 
+        "Opposition Efficiency (%)",
+        "Attacking Entries",
+        "Attacking Tries",
+        "Attacking Efficiency (%)",
+    ]
+    id_cols = ["Date", "Game", "Opposition", "Home/Away"]
+    
+    df = df[df["Metric"].isin(efficiency_cols)]
+
+    df.loc[:,"Team"] = df.loc[:,"Metric"].str.split(" ", expand=True)[0]
+    df.loc[:,"Metric"] = df.loc[:,"Metric"].str.split(" ", expand=True)[1]
+    df = df.pivot(index=id_cols + ["Team"], columns="Metric", values="Value").reset_index()
+
+    # Replace "Attacking" with "EG"
+    df.loc[:,"Team"] = df.loc[:,"Team"].replace("Attacking", "EG")
+
+    df.loc[:,"label"] = df.loc[:,"Tries"] + "T / " + df["Entries"]
+
+    chart = (
+        alt.Chart(df)
+        .add_selection(game_selection)
+        .mark_bar()
+        .encode(
+            x=alt.X("Efficiency", axis=alt.Axis(title="Conversion Rate (%)", format=".0%"), scale=alt.Scale(domain=[0, 1])),
+            y=alt.Y("Game:O", sort=game_order, title=None),
+            color=alt.Color(
+                "Team", 
+                scale=alt.Scale(domain=["Opposition", "EG"], range=["#981515", "#202946"]),
+                legend=None
+            ),
+            opacity=alt.condition(game_selection, alt.value(1), alt.value(0.4)),
+            tooltip=[
+                alt.Tooltip("Game:N"),
+                alt.Tooltip("Date:T"),
+                alt.Tooltip("Team:N"),
+                alt.Tooltip("Entries:Q", title="22m Entries"),
+                alt.Tooltip("Tries:Q"),
+            ]
+        )
+        .properties(
+            width=250,
+            height=alt.Step(35)
+        )
+    )
+
+    if not(axis):
+        chart.encoding.y.axis = None
+
+    text1 = (
+        chart
+        .mark_text(fontSize=16, align="right", baseline="middle", dx=-5)
+        .encode(text=alt.Text("Efficiency:Q", format=".0%"), color=alt.value("white"))
+    )
+
+    text2 = chart.mark_text(fontSize=12, align="left", baseline="middle", dx=5).encode(text=alt.Text("label:N"))
+
+    return (
+        (chart + (text1 + text2))
+        .facet(column=alt.Column("Team:O", sort=["Opposition", "EG"], header=alt.Header(title=None)), spacing=5)
+        .resolve_scale(x="shared")
+        .properties(
+            title=alt.Title(
+                text="Red Zone Efficiency", 
+                subtitle="Conversion rate of 22m entries into tries",
+                anchor="middle",
+                fontSize=36
+            ),
+        )
+    )
+
+def score_chart(df):
+
+    df = df[df["Metric"].isin(["PF", "PA"])]
+
+    max_score = df["Value"].astype(int).max() + 10
+    game_order = df.sort_values(by="Date")["Game"].unique().tolist()
+
+    df = df.pivot(index="Game", columns="Metric", values="Value").reset_index()
+    df.loc[:,"Result"] = df.apply(lambda x: "W" if x["PF"] > x["PA"] else ("D" if x["PF"] == x["PA"] else "L"), axis=1)
+
+    pf = (
+        alt.Chart(df)
+        .add_selection(game_selection)
+        .mark_bar(color="#202947")
+        .encode(
+            x=alt.X("PF:Q", title="Points For", scale=alt.Scale(domain=[0, max_score])),
+            y=alt.Y("Game:N", sort=game_order, axis=None),
+            tooltip=["Date:T", "Game", "PF", "PA"],
+            opacity=alt.condition(game_selection, alt.value(1), alt.value(0.2)),
+            fill=alt.condition(alt.datum.Result == "W", alt.value("#202947"), alt.value("#20294780")),
+            stroke=alt.value("#202947")
+        )
+        .properties(
+            width=200,
+            height=alt.Step(35)
+        )
+    )
+    pa = (
+        alt.Chart(df)
+        .mark_bar(color="#981515")
+        .encode(
+            x=alt.X("PA:Q", title="Points Against", scale=alt.Scale(reverse=True, domain=[0, max_score])),
+            y=alt.Y("Game:N", sort=game_order, title=None),
+            tooltip=["Date:T", "Game", "PF", "PA"],
+            opacity=alt.condition(game_selection, alt.value(1), alt.value(0.2)),
+            fill=alt.condition(alt.datum.Result == "L", alt.value("#981515"), alt.value("#98151580")),
+            stroke=alt.value("#981515")
+        )
+        .properties(width=200, height=alt.Step(35))
+    )
+    pa_text = pa.mark_text(dx=-20, dy=3, fontSize=18).encode(text="PA:Q", fill=alt.value("#981515"))
+    pf_text = pf.mark_text(dx=20, dy=3, fontSize=18).encode(text="PF:Q", fill=alt.value("#202947"))
+
+    return (
+        ((pa + pa_text) | (pf + pf_text))
+        .add_selection(game_selection)
+        .properties(
+            spacing=0,
+            title=alt.Title(
+                text="Scores", 
+                subtitle="Points for and against EG. Winning team shaded darker.", 
+                anchor="middle",
+                fontSize=36
+            )
+        )
+    )
+
+
+def gainline_chart(df, axis=True):
+    
+    game_order = df.sort_values(by="Date")["Game"].unique().tolist()
+
+    chart = (
+        alt.Chart(df[df["Metric"].isin(["Gain line +", "Gain line -"])])
+        .add_selection(game_selection)
+        .transform_joinaggregate(
+            total="sum(Value)",
+            groupby=["Date"]
+        )
+        .transform_calculate(
+            gain_line="datum.Metric == 'Gain line +' ? 'Yes' : 'No'",
+            percentage="datum.Value/datum.total",
+            text_pos="datum.Metric == 'Gain line +' ? datum.percentage/2 : 1 - datum.percentage/2",
+        )
+        .mark_bar()
+        .encode(
+            opacity=alt.condition(game_selection, alt.value(1), alt.value(0.2)),
+            y=alt.Y("Game:O", sort=game_order, title=None),
+            x=alt.X("Value:Q", title=None, stack="normalize", axis=None),
+            color=alt.Color(
+                "gain_line:N", 
+                scale=alt.Scale(
+                    range=["#146f14", "#981515"], 
+                    domain=["Yes", "No"]
+                ),
+                sort=["Yes", "No"],
+                legend=alt.Legend(orient="bottom", title="Gain line?", titleOrient="left", titlePadding=20)
+            ),
+            order=alt.Order("stack_order:O"),
+            tooltip=[
+                "Game",
+                "Date",
+                alt.Tooltip("gain_line:N", title="Gain line?"),
+                alt.Tooltip("Value:Q", title="Plays"),
+                alt.Tooltip("percentage:Q", title="Gain line success", format=".0%")
+            ]
+        ).properties(
+            width=300,
+            height=alt.Step(35)
+        )
+    )
+
+    if not(axis):
+        chart.encoding.y.axis = None
+
+    text = (
+        chart
+        .mark_text(align="left", baseline="middle", fontSize=18)
+        .encode(
+            x=alt.X("text_pos:Q"),
+            text=alt.Text("Value:Q"),
+            color=alt.value("white")
+        )
+    )
+
+    return (chart + text).resolve_scale(color="independent").properties(
+        title=alt.Title(
+            text="Gain Line Success",
+            subtitle="Starter plays that broke the gain line or otherwise.",
+            anchor="middle",
+            fontSize=36
+        )
+    )
+
+def game_stats_charts(df):
+    score=score_chart(df)
+    territory=territory_chart(df)
+    tackle=tackle_chart(df, axis=False)
+    playmaker=playmaker_chart(df, axis=False)
+    penalties=penalties_chart(df, axis=False)
+    efficiency=efficiency_chart(df, axis=False)
+    gainline=gainline_chart(df, axis=False)
+
+    a=alt.hconcat(score, efficiency, penalties, spacing=30).resolve_scale(color="independent")
+    b=alt.hconcat(territory, tackle, playmaker, gainline, spacing=30).resolve_scale(color="independent")
+
+    chart = (a & b).properties(
+        spacing=40,
+        title=alt.Title(
+            text="1st XV Video Analysis", 
+            fontSize=64,
+            subtitle=["Performance metrics from video analysis on Veo / live streams.", "Click on any chart to highlight a single game throughout all other charts."],
+            subtitleFontSize=14,
+            color="#202946"
         )
     )
     return chart

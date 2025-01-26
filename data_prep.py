@@ -3,6 +3,8 @@ from google.oauth2.service_account import Credentials
 import pandas as pd
 import duckdb
 import re
+import requests
+from bs4 import BeautifulSoup
 
 # Position dictionary
 d = {
@@ -183,9 +185,15 @@ def lineouts():
 ########################
 ### PITCHERO TEAM STATS
 ########################
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
+
+def clean_name(name):
+    initial = name.split(" ")[0][0]
+    surname = " ".join(name.split(" ")[1:])
+    surname = surname.replace("’", "'")
+    name_clean = f"{initial} {surname}"
+    # trim and title case
+    return name_clean.strip().title()
+
 
 def pitchero_stats():
 
@@ -230,9 +238,21 @@ def pitchero_stats():
             df['Cons'] = df['Con'].astype(int)*2
             df['Pens'] = df['PK'].astype(int)*3
 
+            df["Player_join"] = df["Player"].apply(clean_name)
+
+            df.drop(columns=["Player"], inplace=True)
+
             dfs.append(df)
 
-    return pd.concat(dfs)
+    pitchero_df = pd.concat(dfs)
+    players_agg_df = players_agg()[["Player", "Season", "Squad", "TotalGames"]]
+    players_agg_df["Player_join"] = players_agg_df["Player"].apply(clean_name)
+    
+    return players_agg_df.merge(
+        pitchero_df, 
+        on=["Squad", "Season", "Player_join"], 
+        how="left"
+    )
 
 ########################
 ### SET PIECE SUMMARY
@@ -276,8 +296,55 @@ def set_piece_results():
 
     # Convert columns to numeric where possible
     for c in df.columns:
-        if c in ["Season", "Date", "Opposition", "Home/Away"]:
+        if c in ["Squad", "Season", "Date", "Opposition", "Home/Away"]:
             continue
-        df[c] = pd.to_numeric(df[c], errors="coerce")
+        if "%" in c:
+            df[c] = df[c].str.replace("%", "").astype(float)*0.01
+        else:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+
+    df["GameID"] = df["Opposition"] + " (" + df["Home/Away"] + ")" + df.groupby(["Squad", "Opposition", "Home/Away", "Season"]).cumcount().replace(0, "").astype(str)
+
+    # Create "_lost" columns (_total - _won) and drop the _total columns
+    for c in df.columns:
+        if "_total" in c and ("_l" in c or "_s" in c):
+            prefix=c[:-6]
+            df[f"{prefix}_lost"] = df[f"{prefix}_total"] - df[f"{prefix}_won"]
+            df.drop(columns=[c], inplace=True)
+
+    id_cols=["Squad", "Season", "GameID", "Opposition", "Home/Away", "Date"]
+    var_cols=["EG_l_won", "EG_l_lost", "EG_s_won", "EG_s_lost", "Opp_l_won", "Opp_l_lost", "Opp_s_won", "Opp_s_lost"]
+
+    # df = df[id_cols + var_cols]
+
+    df = df.melt(id_vars=id_cols, value_vars=var_cols, var_name="Metric", value_name="Count")
+
+    df["SetPiece"] = df["Metric"].apply(lambda x: "Lineout" if "_l_" in x else "Scrum")
+    df["Turnover"] = df["Metric"].apply(lambda x: "Retained" if "won" in x else "Turnover")
+    df["Team"] = df["Metric"].apply(lambda x: "EG" if "EG" in x else "Opposition")
+    df["Winner"] = df.apply(lambda x: x["Team"] if "won" in x["Metric"] else "Opposition" if x["Team"] == "EG" else "EG", axis=1)
+
+    return df
+
+#################################
+### GAME STATS (Video Analysis)
+#################################
+def game_stats():
+    analysis = sheet[0].batch_get(['B4:AZ'])[0]
+
+    df = pd.DataFrame(analysis, columns=analysis.pop(0)).replace("", pd.NA)
+
+    # Convert Date (7 Sep 2024) to vega-compatible date
+    df.loc[:,"Date"] = pd.to_datetime(df["Date"], format="%d %b %Y")
+
+    # Convert all percentage columns to floats
+    for c in df.columns:
+        if "%" in c:
+            df.loc[:,c] = df[c].str.replace("%", "").astype(float)*0.01
+
+    df["Game"] = df.apply(lambda x: x["Opposition"] + " (" + x["Home/Away"] + ")", axis=1)
+
+    id_cols = ["Date", "Game", "Opposition", "Home/Away"]
+    df = df.melt(id_vars=id_cols, var_name="Metric", value_name="Value")
 
     return df

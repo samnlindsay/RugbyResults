@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5.17.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"axis": {"labelFont": "Lato, sans-serif", "titleFont": "PT Sans Narrow, Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 13, "titleFontSize": 24, "gridColor": "#202947", "gridOpacity": 0.2}, "header": {"labelFont": "PT Sans Narrow, Helvetica Neue, Helvetica, Arial, sans-serif", "titleFont": "PT Sans Narrow, Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 24, "titleFontSize": 28, "labelFontWeight": "bold", "orient": "left"}, "legend": {"labelFont": "Lato, sans-serif", "titleFont": "PT Sans Narrow, Helvetica Neue, Helvetica, Arial, sans-serif", "labelFontSize": 14, "titleFontSize": 16, "titlePadding": 5, "fillColor": "white", "strokeColor": "black", "padding": 10, "titleFontWeight": "lighter", "titleFontStyle": "italic", "titleColor": "gray", "offset": 10}, "title": {"font": "PT Sans Narrow, Helvetica Neue, Helvetica, Arial, sans-serif", "fontSize": 48, "fontWeight": "bold", "anchor": "start", "align": "center", "titlePadding": 20, "subtitlePadding": 10, "subtitleFontWeight": "lighter", "subtitleFontSize": 12, "subtitleColor": "", "subtitleFontStyle": "italic", "offset": 15, "color": "black"}, "axisX": {"labelAngle": 0}, "facet": {"title": null, "header": null, "align": {"row": "each", "column": "all"}}, "resolve": {"scale": {"y": "independent", "facet": "independent"}}, "background": "#20294710"}, "hconcat": [{"layer": [{"mark": {"type": "bar", "color": "#981515"}, "encoding": {"fill": {"condition": {"test": "(datum.Result === 'L')", "value": "#981515"}, "value": "#98151580"}, "opacity": {"condition": {"param": "param_22", "value": 1}, "value": 0.2}, "stroke": {"value": "#981515"}, "tooltip": [{"field": "Date", "type": "temporal"}, {"field": "Game", "type": "nominal"}, {"field": "PF", "type": "nominal"}, {"field": "PA", "type": "nominal"}], "x": {"field": "PA", "scale": {"domain": [0, 58.0], "reverse": true}, "title": "Points", "type": "quantitative"}, "y": {"field": "Game", "sort": ["London Cornish (H)", "Hove (H)", "Twickenham (A)", "KCS Old Boys (H)", "Eastbourne (A)", "Trinity (H)", "Old Haileyburians (H)", "Weybridge Vandals (H)", "Twickenham (H)"], "type": "nominal"}}, "name": "view_30", "title": {"text": "PA", "anchor": "end", "dx": -20}}, {"mark": {"type": "text", "dx": -20, "dy": 3, "fontSize": 20}, "encoding": {"fill": {"value": "#981515"}, "opacity": {"condition": {"param": "param_22", "value": 1}, "value": 0.2}, "stroke": {"value": "#981515"}, "text": {"field": "PA", "type": "quantitative"}, "tooltip": [{"field": "Date", "type": "temporal"}, {"field": "Game", "type": "nominal"}, {"field": "PF", "type": "nominal"}, {"field": "PA", "type": "nominal"}], "x": {"field": "PA", "scale": {"domain": [0, 58.0], "reverse": true}, "title": "Points", "type": "quantitative"}, "y": {"field": "Game", "sort": ["London Cornish (H)", "Hove (H)", "Twickenham (A)", "KCS Old Boys (H)", "Eastbourne (A)", "Trinity (H)", "Old Haileyburians (H)", "Weybridge Vandals (H)", "Twickenham (H)"], "type": "nominal"}}, "title": {"text": "PA", "anchor": "end", "dx": -20}}], "height": 400, "width": 200}, {"layer": [{"mark": {"type": "bar", "color": "#202947"}, "encoding": {"fill": {"condition": {"test": "(datum.Result === 'W')", "value": "#202947"}, "value": "#20294780"}, "opacity": {"condition": {"param": "param_22", "value": 1}, "value": 0.2}, "stroke": {"value": "#202947"}, "tooltip": [{"field": "Date", "type": "temporal"}, {"field": "Game", "type": "nominal"}, {"field": "PF", "type": "nominal"}, {"field": "PA", "type": "nominal"}], "x": {"field": "PF", "scale": {"domain": [0, 58.0]}, "title": "Points", "type": "quantitative"}, "y": {"axis": null, "field": "Game", "sort": ["London Cornish (H)", "Hove (H)", "Twickenham (A)", "KCS Old Boys (H)", "Eastbourne (A)", "Trinity (H)", "Old Haileyburians (H)", "Weybridge Vandals (H)", "Twickenham (H)"], "type": "nominal"}}, "name": "view_29", "title": {"text": "PF", "dx": 20}}, {"mark": {"type": "text", "dx": 20, "dy": 3, "fontSize": 20}, "encoding": {"fill": {"value": "#202947"}, "opacity": {"condition": {"param": "param_22", "value": 1}, "value": 0.2}, "stroke": {"value": "#202947"}, "text": {"field": "PF", "type": "quantitative"}, "tooltip": [{"field": "Date", "type": "temporal"}, {"field": "Game", "type": "nominal"}, {"field": "PF", "type": "nominal"}, {"field": "PA", "type": "nominal"}], "x": {"field": "PF", "scale": {"domain": [0, 58.0]}, "title": "Points", "type": "quantitative"}, "y": {"axis": null, "field": "Game", "sort": ["London Cornish (H)", "Hove (H)", "Twickenham (A)", "KCS Old Boys (H)", "Eastbourne (A)", "Trinity (H)", "Old Haileyburians (H)", "Weybridge Vandals (H)", "Twickenham (H)"], "type": "nominal"}}, "title": {"text": "PF", "dx": 20}}], "height": 400, "width": 200}], "data": {"name": "data-cec9702bed05a4df057dcbba753ce7b7"}, "params": [{"name": "param_22", "select": {"type": "point", "fields": ["Game"], "on": "click"}, "views": ["view_29", "view_30"]}], "spacing": 0, "title": "Score Chart", "$schema": "https://vega.github.io/schema/vega-lite/v5.17.0.json", "datasets": {"data-cec9702bed05a4df057dcbba753ce7b7": [{"Game": "Eastbourne (A)", "PA": "33", "PF": "36", "Result": "W"}, {"Game": "Hove (H)", "PA": "34", "PF": "21", "Result": "L"}, {"Game": "KCS Old Boys (H)", "PA": "33", "PF": "29", "Result": "L"}, {"Game": "London Cornish (H)", "PA": "18", "PF": "16", "Result": "L"}, {"Game": "Old Haileyburians (H)", "PA": "5", "PF": "18", "Result": "L"}, {"Game": "Trinity (H)", "PA": "48", "PF": "14", "Result": "L"}, {"Game": "Twickenham (A)", "PA": "41", "PF": "33", "Result": "L"}, {"Game": "Twickenham (H)", "PA": "47", "PF": "10", "Result": "L"}, {"Game": "Weybridge Vandals (H)", "PA": "20", "PF": "14", "Result": "L"}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>
