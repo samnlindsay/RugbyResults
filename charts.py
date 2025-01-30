@@ -768,8 +768,17 @@ def points_scorers_chart(squad=1, season="2024/25", df=None):
             alt.Tooltip("A:Q", title="Games"),
         ],
         text=alt.Text("label:N"),
-        row=alt.Row("Squad:N", spacing=5, header=alt.Header(title=None) if squad == 0 else None),
-        column=alt.Column("Season:O", spacing=5, header=alt.Header(title=None, labelFontSize=24) if season is None else None),
+        row=alt.Row(
+            "Squad:N", 
+            spacing=5, 
+            header=alt.Header(title=None) if squad == 0 else None, 
+            align="each"),
+        column=alt.Column(
+            "Season:O", 
+            spacing=5, 
+            header=alt.Header(title=None, labelFontSize=24) if season is None else None, 
+            align="each"
+        ),
     ).transform_joinaggregate(
         sortfield="sum(Points)",    
         groupby=["Player", "Type", "Season", "Squad"],
@@ -780,11 +789,12 @@ def points_scorers_chart(squad=1, season="2024/25", df=None):
             text=("1st XV " if squad==1 else "2nd XV " if squad==2 else "") + "Points Scorers",
             subtitle="According to Pitchero data"
         ),
-        width=400 if season else 200
+        width=400 if season else 200,
+        height=alt.Step(16)
     ).add_params(
         selection
     ).resolve_scale(
-        x="shared",
+        x="independent",
         y="independent"
     )
 
@@ -913,47 +923,46 @@ def results_chart(squad=1, season=None, df=None):
         x2='PA:Q'
     ).properties(height=alt.Step(20), width=400)
 
-    loser = base.mark_text(align='right', dx=-2, dy=0, color='black').encode(
+    loser = base.mark_text(align='right', dx=-2, dy=0).encode(
         x=alt.X('loser:Q', title=None, axis=alt.Axis(orient='top', offset=5)),
         text='loser:N',
+        color=alt.value('black')
     )
 
-    winner = base.mark_text(align='left', dx=2, dy=0, color='black').encode(
+    winner = base.mark_text(align='left', dx=2, dy=0).encode(
         x=alt.X('winner:Q', title=None, axis=alt.Axis(orient='top', offset=5)),
         text='winner:N',
+        color=alt.value('black')
     )
 
-    chart = (bar + loser + winner).add_params(selection, team_filter)
-
-    if squad == 0 or season is None:
-        chart = (
-            chart
-            .facet(
-                row=alt.Row(
-                    'Squad:N', 
-                    header=alt.Header(title=None, labelExpr="datum.value + ' XV'", labelFontSize=48),
-                    sort=alt.SortOrder('ascending')
-                ),
-                column=alt.Column(
-                    'Season:N',
-                    header=alt.Header(title=None, labelFontSize=40, labels=season is None),
-                    sort=alt.SortOrder('ascending')
-                )
+    chart = (
+        (bar + loser + winner)
+        .add_params(selection, team_filter)
+        .facet(
+            row=alt.Row(
+                'Squad:N', 
+                header=alt.Header(title=None, labelExpr="datum.value + ' XV'", labelFontSize=48),
+                sort=alt.SortOrder('ascending')
+            ),
+            column=alt.Column(
+                'Season:N',
+                header=alt.Header(title=None, labelFontSize=40, labels=season is None),
+                sort=alt.SortOrder('ascending')
             )
-            .resolve_scale(y='independent')
         )
-    
-    chart = chart.properties(
-        title=alt.Title(
-            text=f"{('1st XV ' if squad==1 else ('2nd XV ' if squad==2 else ''))}Results {season if season is not None else '(since 2021)'}",
-            subtitle=[
-                "Match scores visualised by winning margin. Small bars reflect close games, colour reflects the result.",
-                "Click the legend to highlight wins or losses. Click a bar to highlight results against that team."  
-            ],
-            offset=20
+        .resolve_scale(y='independent')
+        .properties(
+            title=alt.Title(
+                text=f"{('1st XV ' if squad==1 else ('2nd XV ' if squad==2 else ''))}Results",
+                subtitle=[
+                    "Match scores visualised by winning margin. Small bars reflect close games, colour reflects the result.",
+                    "Click the legend to highlight wins or losses. Click a bar to highlight results against that team."  
+                ],
+                offset=20
+            )
         )
     )
-
+    
     return chart
 
 seasons = ["2021/22", "2022/23", "2023/24", "2024/25"]
@@ -977,8 +986,16 @@ def set_piece_h2h_chart(squad, season=None, df=None):
 
     base = (
         alt.Chart(df).encode(
-            y=alt.Y("GameID:N", axis=None, sort=alt.EncodingSortField(field="Date", order="descending")),
-            yOffset="Team:N",
+            y=alt.Y(
+                "GameID:N", 
+                axis=None, 
+                sort=alt.EncodingSortField(field="Date", order="descending"), 
+                scale=alt.Scale(padding=0)
+            ),
+            yOffset=alt.YOffset(
+                "Team:N",
+                scale=alt.Scale(paddingOuter=0.2)
+            ),
             color=alt.Color(
                 "Team:N", 
                 scale=color_scale, 
@@ -1005,11 +1022,11 @@ def set_piece_h2h_chart(squad, season=None, df=None):
                 "Count:Q",
             ]
         )
-        .properties(height=alt.Step(12), width=120)
+        .properties(height=alt.Step(10), width=120)
     )
 
     eg = (
-        base.mark_bar(stroke="#202946")
+        base.mark_bar(stroke="#202946", )
         .encode(
             x=alt.X(
                 "Count:Q",
@@ -1080,7 +1097,8 @@ def set_piece_h2h_charts(squad, season=None, df=None):
         .properties(
             title=alt.Title(
                 text="Scrum", 
-                anchor="middle", 
+                anchor="middle",
+                align="left" if season is None else "center", 
                 orient="left" if season is None else "top", 
                 fontSize=60 if season is None else 36
             )
@@ -1102,8 +1120,11 @@ def set_piece_h2h_charts(squad, season=None, df=None):
         .properties(
             title=alt.Title(
                 text=f"{'1st' if squad==1 else '2nd'} XV Set Piece", 
-                fontSize=60,
-                subtitle=["Numbers of set piece and turnovers for both teams in each game.", "Click the legends to view only turnovers. Click the bar charts to select all games against that specific opposition."]
+                subtitle=[
+                    "Numbers of set piece and turnovers for both teams in each game.", 
+                    "Click the legends to view only turnovers.", 
+                    "Click the bar charts to select all games against that specific opposition."
+                ]
             )
         )
     )

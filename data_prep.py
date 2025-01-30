@@ -187,6 +187,16 @@ def lineouts():
 ########################
 
 def clean_name(name):
+
+    name_dict = {
+        "Sam Lindsay": "S Lindsay 2",
+        "Sam Lindsay-McCall": "S Lindsay",
+        "James Mitchell": "T Mitchell",
+    }
+
+    if name in name_dict:
+        return name_dict[name]
+
     initial = name.split(" ")[0][0]
     surname = " ".join(name.split(" ")[1:])
     surname = surname.replace("’", "'")
@@ -247,6 +257,7 @@ def pitchero_stats():
     pitchero_df = pd.concat(dfs)
     players_agg_df = players_agg()[["Player", "Season", "Squad", "TotalGames"]]
     players_agg_df["Player_join"] = players_agg_df["Player"].apply(clean_name)
+
     
     return players_agg_df.merge(
         pitchero_df, 
