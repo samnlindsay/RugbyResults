@@ -6,6 +6,8 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
+pd.options.mode.chained_assignment = None  # default='warn'
+
 # Position dictionary
 d = {
     1: "Prop",
@@ -62,10 +64,10 @@ def team_sheets():
     t2["Squad"] = "2nd"
     team = pd.concat([t1, t2]).dropna(subset=['Season','Score'])
 
-    team["GameID"] = team["Opposition"] + team.groupby(["Squad", "Opposition", "Season"]).cumcount().replace(0, "").astype(str)
+    team["GameID"] = team["Opposition"] + team.groupby(["Squad", "Opposition", "Season"]).cumcount().add(1).replace(1, "").astype(str)
     team['Home/Away'] = team['Opposition'].apply(lambda x: "H" if "(H)" in x else "A")
     team["Opposition"] = team["Opposition"].apply(lambda x: x.replace("(H)","").replace("(A)",""))
-    team["GameType"] = team["Competition"].apply(
+    team["GameType"] = team["Competition"].apply(c
         lambda x: "Friendly" if x=="Friendly" else ("Cup" if re.search("Cup|Plate|Vase", x) else "League")
     )
     team["PF"] = team.apply(lambda x: int(x["Score"].split("-")[0 if x["Home/Away"] == "H" else 1]), axis=1)
@@ -252,6 +254,12 @@ def pitchero_stats():
 
             df.drop(columns=["Player"], inplace=True)
 
+            if season == "2024/25" and squad == 1:
+                # remove 1 from YC column for 'Guy Collins' and 'Aaron Boczek'
+                df.loc[df["Player_join"].isin(["G Collins", "A Boczek"]), "YC"] = df.loc[df["Player_join"].isin(["G Collins", "A Boczek"]), "YC"] - 1
+                # Add 1 YC for 'C Leggat'
+                df.loc[df["Player_join"] == "C Leggat", "YC"] = df.loc[df["Player_join"] == "C Leggat", "YC"] + 1
+
             dfs.append(df)
 
     pitchero_df = pd.concat(dfs)
@@ -314,7 +322,7 @@ def set_piece_results():
         else:
             df[c] = pd.to_numeric(df[c], errors="coerce")
 
-    df["GameID"] = df["Opposition"] + " (" + df["Home/Away"] + ")" + df.groupby(["Squad", "Opposition", "Home/Away", "Season"]).cumcount().replace(0, "").astype(str)
+    df["GameID"] = df["Opposition"] + " (" + df["Home/Away"] + ")" + df.groupby(["Squad", "Opposition", "Home/Away", "Season"]).cumcount().add(1).replace(1,"").astype(str)
 
     # Create "_lost" columns (_total - _won) and drop the _total columns
     for c in df.columns:

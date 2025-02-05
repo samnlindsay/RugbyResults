@@ -13,26 +13,23 @@
             <div>
                 <div class="row-title">1st XV</div>
                 <button class="row-button t1 bold" onclick="openTab(event, '1s-appearances')">Appearances</button>
-                <button class="row-button t1 bold" onclick="openTab(event, '1s-position')">Starts (by position)</button>
-                <button class="row-button t1 bold" onclick="openTab(event, '1s-points')">Scorers</button>
-                <button class="row-button t1 bold" onclick="openTab(event, '1s-set-piece')">Set Piece</button>
                 <button class="row-button t1 bold" onclick="openTab(event, '1s-lineout')">Lineouts</button>
             </div>
             
             <div>
                 <div class="row-title">2nd XV</div>
                 <button class="row-button t2 bold" onclick="openTab(event, '2s-appearances')">Appearances</button>
-                <button class="row-button t2 bold" onclick="openTab(event, '2s-position')">Starts (by position)</button>
-                <button class="row-button t2 bold" onclick="openTab(event, '2s-points')">Scorers</button>
-                <button class="row-button t2 bold" onclick="openTab(event, '2s-set-piece')">Set Piece</button>
                 <button class="row-button t2 bold" onclick="openTab(event, '2s-lineout')">Lineouts</button>
             </div>
             
             <div style="padding-top:10px">
                 <div class="row-title">Squad</div>
-                <button class="row-button bold" onclick="openTab(event, 'appearances')">Appearances</button>
                 <button class="row-button bold" onclick="openTab(event, 'results')">Results</button>
+                <button class="row-button bold" onclick="openTab(event, 'set-piece')">Set Piece</button>
+                <button class="row-button bold" onclick="openTab(event, 'appearances')">Appearances</button>
+                <button class="row-button bold" onclick="openTab(event, 'positions')">Starts by Position</button>
                 <button class="row-button bold" onclick="openTab(event, 'captains')">Captains</button>
+                <button class="row-button bold" onclick="openTab(event, 'points')">Scorers</button>
                 <button class="row-button bold" onclick="openTab(event, 'cards')">Cards</button>
             
             </div>
@@ -40,33 +37,20 @@
         </div>
 
         <div class="scrollable-content">
-            <!-- TEAM OF THE SEASON -->
-            <div id="1s-lineup" class="tabcontent">
-                <iframe class="chart-iframe" src="./1s-lineup.html"></iframe>
-            </div>
-            <div id="2s-lineup" class="tabcontent">
-                <iframe class="chart-iframe" src="./2s-lineup.html"></iframe>
-            </div>
             
             <!-- Players (by position) -->
-            <div id="1s-position" class="tabcontent">
-                <iframe class="chart-iframe" src="./1s-squad-position.html"></iframe>
+            <div id="positions" class="tabcontent">
+                <iframe class="chart-iframe" src="./positions.html"></iframe>
             </div>
-            <div id="2s-position" class="tabcontent">
-                <iframe class="chart-iframe" src="./2s-squad-position.html"></iframe>
-            </div>
-
-            <!-- RESULTS -->
+            
+            <!-- RESULTS -->    
             <div id="results" class="tabcontent">
                 <iframe class="chart-iframe" src="./results.html"></iframe>
             </div>
 
             <!-- POINTS -->
-            <div id="1s-points" class="tabcontent">
-                <iframe class="chart-iframe" src="./1s-points.html"></iframe>
-            </div>
-            <div id="2s-points" class="tabcontent">
-                <iframe class="chart-iframe" src="./2s-points.html"></iframe>
+            <div id="points" class="tabcontent">
+                <iframe class="chart-iframe" src="./points.html"></iframe>
             </div>
 
             <!-- LINEOUTS -->
@@ -83,12 +67,6 @@
             </div>
 
             <!-- APPEARANCES -->
-            <div id="1s-appearances" class="tabcontent">
-                <iframe class="chart-iframe" src="./1s-appearances.html"></iframe>
-            </div>
-            <div id="2s-appearances" class="tabcontent">
-                <iframe class="chart-iframe" src="./2s-appearances.html"></iframe>
-            </div>
             <div id="appearances" class="tabcontent">
                 <iframe class="chart-iframe" src="./appearances.html"></iframe>
             </div>
@@ -99,11 +77,8 @@
             </div>
 
             <!-- SET PIECE -->
-            <div id="1s-set-piece" class="tabcontent">
-                <iframe class="chart-iframe" src="./1s-set-piece.html"></iframe>
-            </div>
-            <div id="2s-set-piece" class="tabcontent">
-                <iframe class="chart-iframe" src="./2s-set-piece.html"></iframe>
+            <div id="set-piece" class="tabcontent">
+                <iframe class="chart-iframe" src="./set-piece.html"></iframe>
             </div>
 
         </div>

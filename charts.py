@@ -1,4 +1,4 @@
-# Create custom style for altair charts
+import json# Create custom style for altair charts
 import altair as alt
 import pandas as pd
 from data_prep import *
@@ -63,7 +63,7 @@ def alt_theme():
             "facet": {
                 "title": None,
                 "header": None,
-                "align": {"row": "each", "column": "all"},  
+                "align": {"row": "each", "column": "each"},  
             },
             "resolve": {
                 "scale": {
@@ -88,6 +88,26 @@ squad_scale = alt.Scale(
     range=["#202947", "#146f14"]
 )
 
+def squad_row(squad, **kwargs):
+    row = alt.Row(
+        'Squad:N', 
+        header=alt.Header(title=None, labelExpr="datum.value + ' XV'", labelFontSize=40, labels=squad==0),
+        sort=alt.SortOrder('ascending'),
+        **kwargs
+    )
+    return row
+
+def season_column(season, **kwargs):
+    column = alt.Column(
+        'Season:N',
+        header=alt.Header(title=None, labelFontSize=40, labels=season is None),
+        sort=alt.SortOrder('ascending'),
+        **kwargs
+    )
+    return column
+
+position_order = ["Prop", "Hooker", "Second Row", "Back Row", "Scrum Half", "Fly Half", "Centre", "Back Three"]
+
 def plot_starts_by_position(squad=1, season="2024/25", fb_only=False, df=None, min=0):
 
     # Filter by squad/season/starts only
@@ -106,52 +126,41 @@ def plot_starts_by_position(squad=1, season="2024/25", fb_only=False, df=None, m
 
     title = f"{'1st XV' if squad==1 else '2nd XV' if squad == 2 else 'Total'} Starts (by position)"
 
-    if fb_only:
-        facet=alt.Facet("PositionType:N", sort=["Forwards", "Backs"], columns=2, title=None)
-    else:
-        facet=alt.Facet(
-            "Position:N", 
-            columns=2, 
-            sort=["Prop", "Scrum Half", "Hooker", "Fly Half", "Second Row", "Centre", "Back Row", "Back Three"], 
-            title=None, 
-            align="each",
-            spacing=5
-        )
-
     # altair bar chart of starts by position
-    chart = alt.Chart(df).mark_bar().encode(
-        x=alt.X('count()', axis=alt.Axis(title="Starts", orient="bottom")),
-        y=alt.Y('Player:N', sort='-x', title=None),
-        facet=facet,
-        tooltip=[
-            "Player", 
-            "Position", 
-            alt.Tooltip("count()"), 
-            'GameType:N' if squad else "Squad:N"
-        ],
-        color=alt.Color(
-            f"{'Squad' if squad==0 else 'GameType'}:N",
-            scale=squad_scale if squad == 0 else game_type_scale,
-            legend=alt.Legend(
-                title="Squad" if squad==0 else None, orient="bottom", direction="horizontal", titleOrient="left"
-            )
-        ),
-        order=alt.Order('GameType:N' if squad else "Squad:N", sort='descending')
-    ).resolve_scale(
-        y="independent",
-        x="shared"
-    ).properties(
-        width=200, 
-        height=alt.Step(14),
-        title=alt.Title(text=title, subtitle="Not including bench appearances.")
-    ).add_params(
-        legend
-    ).transform_joinaggregate(
-        TotalGames="count()", groupby=["Player", "PositionType" if fb_only else "Position"]
-    ).transform_filter(
-        f"datum.TotalGames >= {min}"
-    ).transform_filter(
-        legend
+    chart = (
+        alt.Chart(df)
+        .mark_bar()
+        .encode(
+            x=alt.X('count()', axis=alt.Axis(title="Starts", orient="bottom")),
+            y=alt.Y('Player:N', sort='-x', title=None),
+            # facet=facet,
+            column=alt.Column(
+                f"Position{'Type' if fb_only else ''}", 
+                title=None, 
+                header=alt.Header(title=None, labelFontSize=36), 
+                align="each",
+                sort=["Forwards", "Backs"] if fb_only else position_order
+            ),
+            row=squad_row(squad, align="each"),
+            tooltip=[
+                "Player", 
+                "Position", 
+                alt.Tooltip("count()", title="Starts"), 
+                'GameType:N'
+            ],      
+            color=alt.Color(
+                "GameType:N",
+                scale=game_type_scale,
+                legend=alt.Legend(title=None, orient="bottom", direction="horizontal", titleOrient="left")
+            ),
+            order=alt.Order('GameType:N', sort='descending')
+        )
+        .resolve_scale(y="independent", x="shared")
+        .properties(width=150, height=alt.Step(14), title=alt.Title(text=title, subtitle="Not including bench appearances."))
+        .add_params(legend)
+        .transform_joinaggregate(TotalGames="count()", groupby=["Player", "PositionType" if fb_only else "Position"])
+        .transform_filter(f"datum.TotalGames >= {min}")
+        .transform_filter(legend)
     )
 
     return chart
@@ -170,110 +179,115 @@ def plot_games_by_player(squad=1, season="2024/25", min=5, agg=False, df=None):
         df = df[df["Season"] == season]
 
     c = alt.Color(
-        f"{'Squad' if squad==0 else 'GameType'}:N",
-        scale=squad_scale if squad == 0 else game_type_scale,
+        f"GameType:N",
+        scale=game_type_scale,
         legend=alt.Legend(
-            title="Squad" if squad==0 else None, orient="bottom", direction="horizontal", titleOrient="left"
+            title=None, orient="bottom", direction="horizontal", titleOrient="left"
         )
     )
-    o = alt.Order('Squad' if squad==0 else 'GameType', sort='descending')
+    o = alt.Order("GameType", sort="descending")
 
     # legend selection filter
     legend = alt.selection_point(fields=["GameType" if squad != 0 else "Squad"], bind="legend", on="click")
     
-    chart = alt.Chart(df).mark_bar(strokeWidth=2).encode(
-        x=alt.X(
-            "count()",
-            axis=alt.Axis(title="Appearances", orient="top")),
-        y=alt.Y("Player", sort="-x", title=None),
-        color=c,
-        order=o,
-        opacity=alt.Opacity(
-            "PositionType:N",
-            scale=alt.Scale(
-                domain=["Start", "Bench"],
-                range=[1.0, 0.6]
-            ), 
-            legend=None
-        ),
-        column=alt.Column("Season:N", title=None, header=alt.Header(title=None, labelFontSize=36) if season is None else None),
-        tooltip=[
-            "Player:N", 
-            "Season:N",
-            "GameType:N" if squad != 0 else "Squad:N",
-            alt.Tooltip("count()", title="Games"), 
-            alt.Tooltip("TotalGames:Q", title="Total Games")
-        ],
-    ).transform_filter(
-        legend
-    ).add_params(
-        legend
-    ).transform_joinaggregate(
-        TotalGames="count()", groupby=["Player", "Season"]
-    ).resolve_scale(
-        y="independent"
-    ).transform_filter(
-        f"datum.TotalGames >= {min}"
-    ).properties(
-        title=alt.Title(
-            text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances" + (" per Season" if season is None else ""),
-            subtitle=f"Minimum {min} appearances in a given season. Lighter shaded bars represent bench appearances.",
-            subtitleFontStyle="italic"
-        ),
-        width=400 if season else 250,
-        height=alt.Step(15)
-    )
-    
-    if season is not None:
-        chart = chart.transform_filter(
-            alt.datum.Season == season
-        ).properties(
-            width=400,
-            height=alt.Step(15)
-        )
-        return chart
-    elif agg:
-        agg_chart = alt.Chart(df).mark_bar().encode(
-            x=alt.X("count()", axis=alt.Axis(title="Appearances", orient="top")),
-            y=alt.Y("Player:N", title=None, sort="-x"),
+    chart = (
+        alt.Chart(df)
+        .mark_bar(strokeWidth=2)
+        .encode(
+            x=alt.X("count()", axis=alt.Axis(title=None, orient="top")),
+            y=alt.Y("Player", sort="-x", title=None),
             color=c,
             order=o,
             opacity=alt.Opacity(
                 "PositionType:N",
-                scale=alt.Scale(
-                    domain=["Start", "Bench"],
-                    range=[1.0, 0.6]
-                ),
-                legend=None
+                scale=alt.Scale(domain=["Start", "Bench"], range=[1.0, 0.6]), 
+                legend=None if squad==0 else alt.Legend(title="Game Type", orient="bottom", direction="horizontal", titleOrient="left")
+            ),
+            column=alt.Column(
+                "Season:N" if season is None else "Squad:N", 
+                title=None, 
+                header=alt.Header(
+                    title=None, 
+                    labelFontSize=36, 
+                    labelExpr="datum.value + ' XV'" if (season is not None and squad==0) else ""
+                ) if (season is None or squad==0) else None
             ),
             tooltip=[
-                "Player:N",
+                "Player:N", 
+                "Season:N",
+                "GameType:N",
                 "Squad:N",
                 alt.Tooltip("count()", title="Games"), 
                 alt.Tooltip("TotalGames:Q", title="Total Games")
-            ],
-        ).transform_filter(
-            legend
-        ).add_params(
-            legend
-        ).transform_joinaggregate(
-            TotalGames="count()", groupby=["Player"]
-        ).transform_filter(
-            f"datum.TotalGames >= {2*min}"
-        ).properties(
-            width=500,
-            height=alt.Step(15),
-            title=alt.Title(
-                text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances (since 2021)",
-                subtitle=f"Minimum {2*min} appearances total). Lighter shaded bars represent bench appearances.",
-                subtitleFontStyle="italic",
-            ),
+            ]
         )
-        return alt.vconcat(chart, agg_chart)
+        .transform_filter(legend)
+        .add_params(legend)
+        .transform_joinaggregate(TotalGames="count()", groupby=["Player", "Season"])
+        .resolve_scale(y="independent")
+        .transform_filter(f"datum.TotalGames >= {min}")
+        .properties(
+            title=alt.Title(
+                text=f"Appearances by {'Squad' if season else 'Season'}",
+                subtitle=f"Minimum {min} appearances per squad per season. Lighter shaded bars represent bench appearances.",
+                subtitleFontStyle="italic"  
+            ),
+            width=400 if (season and squad>0) else 250,
+            height=alt.Step(15)
+        )
+    )
     
-    return chart
+    if season is not None:
+        chart = chart.transform_filter(alt.datum.Season == season)
+    
+    if agg and (season is None or squad == 0):
 
-import json
+        agg_chart = (
+            alt.Chart(df)
+            .mark_bar()
+            .encode(
+                x=alt.X("count()", axis=alt.Axis(title=None, orient="top")),
+                y=alt.Y("Player:N", title=None, sort="-x"),
+                color=alt.Color(
+                    "Squad:N", 
+                    scale=squad_scale, 
+                    legend=alt.Legend(title="Squad", orient="right", titleOrient="top")
+                ),
+                order=alt.Order("Squad", sort="ascending"),
+                opacity=alt.Opacity(
+                    "PositionType:N",
+                    scale=alt.Scale(domain=["Start", "Bench"], range=[1.0, 0.6]),
+                    legend=None
+                ),
+                tooltip=[
+                    "Player:N",
+                    "Squad:N",
+                    alt.Tooltip("count()", title="Games"), 
+                    alt.Tooltip("TotalGames:Q", title="Total Games")
+                ]
+            )
+            .transform_filter(legend)
+            .add_params(legend)
+            .transform_joinaggregate(TotalGames="count()", groupby=["Player"])
+            .transform_filter(f"datum.TotalGames >= {2*min if season is None else min}")
+            .properties(
+                width=500,
+                height=alt.Step(15),
+                title=alt.Title(
+                    text=f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Appearances{' (since 2021)' if season is None else ''}",
+                    subtitle=f"Minimum {2*min if season is None else min} appearances total). Lighter shaded bars represent bench appearances.",
+                    subtitleFontStyle="italic",
+                ),
+            )
+        )
+
+        if season is not None:
+            agg_chart = agg_chart.transform_filter(alt.datum.Season == season)
+
+        return alt.vconcat(chart, agg_chart).resolve_scale(color="independent")
+    else:
+        return chart
+
 
 def most_common_players(df, by="Position"):
     mcp = df.groupby(["Player", by]).size().reset_index(name=f"Count{by}")\
@@ -738,64 +752,91 @@ def points_scorers_chart(squad=1, season="2024/25", df=None):
         var_name="Type", 
         value_name="Points"
     )
-    
-    scorers["label"] = scorers.apply(lambda x: f"{x['T']}T" if x['Type']== "Tries" else (f"{x['PK']}P" if x["Type"]=="Pens" else f"{x['Con']}C"), axis=1)
 
     selection = alt.selection_point(fields=['Type'], bind='legend')
 
-    chart = alt.Chart(scorers).mark_bar().transform_calculate(
-        label="if(datum.T>0, datum.T + 'T ', '') + if(datum.Con>0, datum.Con + 'C ', '') + if(datum.PK>0, datum.PK + 'P ', '')"
-    ).encode(
-        x=alt.X("sum(Points):Q", axis=alt.Axis(orient="top", title="Points")),
-        y=alt.Y(
-            "Player:N", 
-            sort=alt.EncodingSortField(field="sortfield", order="descending"), 
-            title=None
-        ),
+    chart = (
+        alt.Chart(scorers)
+        .add_params(selection)
+        .transform_filter(selection)
+        .transform_filter("datum.Points > 0")
+        .transform_calculate(label="if(datum.T>0, datum.T + 'T ','') + if(datum.PK>0, datum.PK + 'P ', '') + if(datum.Con>0, datum.Con + 'C ', '')")
+        .mark_bar()
+        .encode(
+            x=alt.X("sum(Points):Q", axis=alt.Axis(orient="top", title="Points")),
+            y=alt.Y(
+                "Player:N", 
+                sort=alt.EncodingSortField(field="sortfield", order="descending"), 
+                title=None
+            ),
+            tooltip=[
+                alt.Tooltip("Player:N", title=" "), 
+                alt.Tooltip("A:Q", title="Games"),
+                alt.Tooltip("label:N", title="Scores"),
+                alt.Tooltip("sortfield:Q", title="Points")
+            ],
+        )
+        .transform_joinaggregate(
+            sortfield="sum(Points)",    
+            groupby=["Type", "Player", "Season", "Squad"]
+        )
+        .transform_joinaggregate(
+            totalpoints="sum(Points)",    
+            groupby=["Player", "Season", "Squad"]
+        )
+        .properties(width=400 if season else 200, height=alt.Step(16))
+    )
+    
+    text = (
+        chart    
+        .mark_text(align="left", dx=5, color="black")
+        .encode(
+            y=alt.Y(
+                "Player:N", 
+                sort=alt.EncodingSortField(field="sortfield", order="descending"), 
+                title=None
+            ),
+            x=alt.X("totalpoints:Q", axis=alt.Axis(orient="bottom", title="Points")),
+            text=alt.Text("label:N")
+        )
+    )
+
+    chart = chart.encode(
         color=alt.Color(
-            "Type:N", 
-            legend=alt.Legend(
-                title="Click to filter",
-                titleOrient="left",
-                orient="bottom",
-            ), 
-            scale=alt.Scale(domain=['Tries', 'Pens', 'Cons'], range=["#202947", "#981515", "#146f14"]                )
-        ),
+                "Type:N", 
+                legend=alt.Legend(
+                    title="Click to filter",
+                    titleOrient="left",
+                    orient="bottom",
+                ), 
+                scale=alt.Scale(domain=['Tries', 'Pens', 'Cons'], range=["#202947", "#981515", "#146f14"])
+            ),
         order=alt.Order("Type:N", sort="descending"),
-        tooltip=[
-            alt.Tooltip("Player:N", title=" "), 
-            alt.Tooltip("label", title="  "),
-            alt.Tooltip("A:Q", title="Games"),
-        ],
-        text=alt.Text("label:N"),
-        row=alt.Row(
-            "Squad:N", 
-            spacing=5, 
-            header=alt.Header(title=None) if squad == 0 else None, 
-            align="each"),
-        column=alt.Column(
-            "Season:O", 
-            spacing=5, 
-            header=alt.Header(title=None, labelFontSize=24) if season is None else None, 
+    )
+
+
+    chart = (
+        (chart + text)
+        # chart
+        .facet(
+            row=alt.Row(
+                "Squad:N", 
+                header=alt.Header(title=None, labelExpr="datum.value + ' XV'", labelFontSize=36) if squad == 0 else None
+            ),
+            column=alt.Column(
+                "Season:O", 
+                header=alt.Header(title=None, labelFontSize=28) if season is None else None, 
+            ),
+            spacing=20,
             align="each"
-        ),
-    ).transform_joinaggregate(
-        sortfield="sum(Points)",    
-        groupby=["Player", "Type", "Season", "Squad"],
-    ).transform_filter(
-        selection
-    ).properties(
-        title=alt.Title(
-            text=("1st XV " if squad==1 else "2nd XV " if squad==2 else "") + "Points Scorers",
-            subtitle="According to Pitchero data"
-        ),
-        width=400 if season else 200,
-        height=alt.Step(16)
-    ).add_params(
-        selection
-    ).resolve_scale(
-        x="independent",
-        y="independent"
+        )
+        .properties(
+            title=alt.Title(
+                text=("1st XV " if squad==1 else "2nd XV " if squad==2 else "") + "Points Scorers",
+                subtitle="According to Pitchero data"
+            )
+        )
+        .resolve_scale(y="independent")
     )
 
     return chart
@@ -816,24 +857,35 @@ def card_chart(squad=0, season="2024/25", df=None):
 
     title = f"{'1st XV' if squad==1 else ('2nd XV' if squad==2 else 'Total')} Cards"
 
-    chart = alt.Chart(df).mark_bar(stroke="black", strokeOpacity=0.2).encode(
-        y=alt.Y("Player:N", title=None, sort=alt.EncodingSortField(field="Cards", order="descending")),
-        x=alt.X("value:Q", title="Cards", axis=alt.Axis(values=[0,1,2,3,4,5], format="d")),        
-        color=alt.Color(
-            "key:N", 
-            title=None, 
-            legend=alt.Legend(orient="bottom")
-        ).scale(domain=["YC", "RC"], range=["#e6c719", "#981515"]),
-        tooltip=["Player:N", alt.Tooltip("A:Q", title="Appearances"), "YC:Q", "RC:Q", "Squad:N"],
-        column=alt.Column("Season:O", spacing=5, header=alt.Header(title=None, labelFontSize=24) if season is None else None),
-    ).transform_fold(
-        ["YC", "RC"]
-    ).resolve_scale(
-        y="independent"
-    ).properties(
-        title=alt.Title(text=title, subtitle="According to Pitchero data"), 
-        width=200 if season else 120
-    )    
+    selection = alt.selection_point(fields=["Player"], on="mouseover")
+
+    chart = (
+        alt.Chart(df).mark_bar(stroke="black", strokeOpacity=0.2).encode(
+            y=alt.Y("Player:N", title=None, sort=alt.EncodingSortField(field="Cards", order="descending")),
+            x=alt.X("value:Q", title="Cards", axis=alt.Axis(values=[0,1,2,3,4,5], format="d")),        
+            color=alt.Color(
+                "key:N", 
+                title=None, 
+                legend=alt.Legend(orient="bottom")
+            ).scale(domain=["YC", "RC"], range=["#e6c719", "#981515"]),
+            tooltip=["Player:N", alt.Tooltip("A:Q", title="Appearances"), "YC:Q", "RC:Q", "Squad:N"],
+            column=season_column(season),
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.2)),
+        )
+        .add_params(selection)
+        .transform_fold(["YC", "RC"])
+        .resolve_scale(y="independent")
+        .properties(
+            title=alt.Title(
+                text=title, 
+                subtitle=[
+                    "According to Pitchero data", 
+                    "2 YC leading to a RC in a game is shown as 1 YC + 1 RC (2 cards total)"
+                ]
+            ), 
+            width=200 if season else 120
+        )
+    )
 
     return chart
 
@@ -853,27 +905,34 @@ def captains_chart(season="2024/25", df=None):
         
     if season:
         captains = captains[captains["Season"]==season]
-    captains = captains[captains["GameType"]!="Friendly"]
 
-    chart = alt.Chart(captains).mark_bar().encode(
-        y=alt.X("Player:N", title=None, sort="-x"),
-        x=alt.X("count()", title="Games", sort=alt.EncodingSortField(field="Role", order="descending")),
-        color=alt.Color(
-            "Role:N",
-            scale=alt.Scale(
-                domain=["Captain", "VC"], 
-                range=["#202947", "#7d96e8"]                
-            ),
-            legend=alt.Legend(title=None, direction="horizontal", orient="bottom")
-        ), 
-        row=alt.Row("Squad:N", title=None, header=alt.Header(title=None, orient="left")),
-        column=alt.Column("Season:O", header=alt.Header(title=None, labelFontSize=24)),
-    ).properties(
-        title=alt.Title("1st & 2nd XV Captains", subtitle=["League & Cup Captains and Vice-Captains", "(Friendly games excluded)"]),
-        width=400 if season else 250,
-    ).resolve_scale(
-        x="shared",
-        y="independent"
+    chart = (
+        alt.Chart(captains)
+        .mark_bar()
+        .encode(
+            y=alt.X("Player:N", title=None, sort="-x"),
+            x=alt.X("count()", title="Games", sort=alt.EncodingSortField(field="Role", order="descending")),
+            color=alt.Color("Role:N",
+                scale=alt.Scale(domain=["Captain", "VC"], range=["#202947", "#146f14"]),
+                legend=alt.Legend(title=None, direction="horizontal", orient="bottom")
+            ), 
+            row=squad_row(0),
+            column=season_column(season),
+            order=alt.Order("order:N", sort="ascending"),
+            opacity=alt.condition("datum.GameType == 'Friendly'", alt.value(0.5), alt.value(1)),
+            tooltip=[
+                alt.Tooltip("Player:N", title="Player"),
+                alt.Tooltip("count()", title="Games"),
+                alt.Tooltip("Role:N", title="Role"),
+                alt.Tooltip("GameType:N", title="Game Type"),
+            ]
+        )
+        .transform_calculate(order = "(datum.Role=='Captain' ? 'a' : 'b') + (datum.GameType == 'Friendly' ? 'b' : 'a')")
+        .properties(
+            title=alt.Title("Match Day Captains", subtitle="Captains and Vice-Captains (if named). Friendly games are shaded lighter."),
+            width=400 if season else 250,
+        )
+        .resolve_scale(x="shared", y="independent", opacity="shared")
     )
 
     return chart
@@ -921,7 +980,7 @@ def results_chart(squad=1, season=None, df=None):
     bar = base.mark_bar(point=True).encode(
         x=alt.X('PF:Q', title="Points", axis=alt.Axis(orient='bottom', offset=5)),
         x2='PA:Q'
-    ).properties(height=alt.Step(20), width=400)
+    ).properties(height=alt.Step(15), width=400)
 
     loser = base.mark_text(align='right', dx=-2, dy=0).encode(
         x=alt.X('loser:Q', title=None, axis=alt.Axis(orient='top', offset=5)),
@@ -939,16 +998,8 @@ def results_chart(squad=1, season=None, df=None):
         (bar + loser + winner)
         .add_params(selection, team_filter)
         .facet(
-            row=alt.Row(
-                'Squad:N', 
-                header=alt.Header(title=None, labelExpr="datum.value + ' XV'", labelFontSize=48),
-                sort=alt.SortOrder('ascending')
-            ),
-            column=alt.Column(
-                'Season:N',
-                header=alt.Header(title=None, labelFontSize=40, labels=season is None),
-                sort=alt.SortOrder('ascending')
-            )
+            row=squad_row(squad), 
+            column=season_column(season)
         )
         .resolve_scale(y='independent')
         .properties(
@@ -989,7 +1040,7 @@ def set_piece_h2h_chart(squad, season=None, df=None):
             y=alt.Y(
                 "GameID:N", 
                 axis=None, 
-                sort=alt.EncodingSortField(field="Date", order="descending"), 
+                sort=alt.EncodingSortField(field="Date", order="ascending"), 
                 scale=alt.Scale(padding=0)
             ),
             yOffset=alt.YOffset(
@@ -1044,14 +1095,20 @@ def set_piece_h2h_chart(squad, season=None, df=None):
                 scale=alt.Scale(domain=[0, df["Count"].max()], reverse=True),
                 axis=alt.Axis(title="Opposition wins", orient="top", titleColor="#981515")
             ),
-            y=alt.Y("GameID:N", title=None, axis=alt.Axis(orient="left"), sort=alt.EncodingSortField(field="Date", order="descending")),
+            y=alt.Y(
+                "GameID:N", 
+                title=None, 
+                axis=alt.Axis(orient="left"), 
+                sort=alt.EncodingSortField(field="Date", order="ascending"),
+                scale=alt.Scale(padding=0)
+            ),
         )
         .transform_filter("datum.Winner == 'Opposition'")
     )
 
     chart = (
         alt.hconcat(opp, eg, spacing=0)
-        .resolve_scale(y="shared", yOffset="independent")
+        .resolve_scale(yOffset="independent")
     )
 
     return chart
@@ -1062,6 +1119,9 @@ def set_piece_h2h_charts(squad, season=None, df=None):
 
     if season is not None:
         df = df[df["Season"]==season]
+    if squad > 0:
+        df = df[df["Squad"]==("1st" if squad==1 else "2nd")]
+
     seasons = df["Season"].unique()
 
     scrum_panels = []
@@ -1073,43 +1133,38 @@ def set_piece_h2h_charts(squad, season=None, df=None):
         if len(seasons)>1:
             title=alt.Title(text=s, anchor="middle", orient="top", fontSize=36)
             scrum = scrum.properties(title=title)
-            lineout = lineout.properties(title=title)
+            # lineout = lineout.properties(title=title)
 
         scrum_panels.append(scrum)
         lineout_panels.append(lineout)
 
-    lineout_chart = (
-        alt.hconcat(*lineout_panels)
-        .resolve_scale(x="shared", color="shared", y="independent", opacity="shared", yOffset="shared")
-        .properties(
-            title=alt.Title(
-                text="Lineout", 
-                anchor="middle", 
-                orient="left" if season is None else "top", 
-                fontSize=60 if season is None else 36
-            )
-        )
+    
+    lineout_chart = alt.hconcat(*lineout_panels).resolve_scale(
+        x="shared", color="shared", y="independent", opacity="shared", yOffset="shared"
     )
 
-    scrum_chart = (
-        alt.hconcat(*scrum_panels)
-        .resolve_scale(x="shared", color="shared", y="independent", opacity="shared")
-        .properties(
-            title=alt.Title(
-                text="Scrum", 
-                anchor="middle",
-                align="left" if season is None else "center", 
-                orient="left" if season is None else "top", 
-                fontSize=60 if season is None else 36
-            )
-        )
+    scrum_chart = alt.hconcat(*scrum_panels).resolve_scale(
+        x="shared", color="shared", y="independent", opacity="shared"
     )
 
+    if squad>0:
+        titles=[alt.Title(
+                    text=t, 
+                    anchor="middle",
+                    align="left" if season is None else "center", 
+                    orient="left" if season is None else "top", 
+                    fontSize=60 if season is None else 36
+                ) for t in ["Scrum", "Lineout"]]
+        scrum_chart = scrum_chart.properties(title=titles[0])
+        lineout_chart = lineout_chart.properties(title=titles[1])
+        
     if season is not None:
         lineout_chart.hconcat[0].hconcat[0].encoding.y.axis = None
+        lineout_chart = lineout_chart.properties(title = alt.Title(text="Lineout", anchor="middle", fontSize=36))
+        scrum_chart = scrum_chart.properties(title = alt.Title(text="Scrum", anchor="middle", fontSize=36))
         final_chart = alt.hconcat(scrum_chart, lineout_chart, spacing=10).resolve_scale(y="shared")
     else:
-        final_chart = alt.vconcat(scrum_chart, lineout_chart, spacing=30)
+        final_chart = alt.vconcat(scrum_chart, lineout_chart, spacing=30).resolve_scale(y="shared")
 
     return (
         final_chart
@@ -1119,7 +1174,7 @@ def set_piece_h2h_charts(squad, season=None, df=None):
         .transform_filter(team_filter)
         .properties(
             title=alt.Title(
-                text=f"{'1st' if squad==1 else '2nd'} XV Set Piece", 
+                text=f"{'1st XV ' if squad==1 else ('2nd XV ' if squad==2 else '')}Set Piece Head-to-Head Results",
                 subtitle=[
                     "Numbers of set piece and turnovers for both teams in each game.", 
                     "Click the legends to view only turnovers.", 
@@ -1129,104 +1184,35 @@ def set_piece_h2h_charts(squad, season=None, df=None):
         )
     )
 
-# def set_piece_h2h_chart(squad=1, season="2024/25", event="lineout", df=None):
+def squad_set_piece_chart(squad=0, season=None, df=None):
+    if squad == 0:
+        c1 = set_piece_h2h_charts(squad=1, season=season, df=df)
+        c2 = set_piece_h2h_charts(squad=2, season=season, df=df)
 
+        c1 = c1.properties(title=alt.Title(text="1st XV", orient="left", anchor="middle", align="right"))
+        c2 = c2.properties(title=alt.Title(text="2nd XV", orient="left", anchor="middle", align="right"))
 
-#     base = (
-#         alt.Chart(df).encode(
-#             y=alt.Y("GameID:N", axis=None),
-#             yOffset="Team:N",
-#             color=alt.Color(
-#                 "Team:N", 
-#                 scale=color_scale, 
-#                 legend=alt.Legend(
-#                     title="Attacking team",
-#                     orient="bottom", 
-#                     direction="horizontal",
-#                 )
-#             ),
-#             opacity=alt.Opacity(
-#                 "Turnover:N", 
-#                 scale=opacity_scale, 
-#                 legend=alt.Legend(
-#                     labelExpr="datum.value ? 'Turnover' : 'Retained'", 
-#                     title="Result", 
-#                     orient="bottom", 
-#                     direction="horizontal",
-#                 )
-#             ),
-#             tooltip=[
-#                 alt.Tooltip("Opposition:N", title="Opposition"),
-#                 alt.Tooltip("Date:T", title="Date"),
-#                 alt.Tooltip("Team:N", title="Attacking team"),
-#                 alt.Tooltip("Count:Q", title="EG wins"),
-#             ]
-#         )
-#         .add_params(turnover_filter, put_in_filter, team_filter)
-#         .transform_filter(turnover_filter)
-#         .transform_filter(put_in_filter)
-#         .transform_filter(team_filter)
-#         .properties(height=alt.Step(12), width=120)
-#     )
+        chart = alt.vconcat(c1, c2, spacing=50).properties(
+            title=alt.Title(
+                text=f"Set Piece Head-to-Head Results", 
+                subtitle=[
+                    "Numbers of set piece and turnovers for both teams in each game.", 
+                    "Click the legends to view only turnovers.", 
+                    "Click the bar charts to select all games against that specific opposition."
+                ]
+            )
+        )
+    else:
+        chart = set_piece_h2h_charts(squad, season, df)
 
-#     eg = (
-#         base.mark_bar(stroke="#202946")
-#         .encode(
-#             x=alt.X(
-#                 "Count:Q",
-#                 axis=alt.Axis(title="EG wins", orient="top", titleColor="#202946"),
-#                 scale=alt.Scale(domain=[0, df["Count"].max()]),
-#             )
-#         )
-#         .transform_filter({"field":"Outcome", "oneOf":["Opp_lost", "EG_won"]})
-#     )
+    return chart
 
-#     opp = (
-#         base.mark_bar(stroke="#981515")
-#         .encode(
-#             x=alt.X(
-#                 "Count:Q",
-#                 scale=alt.Scale(domain=[0, df["Count"].max()], reverse=True),
-#                 axis=alt.Axis(title="Opposition wins", orient="top", titleColor="#981515")
-#             ),
-#             y=alt.Y("GameID:N", title=None, axis=alt.Axis(orient="left")),
-#         )
-#         .transform_filter({"field":"Outcome", "oneOf":["Opp_won", "EG_lost"]})
-#     )
-#     return (
-#         alt.hconcat(opp, eg, spacing=0)
-#         .resolve_scale(y="shared", yOffset="independent")
-#         .properties(title=alt.Title(text=season, anchor="middle", fontSize=36))
-#     )
-
-# def set_piece_h2h_charts(squad=1, event="lineout", df=None):
-
-#     if df is None:
-#         df = set_piece_results()
-
-#     charts = [set_piece_h2h_chart(squad, s, event, df) for s in seasons]
-
-#     chart = (
-#         alt.hconcat(*charts)
-#         .resolve_scale(color="shared", opacity="shared", y="independent")
-#         .properties(
-#             title=alt.Title(
-#                 text=f"{event.capitalize()} Head-to-Head", 
-#                 subtitle=[
-#                     f"Number of {event}s and turnovers for both teams in each game",
-#                     f"Click the legends to view only turnovers, or to view only one team's {event}s.",
-#                     "Click the bar charts to select all games against that specific opposition."
-#                 ]
-#             )
-#         )
-#     )
-#     return chart
 
 ###########################
 ### VIDEO ANALYSIS CHARTS
 ###########################
 
-game_selection = alt.selection_multi(fields=["Game"], on="click")
+game_selection = alt.selection_point(fields=["Game"], on="click")
 
 def territory_chart(df):
     game_order = df.sort_values(by="Date")["Game"].unique().tolist()
@@ -1235,7 +1221,7 @@ def territory_chart(df):
     
     chart = (
         alt.Chart(df)
-        .add_selection(game_selection)
+        .add_params(game_selection)
         .transform_window(
             frame=[None, 0],
             cumulative_value="sum(Value)",
@@ -1318,7 +1304,7 @@ def tackle_chart(df, axis=True):
     
     chart = (
         alt.Chart(df)
-        .add_selection(game_selection)
+        .add_params(game_selection)
         .transform_joinaggregate(
             total="sum(Value)",
             groupby=["Date"]
@@ -1386,7 +1372,7 @@ def playmaker_chart(df, axis=True):
 
     chart = (
         alt.Chart(df)
-        .add_selection(game_selection)
+        .add_params(game_selection)
         .transform_window(
             frame=[None, 0],
             cumulative_value="sum(Value)",
@@ -1491,8 +1477,8 @@ def penalties_chart(df, axis=True):
 
     chart = (
         alt.Chart(penalties)
-        .add_selection(game_selection)
-        .add_selection(metric_selection)
+        .add_params(game_selection)
+        .add_params(metric_selection)
         .transform_calculate(offset="datum.Metric == 'Penalties For' ? -1 : 1")
         .transform_window(
                 frame=[None, 0],
@@ -1604,7 +1590,7 @@ def efficiency_chart(df, axis=True):
 
     chart = (
         alt.Chart(df)
-        .add_selection(game_selection)
+        .add_params(game_selection)
         .mark_bar()
         .encode(
             x=alt.X("Efficiency", axis=alt.Axis(title="Conversion Rate (%)", format=".0%"), scale=alt.Scale(domain=[0, 1])),
@@ -1666,7 +1652,7 @@ def score_chart(df):
 
     pf = (
         alt.Chart(df)
-        .add_selection(game_selection)
+        .add_params(game_selection)
         .mark_bar(color="#202947")
         .encode(
             x=alt.X("PF:Q", title="Points For", scale=alt.Scale(domain=[0, max_score])),
@@ -1699,7 +1685,7 @@ def score_chart(df):
 
     return (
         ((pa + pa_text) | (pf + pf_text))
-        .add_selection(game_selection)
+        .add_params(game_selection)
         .properties(
             spacing=0,
             title=alt.Title(
@@ -1718,7 +1704,7 @@ def gainline_chart(df, axis=True):
 
     chart = (
         alt.Chart(df[df["Metric"].isin(["Gain line +", "Gain line -"])])
-        .add_selection(game_selection)
+        .add_params(game_selection)
         .transform_joinaggregate(
             total="sum(Value)",
             groupby=["Date"]
